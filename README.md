@@ -13,7 +13,7 @@ Computer reversi on GitHub pages.
   - [ ] Implement tests
 - [ ] Implement reversi board
   - [x] Setup canvas
-  - [ ] Handle click events
+  - [x] Handle click events
   - [ ] Implement data binding
 - [ ] Implement bidboard
 - [ ] Deploy to GitHub pages
