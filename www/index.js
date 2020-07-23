@@ -5,8 +5,8 @@ const height = 8;
 const CELL_SIZE = 30;
 const BOARD_WIDTH = 8 * (CELL_SIZE + 1) + 2 * (BOARD_OFFSET + 10);
 const DISK_RADIUS = 13;
-const horizontalOffset = BOARD_OFFSET + 10;
-const verticalOffset = BOARD_OFFSET + 10;
+const xOffset = BOARD_OFFSET + 10;
+const yOffset = BOARD_OFFSET + 10;
 
 const color = {
   background: "#0B610B",
@@ -27,17 +27,17 @@ const drawGrid = (ctx) => {
 
   // Vertical lines
   for (let i = 0; i <= width; i++) {
-    const start = verticalOffset + i * (CELL_SIZE + 1) + 1;
-    const end = verticalOffset + (CELL_SIZE + 1) * height + 1;
-    ctx.moveTo(start, verticalOffset);
+    const start = xOffset + i * (CELL_SIZE + 1) + 1;
+    const end = xOffset + (CELL_SIZE + 1) * height + 1;
+    ctx.moveTo(start, xOffset);
     ctx.lineTo(start, end);
   }
 
   // Horizontal lines
   for (let j = 0; j <= height; j++) {
-    const start = horizontalOffset + j * (CELL_SIZE + 1) + 1;
-    const end = horizontalOffset + (CELL_SIZE + 1) * width + 1;
-    ctx.moveTo(horizontalOffset, start);
+    const start = yOffset + j * (CELL_SIZE + 1) + 1;
+    const end = yOffset + (CELL_SIZE + 1) * width + 1;
+    ctx.moveTo(yOffset, start);
     ctx.lineTo(end, start);
   }
 
@@ -45,8 +45,8 @@ const drawGrid = (ctx) => {
 };
 
 const drawDisk = (ctx, i, j, color) => {
-  const x = horizontalOffset + (i + 1 / 2) * (CELL_SIZE + 1) + 1;
-  const y = verticalOffset + (j + 1 / 2) * (CELL_SIZE + 1) + 1;
+  const x = yOffset + (i + 1 / 2) * (CELL_SIZE + 1) + 1;
+  const y = xOffset + (j + 1 / 2) * (CELL_SIZE + 1) + 1;
 
   ctx.beginPath();
   ctx.fillStyle = color;
