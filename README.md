@@ -1,13 +1,15 @@
 reversi
 =====
 
+[![GitHub Workflows Status](https://github.com/oshikiri/reversi/workflows/npm%20test/badge.svg)](https://github.com/oshikiri/reversi/actions?query=workflow%3A%22npm+test%22)
+
 Computer reversi on GitHub pages.
 
 
 ## TODO
 
 - [ ] Setup CI
-  - [ ] prettier check
+  - [x] prettier check
   - [ ] Implement tests
 - [ ] Implement reversi board using HTML+CSS
 - [ ] Implement bidboard
@@ -21,7 +23,9 @@ Computer reversi on GitHub pages.
 
 ## References
 
-## LICENSE
+- [Reversi \- Wikipedia](https://en.wikipedia.org/wiki/Reversi)
+
+## License
 MIT
 
 And this program based on the following repositories:
