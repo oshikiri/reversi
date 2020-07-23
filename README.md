@@ -11,7 +11,10 @@ Computer reversi on GitHub pages.
 - [ ] Setup CI
   - [x] prettier check
   - [ ] Implement tests
-- [ ] Implement reversi board using HTML+CSS
+- [ ] Implement reversi board
+  - [x] Setup canvas
+  - [ ] Handle click events
+  - [ ] Implement data binding
 - [ ] Implement bidboard
 - [ ] Deploy to GitHub pages
 - [ ] Implement algorithms
