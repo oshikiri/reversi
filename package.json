@@ -4,6 +4,7 @@
   "description": "Computer reversi backed with webassembly",
   "main": "index.js",
   "scripts": {
+    "check:format": "./node_modules/.bin/prettier --check www/index.*",
     "format": "./node_modules/.bin/prettier --write www/index.*",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
