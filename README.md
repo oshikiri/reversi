@@ -20,3 +20,10 @@ Computer othello on GitHub pages.
 
 
 ## References
+
+## LICENSE
+MIT
+
+And this program based on the following repositories:
+
+- <https://github.com/rustwasm/wasm_game_of_life>
