@@ -1,7 +1,7 @@
 {
-  "name": "othello",
+  "name": "reversi",
   "version": "0.0.1",
-  "description": "Computer othello backed with webassembly",
+  "description": "Computer reversi backed with webassembly",
   "main": "index.js",
   "scripts": {
     "format": "./node_modules/.bin/prettier --write www/index.*",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oshikiri/othello.git"
+    "url": "git+https://github.com/oshikiri/reversi.git"
   },
   "author": "Takamasa Oshikiri <mail@oshikiri.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/oshikiri/othello/issues"
+    "url": "https://github.com/oshikiri/reversi/issues"
   },
-  "homepage": "https://github.com/oshikiri/othello#readme",
+  "homepage": "https://github.com/oshikiri/reversi#readme",
   "devDependencies": {
     "prettier": "^2.0.5"
   }

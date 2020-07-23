@@ -1,7 +1,7 @@
-othello
+reversi
 =====
 
-Computer othello on GitHub pages.
+Computer reversi on GitHub pages.
 
 
 ## TODO
@@ -9,14 +9,14 @@ Computer othello on GitHub pages.
 - [ ] Setup CI
   - [ ] prettier check
   - [ ] Implement tests
-- [ ] Implement othello board using HTML+CSS
+- [ ] Implement reversi board using HTML+CSS
 - [ ] Implement bidboard
 - [ ] Deploy to GitHub pages
 - [ ] Implement algorithms
   - [ ] any-legal-move
     - [ ] Generate all possible legal moves
   - [ ] greedy
-  - [ ] Survey on computer othello algorithms
+  - [ ] Survey on computer reversi algorithms
 
 
 ## References
