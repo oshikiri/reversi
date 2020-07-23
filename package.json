@@ -1,0 +1,23 @@
+{
+  "name": "othello",
+  "version": "0.0.1",
+  "description": "Computer othello backed with webassembly",
+  "main": "index.js",
+  "scripts": {
+    "format": "./node_modules/.bin/prettier --write www/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oshikiri/othello.git"
+  },
+  "author": "Takamasa Oshikiri <mail@oshikiri.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oshikiri/othello/issues"
+  },
+  "homepage": "https://github.com/oshikiri/othello#readme",
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  }
+}
