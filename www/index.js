@@ -63,6 +63,20 @@ const drawDisks = (ctx) => {
   drawDisk(ctx, 4, 3, color.black);
 };
 
+// FIXME: it seems to return unexpected indices
+const convertToIdx = (x, y) => {
+  x = x - xOffset;
+  y = y - yOffset;
+  const i = Math.floor(x / CELL_SIZE);
+  const j = Math.floor(y / CELL_SIZE);
+
+  if (0 <= Math.min(i, j) && Math.max(i, j) < 8) {
+    return [i, j];
+  } else {
+    return undefined;
+  }
+};
+
 const canvas = document.getElementById("reversi-board");
 canvas.height = "320";
 canvas.width = "320";
@@ -71,4 +85,12 @@ if (canvas.getContext) {
   drawBackground(context);
   drawGrid(context);
   drawDisks(context);
+
+  canvas.addEventListener("click", function (clickEvent) {
+    const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
+    if (idx) {
+      const [i, j] = idx;
+      drawDisk(context, i, j, color.black);
+    }
+  });
 }
