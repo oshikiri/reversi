@@ -2,7 +2,7 @@
   "name": "reversi",
   "version": "0.0.1",
   "description": "Computer reversi backed with webassembly",
-  "main": "index.js",
+  "main": "www/index.js",
   "scripts": {
     "check:format": "./node_modules/.bin/prettier --check www/index.*",
     "format": "./node_modules/.bin/prettier --write www/index.*",
