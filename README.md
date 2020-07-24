@@ -16,6 +16,7 @@ Computer reversi on GitHub pages.
   - [x] Handle click events
   - [ ] Implement data binding
 - [ ] Setup wasm
+- [ ] Setup webpack
 - [ ] bidboard
   - [ ] Learn about bidboard
   - [ ] Implement bidboard
