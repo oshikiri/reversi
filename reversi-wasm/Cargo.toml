@@ -1,7 +1,10 @@
 [package]
 name = "reversi-wasm"
 version = "0.1.0"
+description = "A core package for computer reversi"
 authors = ["Takamasa Oshikiri <mail@oshikiri.org>"]
+repository = "https://github.com/oshikiri/reversi"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
