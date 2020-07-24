@@ -17,9 +17,9 @@ Computer reversi on GitHub pages.
   - [ ] Implement data binding
 - [ ] Setup wasm
 - [ ] Setup webpack
-- [ ] bidboard
-  - [ ] Learn about bidboard
-  - [ ] Implement bidboard
+- [ ] bitboard
+  - [ ] Learn about bitboard
+  - [ ] Implement bitboard
 - [ ] Deploy to GitHub pages
 - [ ] Implement algorithms
   - [ ] any-legal-move
@@ -31,7 +31,7 @@ Computer reversi on GitHub pages.
 ## References
 
 - [Reversi \- Wikipedia](https://en.wikipedia.org/wiki/Reversi)
-- bidboard
+- bitboard
   - [オセロをビットボードで実装する \- Qiita](https://qiita.com/sensuikan1973/items/459b3e11d91f3cb37e43)
   - [ビットボードを用いた 4x4 オセロ 完全解析](http://vivi.dyndns.org/vivi/docs/puzzle/othello4x4.html)
 
