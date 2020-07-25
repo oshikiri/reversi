@@ -1,3 +1,6 @@
+import {greet} from 'reversi-wasm';
+greet();
+
 // TODO: Refactor constants
 const BOARD_OFFSET = 10;
 const N_COL_CELLS = 8;

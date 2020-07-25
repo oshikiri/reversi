@@ -15,8 +15,8 @@ Computer reversi on GitHub pages.
   - [x] Setup canvas
   - [x] Handle click events
   - [ ] Implement data binding
-- [ ] Setup wasm
-- [ ] Setup webpack
+- [x] Setup wasm
+- [x] Setup webpack
 - [ ] bitboard
   - [ ] Learn about bitboard
   - [ ] Implement bitboard

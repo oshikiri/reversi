@@ -6,7 +6,9 @@
   "scripts": {
     "check:format": "./node_modules/.bin/prettier --check index.*",
     "format": "./node_modules/.bin/prettier --write index.*",
-    "test": "echo \"INFO: no test specified\""
+    "test": "echo \"INFO: no test specified\"",
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,11 @@
   },
   "homepage": "https://github.com/oshikiri/reversi#readme",
   "devDependencies": {
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "reversi-wasm": "file:../reversi-wasm/pkg",
+    "copy-webpack-plugin": "^5.0.0",
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
   }
 }
