@@ -1,4 +1,4 @@
-import {greet} from 'reversi-wasm';
+import { greet } from "reversi-wasm";
 greet();
 
 // TODO: Refactor constants
