@@ -6,28 +6,6 @@ reversi
 Computer reversi on GitHub pages.
 
 
-## TODO
-
-- [ ] Setup CI
-  - [x] prettier check
-  - [ ] Implement tests
-- [ ] Implement reversi board
-  - [x] Setup canvas
-  - [x] Handle click events
-  - [ ] Implement data binding
-- [x] Setup wasm
-- [x] Setup webpack
-- [ ] bitboard
-  - [ ] Learn about bitboard
-  - [ ] Implement bitboard
-- [ ] Deploy to GitHub pages
-- [ ] Implement algorithms
-  - [ ] any-legal-move
-    - [ ] Generate all possible legal moves
-  - [ ] greedy
-  - [ ] Survey on computer reversi algorithms
-
-
 ## References
 
 - [Reversi \- Wikipedia](https://en.wikipedia.org/wiki/Reversi)
