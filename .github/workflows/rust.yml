@@ -2,13 +2,13 @@ name: test-rs
 
 on: [push]
 
-env:
-  working-directory: ./reversi-wasm
-
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./reversi-wasm
 
     steps:
     - uses: actions/checkout@v2
