@@ -1,7 +1,7 @@
 reversi
 =====
 
-[![GitHub Workflows Status](https://github.com/oshikiri/reversi/workflows/test/badge.svg)](https://github.com/oshikiri/reversi/actions?query=workflow%3A%22test%22)
+[![Status of test-js workflow](https://github.com/oshikiri/reversi/workflows/test-js/badge.svg)](https://github.com/oshikiri/reversi/actions?query=workflow%3A%22test-js%22)
 [![Status of test-rs workflow](https://github.com/oshikiri/reversi/workflows/test-rs/badge.svg)](https://github.com/oshikiri/reversi/actions?query=workflow%3A%22test-rs%22)
 
 
