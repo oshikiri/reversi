@@ -38,6 +38,14 @@ impl Board {
     fn is_valid(&self) -> bool {
         true
     }
+
+    #[allow(dead_code)]
+    fn put(_is_first: bool, _position: BitBoard, _reverse: BitBoard) {}
+
+    #[allow(dead_code)]
+    fn get_possible_moves(_is_first: bool) -> Vec<BitBoard> {
+        vec![0]
+    }
 }
 
 fn generate_mask(i: u64) -> u64 {
