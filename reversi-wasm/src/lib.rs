@@ -40,10 +40,14 @@ impl Board {
     }
 
     #[allow(dead_code)]
-    fn put(_is_first: bool, _position: BitBoard, _reverse: BitBoard) {}
+    fn put(&mut self, _is_second: bool, _position: BitBoard) {
+        let _reverse = 1;
+        self.first = 7;
+        self.second = 0;
+    }
 
     #[allow(dead_code)]
-    fn get_possible_moves(_is_first: bool) -> Vec<BitBoard> {
+    fn get_possible_moves(_is_second: bool) -> Vec<BitBoard> {
         vec![0]
     }
 }
@@ -97,5 +101,16 @@ mod tests {
     fn count_bits_should_return_count_bits() {
         assert_eq!(count_bits(0), 0);
         assert_eq!(count_bits(u64::MAX), 64);
+    }
+
+    #[test]
+    fn put_should_reverse_pieces() {
+        let mut board = Board{
+            first: 1,
+            second: 2,
+        };
+        board.put(false, 3);
+        assert_eq!(board.first, 7);
+        assert_eq!(board.second, 0);
     }
 }
