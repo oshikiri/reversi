@@ -2,6 +2,9 @@ name: test-rs
 
 on: [push]
 
+env:
+  working-directory: ./reversi-wasm
+
 jobs:
   build:
 
@@ -9,10 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Prepare
-      run: |
-        cd reversi-wasm
 
     - name: Build
       run: cargo build --verbose
