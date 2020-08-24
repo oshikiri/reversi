@@ -40,9 +40,26 @@ impl Board {
     }
 }
 
+fn generate_mask(i: u64) -> u64 {
+    match i {
+        1 => 0b_01010101_01010101_01010101_01010101_01010101_01010101_01010101_01010101,
+        2 => 0b_00110011_00110011_00110011_00110011_00110011_00110011_00110011_00110011,
+        3 => 0b_00001111_00001111_00001111_00001111_00001111_00001111_00001111_00001111,
+        4 => 0b_00000000_11111111_00000000_11111111_00000000_11111111_00000000_11111111,
+        5 => 0b_00000000_00000000_11111111_11111111_00000000_00000000_11111111_11111111,
+        6 => 0b_00000000_00000000_00000000_00000000_11111111_11111111_11111111_11111111,
+        _ => panic!("i should be smaller than 7")
+    }
+}
+
 #[allow(dead_code)]
-pub fn count_bits(_bitboard: BitBoard) -> u64 {
-    64
+pub fn count_bits(bitboard: BitBoard) -> u64 {
+    let mut bits = bitboard;
+    for i in 1..=6 {
+        let mask = generate_mask(i);
+        bits = (bits & mask) + (bits >> (1 << i-1) & mask);
+    }
+    return bits
 }
 
 #[cfg(test)]
@@ -69,8 +86,8 @@ mod tests {
     }
 
     #[test]
-    fn count_bits_should_return_num_of_bits() {
-        // assert_eq!(count_bits(0), 0);
+    fn count_bits_should_return_count_bits() {
+        assert_eq!(count_bits(0), 0);
         assert_eq!(count_bits(u64::MAX), 64);
     }
 }
