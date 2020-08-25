@@ -37,10 +37,20 @@ impl Board {
         true
     }
 
-    fn put(&mut self, _is_second: bool, _position: BitBoard) {
-        let _reverse = 1;
-        self.first = 7;
-        self.second = 0;
+    fn put(&mut self, is_second: bool, put_position: BitBoard) {
+        if !is_second {
+            let reverse_pattern = self.get_reverse_pattern(put_position);
+            self.first ^= put_position | reverse_pattern;
+            self.second ^= reverse_pattern;
+        } else {
+            let reverse_pattern = self.get_reverse_pattern(put_position);
+            self.first ^= reverse_pattern;
+            self.second ^= put_position | reverse_pattern;
+        }
+    }
+
+    fn get_reverse_pattern(&self, put_position: BitBoard) -> BitBoard {
+        2
     }
 
     fn get_possible_moves(_is_second: bool) -> Vec<BitBoard> {
@@ -56,7 +66,7 @@ fn generate_mask(i: u64) -> u64 {
         4 => 0b_00000000_11111111_00000000_11111111_00000000_11111111_00000000_11111111,
         5 => 0b_00000000_00000000_11111111_11111111_00000000_00000000_11111111_11111111,
         6 => 0b_00000000_00000000_00000000_00000000_11111111_11111111_11111111_11111111,
-        _ => panic!("i should be smaller than 7")
+        _ => panic!("i should be smaller than 7"),
     }
 }
 
@@ -64,15 +74,15 @@ pub fn count_bits(bitboard: BitBoard) -> u64 {
     let mut bits = bitboard;
     for i in 1..=6 {
         let mask = generate_mask(i);
-        bits = (bits & mask) + (bits >> (1 << i-1) & mask);
+        bits = (bits & mask) + (bits >> (1 << i - 1) & mask);
     }
-    return bits
+    return bits;
 }
 
 #[cfg(test)]
 mod tests {
-    use Board;
     use count_bits;
+    use Board;
 
     #[test]
     fn is_full_should_return_false_when_board_is_empty() {
@@ -100,11 +110,11 @@ mod tests {
 
     #[test]
     fn put_should_reverse_pieces() {
-        let mut board = Board{
+        let mut board = Board {
             first: 1,
             second: 2,
         };
-        board.put(false, 3);
+        board.put(false, 4);
         assert_eq!(board.first, 7);
         assert_eq!(board.second, 0);
     }
