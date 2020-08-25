@@ -53,7 +53,7 @@ impl Board {
         2
     }
 
-    fn get_possible_moves(_is_second: bool) -> Vec<BitBoard> {
+    fn get_all_legal_positions(_is_second: bool) -> Vec<BitBoard> {
         vec![0]
     }
 }
