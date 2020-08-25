@@ -52,7 +52,14 @@ impl Board {
     }
 
     fn get_reverse_pattern(&self, put_position: u64) -> u64 {
-        2
+        if !self.is_empty(put_position) {
+            return 0;
+        }
+
+        (put_position >> 1)
+            & self.second
+            & (self.first << 1)
+            & 0b_11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110
     }
 
     pub fn get_all_legal_positions(_is_second: bool) -> Vec<u64> {
