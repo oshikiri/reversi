@@ -29,24 +29,20 @@ struct Board {
 }
 
 impl Board {
-    #[allow(dead_code)]
     fn is_full(&self) -> bool {
         (self.first | self.second) == BitBoard::MAX
     }
 
-    #[allow(dead_code)]
     fn is_valid(&self) -> bool {
         true
     }
 
-    #[allow(dead_code)]
     fn put(&mut self, _is_second: bool, _position: BitBoard) {
         let _reverse = 1;
         self.first = 7;
         self.second = 0;
     }
 
-    #[allow(dead_code)]
     fn get_possible_moves(_is_second: bool) -> Vec<BitBoard> {
         vec![0]
     }
@@ -64,7 +60,6 @@ fn generate_mask(i: u64) -> u64 {
     }
 }
 
-#[allow(dead_code)]
 pub fn count_bits(bitboard: BitBoard) -> u64 {
     let mut bits = bitboard;
     for i in 1..=6 {
