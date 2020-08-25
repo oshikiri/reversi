@@ -31,6 +31,10 @@ impl Board {
         (self.first | self.second) == u64::MAX
     }
 
+    fn is_empty(&self, position: u64) -> bool {
+        ((self.first | self.second) & position) == 0
+    }
+
     pub fn is_valid(&self) -> bool {
         true
     }
@@ -130,5 +134,15 @@ mod tests {
     fn coordinate_to_bitboard_should_convert_notations() {
         assert_eq!(coordinate_to_bitboard(0, 0), 1);
         assert_eq!(coordinate_to_bitboard(7, 7), 1 << 63);
+    }
+
+    #[test]
+    fn is_empty() {
+        let mut board = Board {
+            first: 1,
+            second: 2,
+        };
+        assert_eq!(board.is_empty(1), false);
+        assert_eq!(board.is_empty(1 << 63), true);
     }
 }
