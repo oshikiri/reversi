@@ -29,15 +29,15 @@ struct Board {
 }
 
 impl Board {
-    fn is_full(&self) -> bool {
+    pub fn is_full(&self) -> bool {
         (self.first | self.second) == BitBoard::MAX
     }
 
-    fn is_valid(&self) -> bool {
+    pub fn is_valid(&self) -> bool {
         true
     }
 
-    fn put(&mut self, is_second: bool, put_position: BitBoard) {
+    pub fn put(&mut self, is_second: bool, put_position: BitBoard) {
         if !is_second {
             let reverse_pattern = self.get_reverse_pattern(put_position);
             self.first ^= put_position | reverse_pattern;
@@ -53,7 +53,7 @@ impl Board {
         2
     }
 
-    fn get_all_legal_positions(_is_second: bool) -> Vec<BitBoard> {
+    pub fn get_all_legal_positions(_is_second: bool) -> Vec<BitBoard> {
         vec![0]
     }
 }
