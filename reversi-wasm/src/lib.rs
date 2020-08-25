@@ -20,24 +20,22 @@ pub fn greet() {
     alert("Hello, reversi-wasm!");
 }
 
-type BitBoard = u64;
-
 #[derive(Debug)]
 struct Board {
-    first: BitBoard,  // black, 先手
-    second: BitBoard, // white, 後手
+    first: u64,  // black, 先手
+    second: u64, // white, 後手
 }
 
 impl Board {
     pub fn is_full(&self) -> bool {
-        (self.first | self.second) == BitBoard::MAX
+        (self.first | self.second) == u64::MAX
     }
 
     pub fn is_valid(&self) -> bool {
         true
     }
 
-    pub fn put(&mut self, is_second: bool, put_position: BitBoard) {
+    pub fn put(&mut self, is_second: bool, put_position: u64) {
         if !is_second {
             let reverse_pattern = self.get_reverse_pattern(put_position);
             self.first ^= put_position | reverse_pattern;
@@ -49,11 +47,11 @@ impl Board {
         }
     }
 
-    fn get_reverse_pattern(&self, put_position: BitBoard) -> BitBoard {
+    fn get_reverse_pattern(&self, put_position: u64) -> u64 {
         2
     }
 
-    pub fn get_all_legal_positions(_is_second: bool) -> Vec<BitBoard> {
+    pub fn get_all_legal_positions(_is_second: bool) -> Vec<u64> {
         vec![0]
     }
 }
@@ -70,7 +68,7 @@ fn generate_mask(i: u64) -> u64 {
     }
 }
 
-pub fn count_bits(bitboard: BitBoard) -> u64 {
+pub fn count_bits(bitboard: u64) -> u64 {
     let mut bits = bitboard;
     for i in 1..=6 {
         let mask = generate_mask(i);
