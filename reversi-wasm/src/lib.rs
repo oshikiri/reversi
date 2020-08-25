@@ -35,7 +35,7 @@ impl Board {
         true
     }
 
-    pub fn put(&mut self, is_second: bool, put_position: u64) {
+    pub fn put_and_reverse(&mut self, is_second: bool, put_position: u64) {
         if !is_second {
             let reverse_pattern = self.get_reverse_pattern(put_position);
             self.first ^= put_position | reverse_pattern;
@@ -112,7 +112,7 @@ mod tests {
             first: 1,
             second: 2,
         };
-        board.put(false, 4);
+        board.put_and_reverse(false, 4);
         assert_eq!(board.first, 7);
         assert_eq!(board.second, 0);
     }
