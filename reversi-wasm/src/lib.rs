@@ -77,8 +77,17 @@ pub fn count_bits(bitboard: u64) -> u64 {
     return bits;
 }
 
+pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
+    if x >= 8 && y >= 8 {
+        panic!("out of index");
+    }
+    let i = x + 8 * y;
+    1 << i
+}
+
 #[cfg(test)]
 mod tests {
+    use coordinate_to_bitboard;
     use count_bits;
     use Board;
 
@@ -115,5 +124,11 @@ mod tests {
         board.put_and_reverse(false, 4);
         assert_eq!(board.first, 7);
         assert_eq!(board.second, 0);
+    }
+
+    #[test]
+    fn coordinate_to_bitboard_should_convert_notations() {
+        assert_eq!(coordinate_to_bitboard(0, 0), 1);
+        assert_eq!(coordinate_to_bitboard(7, 7), 1 << 63);
     }
 }
