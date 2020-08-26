@@ -56,12 +56,13 @@ impl Board {
             return 0;
         }
 
+        let direction = 0;
         let mut reverse_pattern = 0;
-        let mut mask = Board::transfer_board_right(put_position);
+        let mut mask = Board::transfer_board(put_position, direction);
 
         while mask != 0 && (mask & self.second) != 0 {
             reverse_pattern |= mask;
-            mask = Board::transfer_board_right(mask);
+            mask = Board::transfer_board(mask, direction);
         }
 
         if mask & self.first == 0 {
@@ -71,8 +72,50 @@ impl Board {
         }
     }
 
-    fn transfer_board_right(board: u64) -> u64 {
-        (board >> 1) & 0b_01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111
+    fn transfer_board(board: u64, direction: u8) -> u64 {
+        match direction {
+            0 => {
+                // right
+                (board >> 1)
+                    & 0b_01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111
+            }
+            1 => {
+                // right-down
+                (board >> 9)
+                    & 0b_00000000_01111111_01111111_01111111_01111111_01111111_01111111_01111111
+            }
+            2 => {
+                // down
+                (board >> 8)
+                    & 0b_00000000_11111111_11111111_11111111_11111111_11111111_11111111_11111111
+            }
+            3 => {
+                // left-down
+                (board >> 7)
+                    & 0b_00000000_11111110_11111110_11111110_11111110_11111110_11111110_11111110
+            }
+            4 => {
+                // left
+                (board << 1)
+                    & 0b_11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110
+            }
+            5 => {
+                // left-up
+                (board << 9)
+                    & 0b_11111110_11111110_11111110_11111110_11111110_11111110_11111110_00000000
+            }
+            6 => {
+                // up
+                (board << 8)
+                    & 0b_11111111_11111111_11111111_11111111_11111111_11111111_11111111_00000000
+            }
+            7 => {
+                // right-up
+                (board << 7)
+                    & 0b_01111111_01111111_01111111_01111111_01111111_01111111_01111111_00000000
+            }
+            _ => panic!("{}", direction),
+        }
     }
 
     pub fn get_all_legal_positions(_is_second: bool) -> Vec<u64> {
