@@ -57,11 +57,11 @@ impl Board {
         }
 
         let mut reverse_pattern = 0;
-        let mut mask = Board::transfer_board(put_position);
+        let mut mask = Board::transfer_board_right(put_position);
 
         while mask != 0 && (mask & self.second) != 0 {
             reverse_pattern |= mask;
-            mask = Board::transfer_board(mask);
+            mask = Board::transfer_board_right(mask);
         }
 
         if mask & self.first == 0 {
@@ -71,7 +71,7 @@ impl Board {
         }
     }
 
-    fn transfer_board(board: u64) -> u64 {
+    fn transfer_board_right(board: u64) -> u64 {
         (board >> 1) & 0b_01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111
     }
 
