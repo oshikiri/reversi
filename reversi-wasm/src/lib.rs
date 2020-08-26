@@ -164,7 +164,7 @@ mod tests {
 
     #[test]
     fn is_empty() {
-        let mut board = Board {
+        let board = Board {
             first: 1,
             second: 2,
         };
