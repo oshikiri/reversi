@@ -146,13 +146,13 @@ mod tests {
     }
 
     #[test]
-    fn put_should_reverse_pieces() {
+    fn put_and_reverse_should_reverse_pieces() {
         let mut board = Board {
             first: 1,
-            second: 2,
+            second: 6,
         };
-        board.put_and_reverse(false, 4);
-        assert_eq!(board.first, 7);
+        board.put_and_reverse(false, 8);
+        assert_eq!(board.first, 15);
         assert_eq!(board.second, 0);
     }
 
