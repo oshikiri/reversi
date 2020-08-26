@@ -27,6 +27,25 @@ struct Board {
 }
 
 impl Board {
+    pub fn print_board(&self) {
+        println!("print");
+        let mut first = self.first;
+        let mut second = self.second;
+
+        while first != 0 || second != 0 {
+            if first & 1 == 1 {
+                print!("o");
+            } else if second & 1 == 1 {
+                print!("x")
+            } else {
+                print!("-")
+            }
+
+            first >>= 1;
+            second >>= 1;
+        }
+    }
+
     pub fn is_full(&self) -> bool {
         (self.first | self.second) == u64::MAX
     }
