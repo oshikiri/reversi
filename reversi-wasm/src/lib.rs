@@ -41,38 +41,44 @@ impl Board {
 
     pub fn put_and_reverse(&mut self, is_second: bool, put_position: u64) {
         if !is_second {
-            let reverse_pattern = self.get_reverse_pattern(put_position);
+            let reverse_pattern = self.get_reverse_pattern(self.first, self.second, put_position);
             self.first ^= put_position | reverse_pattern;
             self.second ^= reverse_pattern;
         } else {
-            let reverse_pattern = self.get_reverse_pattern(put_position);
+            let reverse_pattern = self.get_reverse_pattern(self.second, self.first, put_position);
             self.first ^= reverse_pattern;
             self.second ^= put_position | reverse_pattern;
         }
     }
 
-    fn get_reverse_pattern(&self, put_position: u64) -> u64 {
+    fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
         if !self.is_empty(put_position) {
             return 0;
         }
 
         let mut reverse_pattern = 0;
         for direction in 0..8 {
-            reverse_pattern |= self.get_reverse_pattern_direction(put_position, direction);
+            reverse_pattern |=
+                Board::get_reverse_pattern_direction(current, opponent, put_position, direction);
         }
         reverse_pattern
     }
 
-    fn get_reverse_pattern_direction(&self, put_position: u64, direction: u8) -> u64 {
+    fn get_reverse_pattern_direction(
+        current: u64,
+        opponent: u64,
+        put_position: u64,
+        direction: u8,
+    ) -> u64 {
         let mut reverse_pattern = 0;
         let mut mask = Board::transfer_board(put_position, direction);
 
-        while mask != 0 && (mask & self.second) != 0 {
+        while mask != 0 && (mask & opponent) != 0 {
             reverse_pattern |= mask;
             mask = Board::transfer_board(mask, direction);
         }
 
-        if mask & self.first == 0 {
+        if mask & current == 0 {
             0
         } else {
             reverse_pattern
