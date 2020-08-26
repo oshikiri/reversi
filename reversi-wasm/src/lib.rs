@@ -56,7 +56,14 @@ impl Board {
             return 0;
         }
 
-        let direction = 0;
+        let mut reverse_pattern = 0;
+        for direction in 0..8 {
+            reverse_pattern |= self.get_reverse_pattern_direction(put_position, direction);
+        }
+        reverse_pattern
+    }
+
+    fn get_reverse_pattern_direction(&self, put_position: u64, direction: u8) -> u64 {
         let mut reverse_pattern = 0;
         let mut mask = Board::transfer_board(put_position, direction);
 
