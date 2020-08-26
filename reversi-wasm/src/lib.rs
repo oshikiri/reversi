@@ -56,14 +56,33 @@ impl Board {
             return 0;
         }
 
-        (put_position >> 1)
-            & self.second
-            & (self.first << 1)
-            & 0b_11111110_11111110_11111110_11111110_11111110_11111110_11111110_11111110
+        let mut reverse_pattern = 0;
+        let mut mask = Board::transfer_board(put_position);
+
+        while mask != 0 && (mask & self.second) != 0 {
+            reverse_pattern |= mask;
+            mask = Board::transfer_board(mask);
+        }
+
+        if mask & self.first == 0 {
+            0
+        } else {
+            reverse_pattern
+        }
+    }
+
+    fn transfer_board(board: u64) -> u64 {
+        (board >> 1) & 0b_01111111_01111111_01111111_01111111_01111111_01111111_01111111_01111111
     }
 
     pub fn get_all_legal_positions(_is_second: bool) -> Vec<u64> {
         vec![0]
+    }
+}
+
+impl std::fmt::Display for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Board(first={}, second={})", self.first, self.second)
     }
 }
 
