@@ -236,25 +236,80 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use reversi;
-    use reversi::Board;
-    use reversi::PositionEvaluation;
 
-    #[test]
-    fn is_full_should_return_false_when_board_is_empty() {
-        let board = Board {
-            first: 0,
-            second: 0,
-        };
-        assert_eq!(board.is_full(), false);
-    }
+    mod board {
+        use reversi::Board;
+        use reversi::PositionEvaluation;
 
-    #[test]
-    fn is_full_should_return_true_when_board_is_full() {
-        let board = Board {
-            first: 0,
-            second: u64::MAX,
-        };
-        assert_eq!(board.is_full(), true);
+        #[test]
+        fn is_full_should_return_false_when_board_is_empty() {
+            let board = Board {
+                first: 0,
+                second: 0,
+            };
+            assert_eq!(board.is_full(), false);
+        }
+
+        #[test]
+        fn is_full_should_return_true_when_board_is_full() {
+            let board = Board {
+                first: 0,
+                second: u64::MAX,
+            };
+            assert_eq!(board.is_full(), true);
+        }
+
+        #[test]
+        fn entire_reverse_patterns() {
+            let board = Board {
+                first: 1,
+                second: 2,
+            };
+            let reverse_patterns = board.entire_reverse_patterns(false);
+
+            let mut expected = vec![0; 64];
+            expected[61] = 2;
+
+            assert_eq!(reverse_patterns, expected)
+        }
+
+        #[test]
+        fn put_and_reverse_should_reverse_pieces() {
+            let mut board = Board {
+                first: 1,
+                second: 6,
+            };
+            board.put_and_reverse(false, 8);
+            assert_eq!(board.first, 15);
+            assert_eq!(board.second, 0);
+        }
+
+        #[test]
+        fn is_empty() {
+            let board = Board {
+                first: 1,
+                second: 2,
+            };
+            assert_eq!(board.is_empty(1), false);
+            assert_eq!(board.is_empty(1 << 63), true);
+        }
+
+        #[test]
+        fn get_all_legal_position() {
+            let board = Board {
+                first: 1,
+                second: 2,
+            };
+            let legal_positions = board.get_all_legal_position(false);
+
+            let expected = vec![PositionEvaluation {
+                i: 5,
+                j: 7,
+                evaluation: 1,
+            }];
+
+            assert_eq!(legal_positions[0], expected[0])
+        }
     }
 
     #[test]
@@ -264,60 +319,8 @@ mod tests {
     }
 
     #[test]
-    fn put_and_reverse_should_reverse_pieces() {
-        let mut board = Board {
-            first: 1,
-            second: 6,
-        };
-        board.put_and_reverse(false, 8);
-        assert_eq!(board.first, 15);
-        assert_eq!(board.second, 0);
-    }
-
-    #[test]
     fn coordinate_to_bitboard_should_convert_notations() {
         assert_eq!(reversi::coordinate_to_bitboard(0, 0), 1);
         assert_eq!(reversi::coordinate_to_bitboard(7, 7), 1 << 63);
-    }
-
-    #[test]
-    fn is_empty() {
-        let board = Board {
-            first: 1,
-            second: 2,
-        };
-        assert_eq!(board.is_empty(1), false);
-        assert_eq!(board.is_empty(1 << 63), true);
-    }
-
-    #[test]
-    fn entire_reverse_patterns() {
-        let board = Board {
-            first: 1,
-            second: 2,
-        };
-        let reverse_patterns = board.entire_reverse_patterns(false);
-
-        let mut expected = vec![0; 64];
-        expected[61] = 2;
-
-        assert_eq!(reverse_patterns, expected)
-    }
-
-    #[test]
-    fn get_all_legal_position() {
-        let board = Board {
-            first: 1,
-            second: 2,
-        };
-        let legal_positions = board.get_all_legal_position(false);
-
-        let expected = vec![PositionEvaluation {
-            i: 5,
-            j: 7,
-            evaluation: 1,
-        }];
-
-        assert_eq!(legal_positions[0], expected[0])
     }
 }
