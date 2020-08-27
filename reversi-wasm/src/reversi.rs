@@ -200,6 +200,7 @@ impl std::fmt::Debug for PositionEvaluation {
         f.debug_struct("PositionEvaluation")
             .field("i", &self.i)
             .field("j", &self.j)
+            .field("evaluation", &self.evaluation)
             .finish()
     }
 }
