@@ -128,14 +128,79 @@ impl Board {
         }
     }
 
-    pub fn get_all_legal_positions(_is_second: bool) -> Vec<u64> {
-        vec![0]
+    fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
+        let (current, opponent) = match is_second {
+            false => (self.first, self.second),
+            true => (self.second, self.first),
+        };
+        let mut reverse_patterns = Vec::new();
+
+        for i in 0..64 {
+            let put_position = 1 << i;
+            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
+            reverse_patterns.push(reverse_pattern);
+        }
+        reverse_patterns.reverse();
+
+        reverse_patterns
+    }
+
+    pub fn get_all_legal_position(&self, is_second: bool) -> Vec<PositionEvaluation> {
+        let mut legal_positions = Vec::new();
+        let entire_reverse_patterns = self.entire_reverse_patterns(is_second);
+
+        for k in 0..64 {
+            let i = k % 8;
+            let j = k / 8;
+            let reverse_pattern = entire_reverse_patterns[k];
+            if reverse_pattern > 0 {
+                let positionEvaluation = PositionEvaluation {
+                    i,
+                    j,
+                    evaluation: count_bits(reverse_pattern),
+                };
+                legal_positions.push(positionEvaluation);
+            }
+        }
+
+        legal_positions
     }
 }
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "Board(first={}, second={})", self.first, self.second)
+    }
+}
+
+struct PositionEvaluation {
+    i: usize,
+    j: usize,
+    evaluation: u64,
+}
+
+impl PartialEq for PositionEvaluation {
+    fn eq(&self, other: &Self) -> bool {
+        self.i == other.i && self.j == other.j && self.evaluation == other.evaluation
+    }
+}
+
+impl std::fmt::Display for PositionEvaluation {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "PositionEvaluation(i={}, j={}, evaluation={})",
+            self.i, self.j, self.evaluation
+        )
+    }
+}
+
+impl std::fmt::Debug for PositionEvaluation {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        f.debug_struct("PositionEvaluation")
+            .field("i", &self.i)
+            .field("j", &self.j)
+            .finish()
     }
 }
 
@@ -172,6 +237,7 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
 mod tests {
     use reversi;
     use reversi::Board;
+    use reversi::PositionEvaluation;
 
     #[test]
     fn is_full_should_return_false_when_board_is_empty() {
@@ -222,5 +288,36 @@ mod tests {
         };
         assert_eq!(board.is_empty(1), false);
         assert_eq!(board.is_empty(1 << 63), true);
+    }
+
+    #[test]
+    fn entire_reverse_patterns() {
+        let board = Board {
+            first: 1,
+            second: 2,
+        };
+        let reverse_patterns = board.entire_reverse_patterns(false);
+
+        let mut expected = vec![0; 64];
+        expected[61] = 2;
+
+        assert_eq!(reverse_patterns, expected)
+    }
+
+    #[test]
+    fn get_all_legal_position() {
+        let board = Board {
+            first: 1,
+            second: 2,
+        };
+        let legal_positions = board.get_all_legal_position(false);
+
+        let expected = vec![PositionEvaluation {
+            i: 5,
+            j: 7,
+            evaluation: 1,
+        }];
+
+        assert_eq!(legal_positions[0], expected[0])
     }
 }
