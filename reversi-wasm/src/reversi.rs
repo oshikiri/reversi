@@ -1,7 +1,20 @@
+extern crate wasm_bindgen;
+
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
 #[derive(Debug)]
-struct Board {
+pub struct Board {
     first: u64,  // black, 先手
     second: u64, // white, 後手
+}
+
+#[wasm_bindgen]
+pub fn new_board() -> Board {
+    Board {
+        first: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
+        second: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
+    }
 }
 
 impl Board {
@@ -173,7 +186,7 @@ impl std::fmt::Display for Board {
     }
 }
 
-struct PositionEvaluation {
+pub struct PositionEvaluation {
     i: usize,
     j: usize,
     evaluation: u64,

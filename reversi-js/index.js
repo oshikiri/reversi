@@ -1,5 +1,6 @@
-import { greet } from "reversi-wasm";
-greet();
+import { new_board } from "reversi-wasm";
+const board = new_board();
+console.log(board);
 
 // TODO: Refactor constants
 const BOARD_OFFSET = 10;
