@@ -154,12 +154,12 @@ impl Board {
             let j = k / 8;
             let reverse_pattern = entire_reverse_patterns[k];
             if reverse_pattern > 0 {
-                let positionEvaluation = PositionEvaluation {
+                let position_evaluation = PositionEvaluation {
                     i,
                     j,
                     evaluation: count_bits(reverse_pattern),
                 };
-                legal_positions.push(positionEvaluation);
+                legal_positions.push(position_evaluation);
             }
         }
 
