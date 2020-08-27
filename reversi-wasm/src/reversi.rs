@@ -298,18 +298,37 @@ mod tests {
         #[test]
         fn get_all_legal_position() {
             let board = Board {
-                first: 1,
-                second: 2,
+                first: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
+                second: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
             };
             let legal_positions = board.get_all_legal_position(false);
 
-            let expected = vec![PositionEvaluation {
-                i: 5,
-                j: 7,
-                evaluation: 1,
-            }];
+            let expected = vec![
+                PositionEvaluation {
+                    i: 4,
+                    j: 2,
+                    evaluation: 1,
+                },
+                PositionEvaluation {
+                    i: 5,
+                    j: 3,
+                    evaluation: 1,
+                },
+                PositionEvaluation {
+                    i: 2,
+                    j: 4,
+                    evaluation: 1,
+                },
+                PositionEvaluation {
+                    i: 3,
+                    j: 5,
+                    evaluation: 1,
+                },
+            ];
 
-            assert_eq!(legal_positions[0], expected[0])
+            for i in 0..4 {
+                assert_eq!(legal_positions[i], expected[i]);
+            }
         }
     }
 
