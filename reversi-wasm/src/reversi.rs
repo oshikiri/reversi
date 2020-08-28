@@ -1,6 +1,7 @@
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -17,6 +18,7 @@ pub fn new_board() -> Board {
     }
 }
 
+#[wasm_bindgen]
 impl Board {
     pub fn print_board(&self) {
         println!("print");
@@ -141,6 +143,19 @@ impl Board {
         }
     }
 
+    pub fn entire_reverse_patterns_js(&self, is_second: bool) -> js_sys::Array {
+        let reverse_patterns = self.entire_reverse_patterns(is_second);
+        let mut reverse_patterns_jsarray = js_sys::Array::new_with_length(64);
+
+        for i in 0..64 {
+            reverse_patterns_jsarray.set(i, JsValue::from_f64(reverse_patterns[i as usize] as f64));
+        }
+
+        reverse_patterns_jsarray
+    }
+}
+
+impl Board {
     fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
         let (current, opponent) = match is_second {
             false => (self.first, self.second),

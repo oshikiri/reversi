@@ -1,6 +1,9 @@
 import { new_board } from "reversi-wasm";
 const board = new_board();
-console.log(board);
+console.log(board.is_full());
+console.log('get_array', board.get_array([0,1,2,3]));
+console.log('entire_reverse_patterns', board.entire_reverse_patterns_js(true));
+board.print_board();
 
 // TODO: Refactor constants
 const BOARD_OFFSET = 10;
