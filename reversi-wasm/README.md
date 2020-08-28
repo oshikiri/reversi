@@ -9,5 +9,5 @@ wasm-pack build
 
 ### Test
 ```sh
-
+cargo test
 ```
