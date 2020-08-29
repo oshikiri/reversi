@@ -78,10 +78,8 @@ const convertToIdx = (x, y) => {
 
 const board = new_board();
 console.log(
-  'entire_reverse_patterns > count_bit',
-  board
-    .entire_reverse_patterns_js(true)
-    .map(p => count_bits_js(BigInt(p)))
+  "entire_reverse_patterns > count_bit",
+  board.entire_reverse_patterns_js(true).map((p) => count_bits_js(BigInt(p)))
 );
 
 const canvas = document.getElementById("reversi-board");
