@@ -245,6 +245,7 @@ fn generate_mask(i: u64) -> u64 {
     }
 }
 
+#[wasm_bindgen]
 pub fn count_bits(bitboard: u64) -> u64 {
     let mut bits = bitboard;
     for i in 1..=6 {
