@@ -246,6 +246,10 @@ fn generate_mask(i: u64) -> u64 {
 }
 
 #[wasm_bindgen]
+pub fn count_bits_js(bitboard: u64) -> js_sys::Number {
+    js_sys::Number::from(count_bits(bitboard) as f64)
+}
+
 pub fn count_bits(bitboard: u64) -> u64 {
     let mut bits = bitboard;
     for i in 1..=6 {

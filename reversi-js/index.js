@@ -1,7 +1,7 @@
-import { new_board, count_bits } from "reversi-wasm";
+import { new_board, count_bits_js } from "reversi-wasm";
 const board = new_board();
 console.log(board.is_full());
-console.log('entire_reverse_patterns', board.entire_reverse_patterns_js(true).map(p => count_bits(BigInt(p))));
+console.log('entire_reverse_patterns', board.entire_reverse_patterns_js(true).map(p => count_bits_js(BigInt(p))));
 board.print_board();
 
 // TODO: Refactor constants
