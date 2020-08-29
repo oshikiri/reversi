@@ -150,13 +150,7 @@ impl Board {
 
     pub fn entire_reverse_patterns_js(&self, is_second: bool) -> js_sys::Array {
         let reverse_patterns = self.entire_reverse_patterns(is_second);
-        let reverse_patterns_jsarray = js_sys::Array::new_with_length(64);
-
-        for i in 0..64 {
-            reverse_patterns_jsarray.set(i, JsValue::from_f64(reverse_patterns[i as usize] as f64));
-        }
-
-        reverse_patterns_jsarray
+        convert_vec_to_jsarray(reverse_patterns)
     }
 }
 
@@ -253,6 +247,16 @@ fn generate_mask(i: u64) -> u64 {
 #[wasm_bindgen]
 pub fn count_bits_js(bitboard: u64) -> js_sys::Number {
     js_sys::Number::from(count_bits(bitboard) as f64)
+}
+
+pub fn convert_vec_to_jsarray(vector: Vec<u64>) -> js_sys::Array {
+    let jsarray = js_sys::Array::new_with_length(64);
+
+    for i in 0..64 {
+        jsarray.set(i, JsValue::from_f64(vector[i as usize] as f64));
+    }
+
+    jsarray
 }
 
 pub fn count_bits(bitboard: u64) -> u64 {
