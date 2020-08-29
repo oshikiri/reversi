@@ -63,6 +63,11 @@ impl Board {
         }
     }
 
+    pub fn put_and_reverse_js(&mut self, is_second: bool, i: u64, j: u64) {
+        // TODO: Convert (i, j) to put_position
+        // put_and_reverse
+    }
+
     fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
         if !self.is_empty(put_position) {
             return 0;

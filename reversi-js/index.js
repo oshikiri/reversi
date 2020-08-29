@@ -1,8 +1,4 @@
 import { new_board, count_bits_js } from "reversi-wasm";
-const board = new_board();
-console.log(board.is_full());
-console.log('entire_reverse_patterns', board.entire_reverse_patterns_js(true).map(p => count_bits_js(BigInt(p))));
-board.print_board();
 
 // TODO: Refactor constants
 const BOARD_OFFSET = 10;
@@ -80,6 +76,14 @@ const convertToIdx = (x, y) => {
   }
 };
 
+const board = new_board();
+console.log(
+  'entire_reverse_patterns > count_bit',
+  board
+    .entire_reverse_patterns_js(true)
+    .map(p => count_bits_js(BigInt(p)))
+);
+
 const canvas = document.getElementById("reversi-board");
 canvas.height = "320";
 canvas.width = "320";
@@ -93,8 +97,12 @@ if (canvas.getContext) {
     const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
     if (idx) {
       const [i, j] = idx;
-      // TODO: pass the indices to wasm
-      drawDisk(context, i, j, color.black); // FIXME
+      // TODO: check legal or not
+      board.put_and_reverse_js(true, i, j);
+      // if put succeeded {
+      //   board.put() // next move
+      // }
+      drawDisk(context, i, j, color.black); // FIXME: Update all the pieces
     }
   });
 }
