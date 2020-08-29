@@ -77,6 +77,8 @@ const convertToIdx = (x, y) => {
 };
 
 const board = new_board();
+console.log(board.get_bitboard(false));
+console.log(board.get_bitboard(true));
 console.log(
   "entire_reverse_patterns > count_bit",
   board.entire_reverse_patterns_js(true).map((p) => count_bits_js(BigInt(p)))

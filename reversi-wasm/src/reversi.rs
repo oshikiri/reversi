@@ -51,6 +51,15 @@ impl Board {
         true
     }
 
+    pub fn get_bitboard(&self, is_second: bool) -> js_sys::Array {
+        let bitboard = match is_second {
+            false => self.first,
+            true => self.second,
+        };
+        let bitarray = convert_bitboard_to_array(bitboard);
+        convert_vec_to_jsarray(bitarray)
+    }
+
     pub fn put_and_reverse(&mut self, is_second: bool, put_position: u64) {
         if !is_second {
             let reverse_pattern = self.get_reverse_pattern(self.first, self.second, put_position);
@@ -64,8 +73,8 @@ impl Board {
     }
 
     pub fn put_and_reverse_js(&mut self, is_second: bool, i: u64, j: u64) {
-        // TODO: Convert (i, j) to put_position
-        // put_and_reverse
+        let put_position = convert_indices_to_bitboard(i, j);
+        self.put_and_reverse(is_second, put_position);
     }
 
     fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
@@ -247,6 +256,23 @@ fn generate_mask(i: u64) -> u64 {
 #[wasm_bindgen]
 pub fn count_bits_js(bitboard: u64) -> js_sys::Number {
     js_sys::Number::from(count_bits(bitboard) as f64)
+}
+
+pub fn convert_bitboard_to_array(bitboard: u64) -> Vec<u64> {
+    let mut reverse_patterns = Vec::<u64>::new();
+
+    for i in 0..64 {
+        let occupied = (bitboard >> i) & 1;
+        reverse_patterns.push(occupied);
+    }
+    reverse_patterns.reverse();
+
+    reverse_patterns
+}
+
+pub fn convert_indices_to_bitboard(i: u64, j: u64) -> u64 {
+    let idx = i + 8 * j;
+    1 << idx
 }
 
 pub fn convert_vec_to_jsarray(vector: Vec<u64>) -> js_sys::Array {
