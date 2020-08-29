@@ -145,7 +145,7 @@ impl Board {
 
     pub fn entire_reverse_patterns_js(&self, is_second: bool) -> js_sys::Array {
         let reverse_patterns = self.entire_reverse_patterns(is_second);
-        let mut reverse_patterns_jsarray = js_sys::Array::new_with_length(64);
+        let reverse_patterns_jsarray = js_sys::Array::new_with_length(64);
 
         for i in 0..64 {
             reverse_patterns_jsarray.set(i, JsValue::from_f64(reverse_patterns[i as usize] as f64));
