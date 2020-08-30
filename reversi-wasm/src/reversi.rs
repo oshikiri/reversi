@@ -72,8 +72,8 @@ impl Board {
         }
     }
 
-    pub fn put_and_reverse_js(&mut self, is_second: bool, i: u64, j: u64) {
-        let put_position = convert_indices_to_bitboard(i, j);
+    pub fn put_and_reverse_js(&mut self, is_second: bool, i: u8, j: u8) {
+        let put_position = convert_indices_to_bitboard(i as u64, j as u64);
         self.put_and_reverse(is_second, put_position);
     }
 
