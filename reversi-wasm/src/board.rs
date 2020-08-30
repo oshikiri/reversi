@@ -348,11 +348,11 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use reversi;
+    use board;
 
-    mod board {
-        use reversi::Board;
-        use reversi::PositionEvaluation;
+    mod board_test {
+        use board::Board;
+        use board::PositionEvaluation;
 
         #[test]
         fn is_full_should_return_false_when_board_is_empty() {
@@ -446,13 +446,13 @@ mod tests {
 
     #[test]
     fn count_bits_should_return_count_bits() {
-        assert_eq!(reversi::count_bits(0), 0);
-        assert_eq!(reversi::count_bits(u64::MAX), 64);
+        assert_eq!(board::count_bits(0), 0);
+        assert_eq!(board::count_bits(u64::MAX), 64);
     }
 
     #[test]
     fn coordinate_to_bitboard_should_convert_notations() {
-        assert_eq!(reversi::coordinate_to_bitboard(0, 0), 1 << 63);
-        assert_eq!(reversi::coordinate_to_bitboard(7, 7), 1);
+        assert_eq!(board::coordinate_to_bitboard(0, 0), 1 << 63);
+        assert_eq!(board::coordinate_to_bitboard(7, 7), 1);
     }
 }
