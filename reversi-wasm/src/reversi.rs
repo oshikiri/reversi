@@ -22,6 +22,40 @@ pub fn newBoard() -> Board {
 impl Board {
     #![allow(non_snake_case)]
 
+    pub fn getBitboard(&self, is_second: bool) -> js_sys::Array {
+        let bitboard = match is_second {
+            false => self.first,
+            true => self.second,
+        };
+        let bitarray = convert_bitboard_to_array(bitboard);
+        convert_vec_to_jsarray(bitarray)
+    }
+
+    pub fn putAndReverse(&mut self, is_second: bool, i: u8, j: u8) {
+        let put_position = convert_indices_to_bitboard(i as u64, j as u64);
+        self.put_and_reverse(is_second, put_position);
+    }
+
+    pub fn entireReversePatterns(&self, is_second: bool) -> js_sys::Array {
+        let reverse_patterns = self.entire_reverse_patterns(is_second);
+        convert_vec_to_jsarray(reverse_patterns)
+    }
+
+    pub fn getAllLegalPosition(&self, is_second: bool) -> js_sys::Array {
+        let legal_positions: Vec<u64> = self
+            .entire_reverse_patterns(is_second)
+            .into_iter()
+            .map(count_bits)
+            .collect();
+        convert_vec_to_jsarray(legal_positions)
+    }
+
+    pub fn putNextMove(&mut self, is_second: bool, strategy: u8) {
+        self.put_next_move(is_second, strategy);
+    }
+}
+
+impl Board {
     pub fn print_board(&self) {
         println!("print");
         let mut first = self.first;
@@ -53,15 +87,6 @@ impl Board {
         true
     }
 
-    pub fn getBitboard(&self, is_second: bool) -> js_sys::Array {
-        let bitboard = match is_second {
-            false => self.first,
-            true => self.second,
-        };
-        let bitarray = convert_bitboard_to_array(bitboard);
-        convert_vec_to_jsarray(bitarray)
-    }
-
     pub fn put_and_reverse(&mut self, is_second: bool, put_position: u64) {
         if !is_second {
             let reverse_pattern = self.get_reverse_pattern(self.first, self.second, put_position);
@@ -72,11 +97,6 @@ impl Board {
             self.first ^= reverse_pattern;
             self.second ^= put_position | reverse_pattern;
         }
-    }
-
-    pub fn putAndReverse(&mut self, is_second: bool, i: u8, j: u8) {
-        let put_position = convert_indices_to_bitboard(i as u64, j as u64);
-        self.put_and_reverse(is_second, put_position);
     }
 
     fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
@@ -159,26 +179,6 @@ impl Board {
         }
     }
 
-    pub fn entireReversePatterns(&self, is_second: bool) -> js_sys::Array {
-        let reverse_patterns = self.entire_reverse_patterns(is_second);
-        convert_vec_to_jsarray(reverse_patterns)
-    }
-
-    pub fn getAllLegalPosition(&self, is_second: bool) -> js_sys::Array {
-        let legal_positions: Vec<u64> = self
-            .entire_reverse_patterns(is_second)
-            .into_iter()
-            .map(count_bits)
-            .collect();
-        convert_vec_to_jsarray(legal_positions)
-    }
-
-    pub fn putNextMove(&mut self, is_second: bool, strategy: u8) {
-        self.put_next_move(is_second, strategy);
-    }
-}
-
-impl Board {
     fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
         let (current, opponent) = match is_second {
             false => (self.first, self.second),
