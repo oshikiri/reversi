@@ -161,6 +161,15 @@ impl Board {
         let reverse_patterns = self.entire_reverse_patterns(is_second);
         convert_vec_to_jsarray(reverse_patterns)
     }
+
+    pub fn get_all_legal_position_js(&self, is_second: bool) -> js_sys::Array {
+        let legal_positions: Vec<u64> = self
+            .entire_reverse_patterns(is_second)
+            .into_iter()
+            .map(count_bits)
+            .collect();
+        convert_vec_to_jsarray(legal_positions)
+    }
 }
 
 impl Board {

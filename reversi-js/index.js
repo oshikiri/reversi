@@ -85,6 +85,8 @@ const convertToIdx = (x, y) => {
 };
 
 const board = new_board();
+let legalPositions = board.get_all_legal_position_js(true);
+
 console.log(board.get_bitboard(false));
 console.log(board.get_bitboard(true));
 console.log(
@@ -105,12 +107,13 @@ if (canvas.getContext) {
     const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
     if (idx) {
       const [i, j] = idx;
-      // TODO: check legal or not
+      if (legalPositions[i + 8 * j] == 0) return;
       board.put_and_reverse_js(true, i, j);
-      // if put succeeded {
-      //   board.put() // next move
-      // }
+
+      // board.put_next_move_any_legal_position();
+
       drawDisks(context, board);
+      legalPositions = board.get_all_legal_position_js(true);
     }
   });
 }
