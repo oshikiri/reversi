@@ -1,4 +1,4 @@
-import { new_board, count_bits_js } from "reversi-wasm";
+import { newBoard, countBits } from "reversi-wasm";
 
 // TODO: Refactor constants
 const BOARD_OFFSET = 10;
@@ -56,8 +56,8 @@ const drawDisk = (ctx, i, j, color) => {
 };
 
 const drawDisks = (ctx, board) => {
-  const first = board.get_bitboard(false);
-  const second = board.get_bitboard(true);
+  const first = board.getBitboard(false);
+  const second = board.getBitboard(true);
 
   for (let k = 0; k < 64; k++) {
     const i = k % 8;
@@ -84,14 +84,14 @@ const convertToIdx = (x, y) => {
   }
 };
 
-const board = new_board();
-let legalPositions = board.get_all_legal_position_js(true);
+const board = newBoard();
+let legalPositions = board.getAllLegalPosition(true);
 
-console.log(board.get_bitboard(false));
-console.log(board.get_bitboard(true));
+console.log(board.getBitboard(false));
+console.log(board.getBitboard(true));
 console.log(
-  "entire_reverse_patterns > count_bit",
-  board.entire_reverse_patterns_js(true).map((p) => count_bits_js(BigInt(p)))
+  "entireReversePatterns > countBits",
+  board.entireReversePatterns(true).map((p) => countBits(BigInt(p)))
 );
 
 const canvas = document.getElementById("reversi-board");
@@ -108,12 +108,12 @@ if (canvas.getContext) {
     if (idx) {
       const [i, j] = idx;
       if (legalPositions[i + 8 * j] == 0) return;
-      board.put_and_reverse_js(true, i, j);
+      board.putAndReverse(true, i, j);
 
-      // board.put_next_move_any_legal_position();
+      // board.putNextMove(strategy = "any-legal-position");
 
       drawDisks(context, board);
-      legalPositions = board.get_all_legal_position_js(true);
+      legalPositions = board.getAllLegalPosition(true);
     }
   });
 }

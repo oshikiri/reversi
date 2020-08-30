@@ -1,3 +1,5 @@
+
+
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
@@ -11,7 +13,7 @@ pub struct Board {
 }
 
 #[wasm_bindgen]
-pub fn new_board() -> Board {
+pub fn newBoard() -> Board {
     Board {
         first: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
         second: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
@@ -20,6 +22,8 @@ pub fn new_board() -> Board {
 
 #[wasm_bindgen]
 impl Board {
+    #![allow(non_snake_case)]
+
     pub fn print_board(&self) {
         println!("print");
         let mut first = self.first;
@@ -51,7 +55,7 @@ impl Board {
         true
     }
 
-    pub fn get_bitboard(&self, is_second: bool) -> js_sys::Array {
+    pub fn getBitboard(&self, is_second: bool) -> js_sys::Array {
         let bitboard = match is_second {
             false => self.first,
             true => self.second,
@@ -72,7 +76,7 @@ impl Board {
         }
     }
 
-    pub fn put_and_reverse_js(&mut self, is_second: bool, i: u8, j: u8) {
+    pub fn putAndReverse(&mut self, is_second: bool, i: u8, j: u8) {
         let put_position = convert_indices_to_bitboard(i as u64, j as u64);
         self.put_and_reverse(is_second, put_position);
     }
@@ -157,12 +161,12 @@ impl Board {
         }
     }
 
-    pub fn entire_reverse_patterns_js(&self, is_second: bool) -> js_sys::Array {
+    pub fn entireReversePatterns(&self, is_second: bool) -> js_sys::Array {
         let reverse_patterns = self.entire_reverse_patterns(is_second);
         convert_vec_to_jsarray(reverse_patterns)
     }
 
-    pub fn get_all_legal_position_js(&self, is_second: bool) -> js_sys::Array {
+    pub fn getAllLegalPosition(&self, is_second: bool) -> js_sys::Array {
         let legal_positions: Vec<u64> = self
             .entire_reverse_patterns(is_second)
             .into_iter()
@@ -263,7 +267,7 @@ fn generate_mask(i: u64) -> u64 {
 }
 
 #[wasm_bindgen]
-pub fn count_bits_js(bitboard: u64) -> js_sys::Number {
+pub fn countBits(bitboard: u64) -> js_sys::Number {
     js_sys::Number::from(count_bits(bitboard) as f64)
 }
 
