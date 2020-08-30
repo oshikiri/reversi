@@ -1,7 +1,6 @@
 extern crate wasm_bindgen;
 
 mod reversi;
-mod board_js;
 mod utils;
 
 use wasm_bindgen::prelude::*;
