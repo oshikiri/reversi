@@ -272,7 +272,7 @@ pub fn convert_bitboard_to_array(bitboard: u64) -> Vec<u64> {
 
 pub fn convert_indices_to_bitboard(i: u64, j: u64) -> u64 {
     let idx = i + 8 * j;
-    1 << idx
+    1 << (63 - idx)
 }
 
 pub fn convert_vec_to_jsarray(vector: Vec<u64>) -> js_sys::Array {
