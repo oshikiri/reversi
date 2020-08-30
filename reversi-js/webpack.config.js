@@ -11,6 +11,7 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: 'index.html', to: '.' },
+        { from: 'favicon.ico', to: '.' },
       ],
     })
   ]
