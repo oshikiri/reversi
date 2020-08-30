@@ -11,8 +11,8 @@ const DISK_RADIUS = 13;
 const color = {
   background: "#0B610B",
   grid: "#000000",
-  white: "#FFFFFF",
-  black: "#000000",
+  second: "#FFFFFF",
+  first: "#000000",
 };
 
 const sleep = (milliSeconds) =>
@@ -67,9 +67,9 @@ const drawDisks = (ctx, board) => {
     const j = Math.floor(k / 8);
 
     if (first[k] == 1) {
-      drawDisk(ctx, i, j, color.black);
+      drawDisk(ctx, i, j, color.first);
     } else if (second[k] == 1) {
-      drawDisk(ctx, i, j, color.white);
+      drawDisk(ctx, i, j, color.second);
     }
   }
 };
