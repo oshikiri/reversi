@@ -32,7 +32,7 @@ impl Board {
     }
 
     pub fn putAndReverse(&mut self, is_second: bool, i: u8, j: u8) {
-        let put_position = convert_indices_to_bitboard(i as u64, j as u64);
+        let put_position = coordinate_to_bitboard(i as u64, j as u64);
         self.put_and_reverse(is_second, put_position);
     }
 
@@ -318,11 +318,6 @@ pub fn convert_bitboard_to_array(bitboard: u64) -> Vec<u64> {
     reverse_patterns
 }
 
-pub fn convert_indices_to_bitboard(i: u64, j: u64) -> u64 {
-    let idx = i + 8 * j;
-    1 << (63 - idx)
-}
-
 pub fn convert_vec_to_jsarray(vector: Vec<u64>) -> js_sys::Array {
     let jsarray = js_sys::Array::new_with_length(64);
 
@@ -347,7 +342,7 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
         panic!("out of index");
     }
     let i = x + 8 * y;
-    1 << i
+    1 << (63 - i)
 }
 
 #[cfg(test)]
@@ -456,7 +451,7 @@ mod tests {
 
     #[test]
     fn coordinate_to_bitboard_should_convert_notations() {
-        assert_eq!(reversi::coordinate_to_bitboard(0, 0), 1);
-        assert_eq!(reversi::coordinate_to_bitboard(7, 7), 1 << 63);
+        assert_eq!(reversi::coordinate_to_bitboard(0, 0), 1 << 63);
+        assert_eq!(reversi::coordinate_to_bitboard(7, 7), 1);
     }
 }
