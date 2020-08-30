@@ -55,12 +55,20 @@ const drawDisk = (ctx, i, j, color) => {
   ctx.stroke();
 };
 
-const drawDisks = (ctx) => {
-  // Initial position
-  drawDisk(ctx, 3, 3, color.white);
-  drawDisk(ctx, 4, 4, color.white);
-  drawDisk(ctx, 3, 4, color.black);
-  drawDisk(ctx, 4, 3, color.black);
+const drawDisks = (ctx, board) => {
+  const first = board.get_bitboard(false);
+  const second = board.get_bitboard(true);
+
+  for (let k = 0; k < 64; k++) {
+    const i = k % 8;
+    const j = Math.floor(k / 8);
+
+    if (first[k] == 1) {
+      drawDisk(ctx, i, j, color.black);
+    } else if (second[k] == 1) {
+      drawDisk(ctx, i, j, color.white);
+    }
+  }
 };
 
 const convertToIdx = (x, y) => {
@@ -91,7 +99,7 @@ if (canvas.getContext) {
   const context = canvas.getContext("2d");
   drawBackground(context);
   drawGrid(context);
-  drawDisks(context);
+  drawDisks(context, board);
 
   canvas.addEventListener("click", function (clickEvent) {
     const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
@@ -102,7 +110,7 @@ if (canvas.getContext) {
       // if put succeeded {
       //   board.put() // next move
       // }
-      drawDisk(context, i, j, color.black); // FIXME: Update all the pieces
+      drawDisks(context, board);
     }
   });
 }
