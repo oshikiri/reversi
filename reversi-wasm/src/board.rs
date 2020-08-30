@@ -11,6 +11,7 @@ pub struct Board {
 }
 
 #[wasm_bindgen]
+#[allow(dead_code)]
 #[allow(non_snake_case)]
 pub fn newBoard() -> Board {
     Board {
