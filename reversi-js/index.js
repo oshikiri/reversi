@@ -15,6 +15,9 @@ const color = {
   black: "#000000",
 };
 
+const sleep = (milliSeconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliSeconds));
+
 const drawBackground = (ctx) => {
   ctx.fillStyle = color.background;
   ctx.fillRect(0, 0, BACKGROUND_WIDTH, BACKGROUND_WIDTH);
@@ -85,14 +88,7 @@ const convertToIdx = (x, y) => {
 };
 
 const board = newBoard();
-let legalPositions = board.getAllLegalPosition(true);
-
-console.log(board.getBitboard(false));
-console.log(board.getBitboard(true));
-console.log(
-  "entireReversePatterns > countBits",
-  board.entireReversePatterns(true).map((p) => countBits(BigInt(p)))
-);
+let legalPositions = board.getAllLegalPosition(false);
 
 const canvas = document.getElementById("reversi-board");
 canvas.height = "320";
@@ -103,17 +99,21 @@ if (canvas.getContext) {
   drawGrid(context);
   drawDisks(context, board);
 
-  canvas.addEventListener("click", function (clickEvent) {
+  canvas.addEventListener("click", async function (clickEvent) {
     const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
     if (idx) {
       const [i, j] = idx;
       if (legalPositions[i + 8 * j] == 0) return;
-      board.putAndReverse(true, i, j);
+      board.putAndReverse(false, i, j);
+      drawDisks(context, board);
 
-      // board.putNextMove(strategy = "any-legal-position");
+      await sleep(500);
+
+      const strategy = 0;
+      board.putNextMove(true, strategy);
 
       drawDisks(context, board);
-      legalPositions = board.getAllLegalPosition(true);
+      legalPositions = board.getAllLegalPosition(false);
     }
   });
 }

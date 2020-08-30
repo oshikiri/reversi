@@ -1,5 +1,3 @@
-
-
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
@@ -174,6 +172,10 @@ impl Board {
             .collect();
         convert_vec_to_jsarray(legal_positions)
     }
+
+    pub fn putNextMove(&mut self, is_second: bool, strategy: u8) {
+        self.put_next_move(is_second, strategy);
+    }
 }
 
 impl Board {
@@ -214,6 +216,44 @@ impl Board {
 
         legal_positions
     }
+
+    pub fn put_next_move(&mut self, is_second: bool, strategy: u8) {
+        match strategy {
+            0 => self.put_next_move_greedy(is_second),
+            _ => panic!("Invalid strategy: {}", strategy),
+        };
+    }
+
+    fn put_next_move_greedy(&mut self, is_second: bool) {
+        let reverse_counts: Vec<u64> = self
+            .entire_reverse_patterns(is_second)
+            .into_iter()
+            .map(|cell| count_bits(cell))
+            .collect();
+
+        let mut non_zero_counts = Vec::new();
+        for k in 0..64 {
+            if reverse_counts[k] > 0 {
+                non_zero_counts.push(reverse_counts[k])
+            }
+        }
+        let i_max = argmax(reverse_counts);
+        let put_position = 1 << (63 - i_max);
+        self.put_and_reverse(is_second, put_position);
+    }
+}
+
+pub fn argmax(v: Vec<u64>) -> usize {
+    let n = v.len();
+    let mut v_max = 0;
+    let mut i_max = 0;
+    for i in 0..n {
+        if v[i] > v_max {
+            v_max = v[i];
+            i_max = i;
+        }
+    }
+    i_max
 }
 
 impl std::fmt::Display for Board {
