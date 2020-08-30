@@ -1,4 +1,4 @@
-import { newBoard, countBits } from "reversi-wasm";
+import { newBoard } from "reversi-wasm";
 
 // TODO: Refactor constants
 const BOARD_OFFSET = 10;

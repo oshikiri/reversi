@@ -306,11 +306,6 @@ fn generate_mask(i: u64) -> u64 {
     }
 }
 
-#[wasm_bindgen]
-pub fn countBits(bitboard: u64) -> js_sys::Number {
-    js_sys::Number::from(count_bits(bitboard) as f64)
-}
-
 pub fn convert_bitboard_to_array(bitboard: u64) -> Vec<u64> {
     let mut reverse_patterns = Vec::<u64>::new();
 
