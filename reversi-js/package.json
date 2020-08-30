@@ -7,8 +7,8 @@
     "check:format": "./node_modules/.bin/prettier --check index.*",
     "format": "./node_modules/.bin/prettier --write index.*",
     "test": "echo \"INFO: no test specified\"",
-    "build": "webpack --config webpack.config.js",
-    "start": "webpack-dev-server"
+    "build": "webpack --config webpack.config.js --mode=production",
+    "start": "webpack-dev-server --mode=development"
   },
   "repository": {
     "type": "git",
