@@ -6,6 +6,7 @@ reversi
 
 
 Computer reversi on GitHub pages.
+Hosted on <https://oshikiri.github.io/reversi/>
 
 
 ## Deployment
