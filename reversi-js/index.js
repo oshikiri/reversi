@@ -1,12 +1,13 @@
 import { newBoard } from "reversi-wasm";
 
 // TODO: Refactor constants
-const BOARD_OFFSET = 10;
+const BOARD_OFFSET = 30;
+const GRID_WIDTH = 3;
 const N_COL_CELLS = 8;
 const N_ROW_CELLS = 8;
-const CELL_WIDTH = 30;
+const CELL_WIDTH = 90;
 const BACKGROUND_WIDTH = 8 * (CELL_WIDTH + 1) + 2 * BOARD_OFFSET;
-const DISK_RADIUS = 13;
+const DISK_RADIUS = 39;
 
 const color = {
   background: "#0B610B",
@@ -27,6 +28,7 @@ const drawBackground = (ctx) => {
 const drawGrid = (ctx) => {
   ctx.beginPath();
   ctx.strokeStyle = color.grid;
+  ctx.lineWidth = GRID_WIDTH;
 
   // Vertical lines
   for (let i = 0; i <= N_COL_CELLS; i++) {
@@ -90,8 +92,8 @@ const board = newBoard();
 let legalPositions = board.getAllLegalPosition(false);
 
 const canvas = document.getElementById("reversi-board");
-canvas.height = "320";
-canvas.width = "320";
+canvas.height = "960";
+canvas.width = "960";
 if (canvas.getContext) {
   const context = canvas.getContext("2d");
   drawBackground(context);
