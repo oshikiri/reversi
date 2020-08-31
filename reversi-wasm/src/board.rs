@@ -267,8 +267,6 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
 
 #[cfg(test)]
 mod tests {
-    use board;
-
     mod board_test {
         use board::Board;
 
@@ -326,15 +324,18 @@ mod tests {
         }
     }
 
-    #[test]
-    fn count_bits_should_return_count_bits() {
-        assert_eq!(board::count_bits(0), 0);
-        assert_eq!(board::count_bits(u64::MAX), 64);
-    }
+    mod utils_test {
+        use board;
+        #[test]
+        fn count_bits_should_return_count_bits() {
+            assert_eq!(board::count_bits(0), 0);
+            assert_eq!(board::count_bits(u64::MAX), 64);
+        }
 
-    #[test]
-    fn coordinate_to_bitboard_should_convert_notations() {
-        assert_eq!(board::coordinate_to_bitboard(0, 0), 1 << 63);
-        assert_eq!(board::coordinate_to_bitboard(7, 7), 1);
+        #[test]
+        fn coordinate_to_bitboard_should_convert_notations() {
+            assert_eq!(board::coordinate_to_bitboard(0, 0), 1 << 63);
+            assert_eq!(board::coordinate_to_bitboard(7, 7), 1);
+        }
     }
 }
