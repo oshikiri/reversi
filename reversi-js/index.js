@@ -55,7 +55,6 @@ const drawDisk = (ctx, i, j, color) => {
   ctx.fillStyle = color;
   ctx.arc(x, y, DISK_RADIUS, 0, 2 * Math.PI);
   ctx.fill();
-  ctx.stroke();
 };
 
 const drawDisks = (ctx, board) => {
