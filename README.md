@@ -8,6 +8,25 @@ reversi
 Computer reversi on GitHub pages.
 
 
+## Deployment
+
+```sh
+pushd reversi-wasm
+wasm-pack build
+popd
+
+pushd reversi-js
+npm run build
+popd
+
+git branch -D gh-pages
+git branch -c gh-pages
+git add docs/* -f
+git commit -m "Deploy docs/*"
+
+git push -f origin gh-pages
+```
+
 ## References
 
 - [Reversi \- Wikipedia](https://en.wikipedia.org/wiki/Reversi)
