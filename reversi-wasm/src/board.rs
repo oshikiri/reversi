@@ -58,35 +58,12 @@ impl Board {
 }
 
 impl Board {
-    pub fn print_board(&self) {
-        println!("print");
-        let mut first = self.first;
-        let mut second = self.second;
-
-        while first != 0 || second != 0 {
-            if first & 1 == 1 {
-                print!("o");
-            } else if second & 1 == 1 {
-                print!("x")
-            } else {
-                print!("-")
-            }
-
-            first >>= 1;
-            second >>= 1;
-        }
-    }
-
     pub fn is_full(&self) -> bool {
         (self.first | self.second) == u64::MAX
     }
 
     fn is_empty(&self, position: u64) -> bool {
         ((self.first | self.second) & position) == 0
-    }
-
-    pub fn is_valid(&self) -> bool {
-        true
     }
 
     pub fn put_and_reverse(&mut self, is_second: bool, put_position: u64) {
@@ -198,27 +175,6 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn get_all_legal_position(&self, is_second: bool) -> Vec<PositionEvaluation> {
-        let mut legal_positions = Vec::new();
-        let entire_reverse_patterns = self.entire_reverse_patterns(is_second);
-
-        for k in 0..64 {
-            let i = k % 8;
-            let j = k / 8;
-            let reverse_pattern = entire_reverse_patterns[k];
-            if reverse_pattern > 0 {
-                let position_evaluation = PositionEvaluation {
-                    i,
-                    j,
-                    evaluation: count_bits(reverse_pattern),
-                };
-                legal_positions.push(position_evaluation);
-            }
-        }
-
-        legal_positions
-    }
-
     pub fn put_next_move(&mut self, is_second: bool, strategy: u8) {
         match strategy {
             0 => self.put_next_move_greedy(is_second),
@@ -256,44 +212,6 @@ pub fn argmax(v: Vec<u64>) -> usize {
         }
     }
     i_max
-}
-
-impl std::fmt::Display for Board {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Board(first={}, second={})", self.first, self.second)
-    }
-}
-
-pub struct PositionEvaluation {
-    i: usize,
-    j: usize,
-    evaluation: u64,
-}
-
-impl PartialEq for PositionEvaluation {
-    fn eq(&self, other: &Self) -> bool {
-        self.i == other.i && self.j == other.j && self.evaluation == other.evaluation
-    }
-}
-
-impl std::fmt::Display for PositionEvaluation {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(
-            f,
-            "PositionEvaluation(i={}, j={}, evaluation={})",
-            self.i, self.j, self.evaluation
-        )
-    }
-}
-
-impl std::fmt::Debug for PositionEvaluation {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        f.debug_struct("PositionEvaluation")
-            .field("i", &self.i)
-            .field("j", &self.j)
-            .field("evaluation", &self.evaluation)
-            .finish()
-    }
 }
 
 fn generate_mask(i: u64) -> u64 {
@@ -353,7 +271,6 @@ mod tests {
 
     mod board_test {
         use board::Board;
-        use board::PositionEvaluation;
 
         #[test]
         fn is_full_should_return_false_when_board_is_empty() {
@@ -406,42 +323,6 @@ mod tests {
             };
             assert_eq!(board.is_empty(1), false);
             assert_eq!(board.is_empty(1 << 63), true);
-        }
-
-        #[test]
-        fn get_all_legal_position() {
-            let board = Board {
-                first: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
-                second: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
-            };
-            let legal_positions = board.get_all_legal_position(false);
-
-            let expected = vec![
-                PositionEvaluation {
-                    i: 4,
-                    j: 2,
-                    evaluation: 1,
-                },
-                PositionEvaluation {
-                    i: 5,
-                    j: 3,
-                    evaluation: 1,
-                },
-                PositionEvaluation {
-                    i: 2,
-                    j: 4,
-                    evaluation: 1,
-                },
-                PositionEvaluation {
-                    i: 3,
-                    j: 5,
-                    evaluation: 1,
-                },
-            ];
-
-            for i in 0..4 {
-                assert_eq!(legal_positions[i], expected[i]);
-            }
         }
     }
 
