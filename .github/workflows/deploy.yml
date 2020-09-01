@@ -28,8 +28,6 @@ jobs:
         node-version: '14'
 
     - name: Build at javascript/
-      with:
-          node-version: '14'
       run: |
         pushd javascript/
         npm install
