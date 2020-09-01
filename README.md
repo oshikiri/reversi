@@ -12,11 +12,11 @@ Hosted on <https://oshikiri.github.io/reversi/>
 ## Deployment
 
 ```sh
-pushd reversi-wasm
+pushd rust
 wasm-pack build
 popd
 
-pushd reversi-js
+pushd javascript
 npm run build
 popd
 
