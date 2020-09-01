@@ -42,7 +42,7 @@ jobs:
         git config user.name "deploy workflow"
         git config user.email "oshikiri@users.noreply.github.com"
 
-        git branch -c gh-pages
+        git checkout -b gh-pages
         git add docs/* --force
         git commit --message "Deploy docs/*"
 
