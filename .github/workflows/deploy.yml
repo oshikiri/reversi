@@ -46,7 +46,4 @@ jobs:
         git add docs/* --force
         git commit --message "Deploy docs/*"
 
-        git branch
-        git log -1
-
-        # git push --force origin gh-pages
+        git push --force origin gh-pages
