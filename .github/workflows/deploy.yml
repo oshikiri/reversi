@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build at rust/
+      run: |
+        pushd rust/
+        cargo test --verbose
+        curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        wasm-pack build
+        ls -l pkg/  # For debug
+        popd
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14'
+
+    - name: Build at javascript/
+      with:
+          node-version: '14'
+      run: |
+        pushd javascript/
+        npm install
+        npm build
+        ls -l ../docs/ # For debug
+        popd
