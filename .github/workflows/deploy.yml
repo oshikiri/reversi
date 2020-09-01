@@ -15,11 +15,9 @@ jobs:
 
     - name: Build at rust/
       run: |
-        pushd rust/
-        cargo test --verbose
         curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        pushd rust/
         wasm-pack build
-        ls -l pkg/  # For debug
         popd
 
     - name: Use Node.js ${{ matrix.node-version }}
@@ -32,7 +30,6 @@ jobs:
         pushd javascript/
         npm install
         npm run build
-        ls -l ../docs/ # For debug
         popd
 
     - name: Push to gh-pages branch
