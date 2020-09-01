@@ -23,7 +23,7 @@
   "devDependencies": {
     "copy-webpack-plugin": "^6.0.3",
     "prettier": "^2.0.5",
-    "reversi-wasm": "file:../reversi-wasm/pkg",
+    "reversi-wasm": "file:../rust/pkg",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5"
