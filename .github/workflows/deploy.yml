@@ -39,7 +39,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git branch -D gh-pages
         git branch -c gh-pages
         git add docs/* --force
         git commit --message "Deploy docs/*"
