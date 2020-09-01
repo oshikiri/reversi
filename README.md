@@ -11,22 +11,7 @@ Hosted on <https://oshikiri.github.io/reversi/>
 
 ## Deployment
 
-```sh
-pushd rust
-wasm-pack build
-popd
-
-pushd javascript
-npm run build
-popd
-
-git branch -D gh-pages
-git branch -c gh-pages
-git add docs/* -f
-git commit -m "Deploy docs/*"
-
-git push -f origin gh-pages
-```
+See .github/workflows/deploy.yml
 
 ## References
 
