@@ -31,6 +31,6 @@ jobs:
       run: |
         pushd javascript/
         npm install
-        npm build
+        npm run build
         ls -l ../docs/ # For debug
         popd
