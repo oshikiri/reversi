@@ -63,16 +63,22 @@ const drawDisks = (ctx, board) => {
   const first = board.getBitboard(false);
   const second = board.getBitboard(true);
 
+  let firstScore = 0;
+  let secondScore = 0;
+
   for (let k = 0; k < 64; k++) {
     const i = k % 8;
     const j = Math.floor(k / 8);
 
     if (first[k] == 1) {
+      firstScore++;
       drawDisk(ctx, i, j, color.first);
     } else if (second[k] == 1) {
+      secondScore++;
       drawDisk(ctx, i, j, color.second);
     }
   }
+  document.querySelector("#scores").innerHTML = `${firstScore}-${secondScore}`;
 };
 
 const convertToIdx = (x, y) => {
