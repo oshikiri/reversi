@@ -4,6 +4,11 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 #[wasm_bindgen]
+pub enum Strategy {
+    Greedy,
+}
+
+#[wasm_bindgen]
 #[derive(Debug)]
 pub struct Board {
     first: u64,  // black, 先手
@@ -52,7 +57,7 @@ impl Board {
         convert_vec_to_jsarray(legal_positions)
     }
 
-    pub fn putNextMove(&mut self, is_second: bool, strategy: u8) {
+    pub fn putNextMove(&mut self, is_second: bool, strategy: Strategy) {
         self.put_next_move(is_second, strategy);
     }
 }
@@ -175,10 +180,10 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn put_next_move(&mut self, is_second: bool, strategy: u8) {
+    pub fn put_next_move(&mut self, is_second: bool, strategy: Strategy) {
+        use self::Strategy::*;
         match strategy {
-            0 => self.put_next_move_greedy(is_second),
-            _ => panic!("Invalid strategy: {}", strategy),
+            Greedy => self.put_next_move_greedy(is_second),
         };
     }
 

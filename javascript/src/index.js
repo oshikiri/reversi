@@ -1,4 +1,4 @@
-import { newBoard } from "reversi-wasm";
+import { newBoard, Strategy } from "reversi-wasm";
 import { sleep } from "./utils";
 import { convertToIdx, drawBackground, drawDisks, drawGrid } from "./draw";
 
@@ -30,8 +30,7 @@ if (canvas.getContext) {
 
         await sleep(500);
 
-        const strategy = 0;
-        board.putNextMove(true, strategy);
+        board.putNextMove(true, Strategy.Greedy);
 
         drawDisks(context, board);
         legalPositions = board.getAllLegalPosition(false);
