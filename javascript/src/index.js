@@ -4,6 +4,7 @@ import { convertToIdx, drawBackground, drawDisks, drawGrid } from "./draw";
 
 const board = newBoard();
 let legalPositions = board.getAllLegalPosition(false);
+let boardLocked = false;
 
 const canvas = document.getElementById("reversi-board");
 canvas.height = "960";
@@ -15,20 +16,28 @@ if (canvas.getContext) {
   drawDisks(context, board);
 
   canvas.addEventListener("click", async function (clickEvent) {
+    if (boardLocked) {
+      return;
+    }
+    boardLocked = true;
+
     const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
     if (idx) {
       const [i, j] = idx;
-      if (legalPositions[i + 8 * j] == 0) return;
-      board.putAndReverse(false, i, j);
-      drawDisks(context, board);
+      if (legalPositions[i + 8 * j] > 0) {
+        board.putAndReverse(false, i, j);
+        drawDisks(context, board);
 
-      await sleep(500);
+        await sleep(500);
 
-      const strategy = 0;
-      board.putNextMove(true, strategy);
+        const strategy = 0;
+        board.putNextMove(true, strategy);
 
-      drawDisks(context, board);
-      legalPositions = board.getAllLegalPosition(false);
+        drawDisks(context, board);
+        legalPositions = board.getAllLegalPosition(false);
+      }
     }
+
+    boardLocked = false;
   });
 }
