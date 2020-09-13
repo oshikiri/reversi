@@ -353,7 +353,8 @@ mod tests {
         }
 
         #[test]
-        fn entire_reverse_patterns_bug_0_0() {
+        fn put_next_move_greedy_bug_0_0() {
+            // https://github.com/oshikiri/reversi/pull/7
             let mut board = create_board_fixture(
                 "
                 - - - - - - - -
@@ -363,7 +364,7 @@ mod tests {
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - - - - x o
+                - - - - - - - -
             ",
             );
             board.put_next_move_greedy(true);
@@ -377,7 +378,7 @@ mod tests {
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - - - - x o
+                - - - - - - - -
             ",
             );
 
