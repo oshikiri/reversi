@@ -275,30 +275,73 @@ mod tests {
     mod board_test {
         use board::Board;
 
+        fn create_board_fixture(board_str: &str) -> Board {
+            let mut n_cells = 0;
+            let mut first = 0;
+            let mut second = 0;
+
+            for c in String::from(board_str).chars() {
+                if c == '-' || c == 'o' || c == 'x' {
+                    n_cells = n_cells + 1;
+                    if c == 'o' {
+                        first |= 1 << (64 - n_cells);
+                    } else if c == 'x' {
+                        second |= 1 << (64 - n_cells);
+                    }
+                }
+            }
+
+            Board { first, second }
+        }
+
         #[test]
         fn is_full_should_return_false_when_board_is_empty() {
-            let board = Board {
-                first: 0,
-                second: 0,
-            };
+            let board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
             assert_eq!(board.is_full(), false);
         }
 
         #[test]
         fn is_full_should_return_true_when_board_is_full() {
-            let board = Board {
-                first: 0,
-                second: u64::MAX,
-            };
+            let board = create_board_fixture(
+                "
+                x x x x x x x x
+                x x x x x x x x
+                x x x x x x x x
+                x x x x x x x x
+                x x x x x x x x
+                x x x x x x x x
+                x x x x x x x x
+                x x x x x x x x
+            ",
+            );
             assert_eq!(board.is_full(), true);
         }
 
         #[test]
         fn entire_reverse_patterns() {
-            let board = Board {
-                first: 1,
-                second: 2,
-            };
+            let board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - x o
+            ",
+            );
             let reverse_patterns = board.entire_reverse_patterns(false);
 
             let mut expected = vec![0; 64];
@@ -309,10 +352,18 @@ mod tests {
 
         #[test]
         fn put_and_reverse_should_reverse_pieces() {
-            let mut board = Board {
-                first: 1,
-                second: 6,
-            };
+            let mut board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - x x o
+            ",
+            );
             board.put_and_reverse(false, 8);
             assert_eq!(board.first, 15);
             assert_eq!(board.second, 0);
@@ -320,10 +371,18 @@ mod tests {
 
         #[test]
         fn is_empty() {
-            let board = Board {
-                first: 1,
-                second: 2,
-            };
+            let board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - x o
+            ",
+            );
             assert_eq!(board.is_empty(1), false);
             assert_eq!(board.is_empty(1 << 63), true);
         }
