@@ -351,6 +351,74 @@ mod tests {
         }
 
         #[test]
+        fn entire_reverse_patterns_bug_0_0() {
+            let mut board = create_board_fixture(
+                "
+                - - - - o o o o
+                o - - - x x x x
+                o o x x x x x x
+                o o o x x x x x
+                o o o o x o x x
+                o o o x o x o x
+                o o x x x o o x
+                o o o x o o o o
+            ",
+            );
+            board.put_next_move_greedy(true);
+
+            let expected = create_board_fixture(
+                "
+                x - - - o o o o
+                o - - - x x x x
+                o o x x x x x x
+                o o o x x x x x
+                o o o o x o x x
+                o o o x o x o x
+                o o x x x o o x
+                o o o x o o o o
+            ",
+            );
+
+            // TODO: implement eq between board
+            assert_eq!(board.first, expected.first);
+            assert_eq!(board.second, expected.second);
+        }
+
+        #[test]
+        fn entire_reverse_patterns_bug_0_0_simple() {
+            let mut board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - x o
+            ",
+            );
+            board.put_next_move_greedy(true);
+
+            let expected = create_board_fixture(
+                "
+                x - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - x o
+            ",
+            );
+
+            // TODO: implement eq between board
+            assert_eq!(board.first, expected.first);
+            assert_eq!(board.second, expected.second);
+        }
+
+        #[test]
         fn put_and_reverse_should_reverse_pieces() {
             let mut board = create_board_fixture(
                 "
