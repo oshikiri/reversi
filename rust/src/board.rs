@@ -200,9 +200,11 @@ impl Board {
                 non_zero_counts.push(reverse_counts[k])
             }
         }
-        let i_max = argmax(reverse_counts);
-        let put_position = 1 << (63 - i_max);
-        self.put_and_reverse(is_second, put_position);
+        if non_zero_counts.len() > 0 {
+            let i_max = argmax(non_zero_counts);
+            let put_position = 1 << (63 - i_max);
+            self.put_and_reverse(is_second, put_position);
+        }
     }
 }
 
@@ -348,6 +350,40 @@ mod tests {
             expected[61] = 2;
 
             assert_eq!(reverse_patterns, expected)
+        }
+
+        #[test]
+        fn entire_reverse_patterns_bug_0_0() {
+            let mut board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - x o
+            ",
+            );
+            board.put_next_move_greedy(true);
+
+            let expected = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - x o
+            ",
+            );
+
+            // TODO: implement eq between board
+            assert_eq!(board.first, expected.first);
+            assert_eq!(board.second, expected.second);
         }
 
         #[test]
