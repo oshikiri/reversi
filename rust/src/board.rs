@@ -194,31 +194,31 @@ impl Board {
             .map(|cell| count_bits(cell))
             .collect();
 
-        let mut non_zero_counts = Vec::new();
-        for k in 0..64 {
-            if reverse_counts[k] > 0 {
-                non_zero_counts.push(reverse_counts[k])
+        match positive_argmax(reverse_counts) {
+            Some(i_max) => {
+                let put_position = 1 << (63 - i_max);
+                self.put_and_reverse(is_second, put_position);
             }
-        }
-        if non_zero_counts.len() > 0 {
-            let i_max = argmax(non_zero_counts);
-            let put_position = 1 << (63 - i_max);
-            self.put_and_reverse(is_second, put_position);
+            None => {}
         }
     }
 }
 
-pub fn argmax(v: Vec<u64>) -> usize {
-    let n = v.len();
+pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
     let mut v_max = 0;
     let mut i_max = 0;
-    for i in 0..n {
-        if v[i] > v_max {
+
+    for i in 0..v.len() {
+        if v[i] > 0 && v[i] > v_max {
             v_max = v[i];
             i_max = i;
         }
     }
-    i_max
+    if v_max == 0 {
+        None
+    } else {
+        Some(i_max)
+    }
 }
 
 fn generate_mask(i: u64) -> u64 {
@@ -376,6 +376,41 @@ mod tests {
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+
+            // TODO: implement eq between board
+            assert_eq!(board.first, expected.first);
+            assert_eq!(board.second, expected.second);
+        }
+
+        #[test]
+        fn put_next_move_greedy_bug_0_0_second_move() {
+            // https://github.com/oshikiri/reversi/pull/7
+            let mut board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - o x - - -
+                - - - x o - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            board.put_next_move_greedy(false);
+
+            let expected = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - o - - -
+                - - - o o - - -
+                - - - x o - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
