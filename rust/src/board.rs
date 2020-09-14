@@ -388,6 +388,41 @@ mod tests {
         }
 
         #[test]
+        fn put_next_move_greedy_bug_0_0_second_move() {
+            // https://github.com/oshikiri/reversi/pull/7
+            let mut board = create_board_fixture(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - o x - - -
+                - - - x o - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            board.put_next_move_greedy(false);
+
+            let expected = create_board_fixture(
+                "
+                o - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - o x - - -
+                - - - x o - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+
+            // TODO: implement eq between board
+            assert_eq!(board.first, expected.first);
+            assert_eq!(board.second, expected.second);
+        }
+
+        #[test]
         fn put_and_reverse_should_reverse_pieces() {
             let mut board = create_board_fixture(
                 "
