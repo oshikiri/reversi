@@ -205,18 +205,18 @@ impl Board {
 }
 
 pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
-    let n = v.len();
-    if n == 0 {
+    let mut v_max = 0;
+    let mut i_max = 0;
+
+    for i in 0..v.len() {
+        if v[i] > 0 && v[i] > v_max {
+            v_max = v[i];
+            i_max = i;
+        }
+    }
+    if v_max == 0 {
         None
     } else {
-        let mut v_max = 0;
-        let mut i_max = 0;
-        for i in 0..n {
-            if v[i] > 0 && v[i] > v_max {
-                v_max = v[i];
-                i_max = i;
-            }
-        }
         Some(i_max)
     }
 }
