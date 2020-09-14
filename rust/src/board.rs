@@ -388,8 +388,8 @@ mod tests {
         }
 
         #[test]
-        fn put_next_move_greedy_bug_0_0_second_move() {
-            // https://github.com/oshikiri/reversi/pull/7
+        fn put_next_move_greedy_initial_move() {
+            // https://github.com/oshikiri/reversi/pull/8
             let mut board = create_board_fixture(
                 "
                 - - - - - - - -
