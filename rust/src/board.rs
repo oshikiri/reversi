@@ -198,8 +198,8 @@ impl Board {
             Some(i_max) => {
                 let put_position = 1 << (63 - i_max);
                 self.put_and_reverse(is_second, put_position);
-            },
-            None => {},
+            }
+            None => {}
         }
     }
 }
