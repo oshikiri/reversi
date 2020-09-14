@@ -194,31 +194,31 @@ impl Board {
             .map(|cell| count_bits(cell))
             .collect();
 
-        let mut non_zero_counts = Vec::new();
-        for k in 0..64 {
-            if reverse_counts[k] > 0 {
-                non_zero_counts.push(reverse_counts[k])
-            }
-        }
-        if non_zero_counts.len() > 0 {
-            let i_max = argmax(non_zero_counts);
-            let put_position = 1 << (63 - i_max);
-            self.put_and_reverse(is_second, put_position);
+        match positive_argmax(reverse_counts) {
+            Some(i_max) => {
+                let put_position = 1 << (63 - i_max);
+                self.put_and_reverse(is_second, put_position);
+            },
+            None => {},
         }
     }
 }
 
-pub fn argmax(v: Vec<u64>) -> usize {
+pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
     let n = v.len();
-    let mut v_max = 0;
-    let mut i_max = 0;
-    for i in 0..n {
-        if v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
+    if n == 0 {
+        None
+    } else {
+        let mut v_max = 0;
+        let mut i_max = 0;
+        for i in 0..n {
+            if v[i] > 0 && v[i] > v_max {
+                v_max = v[i];
+                i_max = i;
+            }
         }
+        Some(i_max)
     }
-    i_max
 }
 
 fn generate_mask(i: u64) -> u64 {
@@ -406,10 +406,10 @@ mod tests {
 
             let expected = create_board_fixture(
                 "
-                o - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - o x - - -
+                - - - - o - - -
+                - - - o o - - -
                 - - - x o - - -
                 - - - - - - - -
                 - - - - - - - -
