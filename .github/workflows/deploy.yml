@@ -12,7 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+      with:
+        fetch-depth: 0
     - name: Build at rust/
       run: |
         curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
