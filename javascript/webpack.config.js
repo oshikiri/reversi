@@ -1,5 +1,6 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
+const webpack = require('webpack');
 
 module.exports = {
   entry: "./bootstrap.js",
@@ -13,6 +14,9 @@ module.exports = {
         { from: "index.html", to: "." },
         { from: "favicon.ico", to: "." },
       ],
+    }),
+    new webpack.EnvironmentPlugin({
+      REVERSI_VERSION: '',
     }),
   ],
 };
