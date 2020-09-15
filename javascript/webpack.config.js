@@ -1,6 +1,6 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
-const webpack = require('webpack');
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./bootstrap.js",
@@ -16,7 +16,7 @@ module.exports = {
       ],
     }),
     new webpack.EnvironmentPlugin({
-      REVERSI_VERSION: '',
+      REVERSI_VERSION: "",
     }),
   ],
 };
