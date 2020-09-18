@@ -400,9 +400,7 @@ mod tests {
             ",
             );
 
-            // TODO: implement eq between board
-            assert_eq!(board.first, expected.first);
-            assert_eq!(board.second, expected.second);
+            assert_eq!(board, expected);
         }
 
         #[test]
@@ -435,9 +433,7 @@ mod tests {
             ",
             );
 
-            // TODO: implement eq between board
-            assert_eq!(board.first, expected.first);
-            assert_eq!(board.second, expected.second);
+            assert_eq!(board, expected);
         }
 
         #[test]
@@ -455,8 +451,11 @@ mod tests {
             ",
             );
             board.put_and_reverse(false, 8);
-            assert_eq!(board.first, 15);
-            assert_eq!(board.second, 0);
+            let expected = Board {
+                first: 15,
+                second: 0,
+            };
+            assert_eq!(board, expected);
         }
 
         #[test]
