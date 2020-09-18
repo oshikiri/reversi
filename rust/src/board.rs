@@ -9,7 +9,7 @@ pub enum Strategy {
 }
 
 #[wasm_bindgen]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Board {
     first: u64,  // black, 先手
     second: u64, // white, 後手
@@ -276,6 +276,24 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
 mod tests {
     mod board_test {
         use board::Board;
+
+        #[test]
+        fn equivalence() {
+            let board1 = Board {
+                first: 0,
+                second: 1,
+            };
+            let board2 = Board {
+                first: 0,
+                second: 1,
+            };
+            let board3 = Board {
+                first: 0,
+                second: 4,
+            };
+            assert_eq!(board1, board2);
+            assert_ne!(board1, board3);
+        }
 
         fn create_board_fixture(board_str: &str) -> Board {
             let mut n_cells = 0;
