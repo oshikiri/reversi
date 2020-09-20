@@ -37,17 +37,22 @@ fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
     (j, content)
 }
 
-// fn parse_move_content(turn: char, i: usize, chars: Vec<char>, content: String) -> Option<CharTriple> {
-//   let first_slash = content.find('/').unwrap_or(content.len());
-//   let first_element = content.get(0..first_slash).unwrap();
-//   if first_element != "pass" {
-//       let x = chars.get(i + 1).unwrap();
-//       let y = chars.get(i + 2).unwrap();
-//       Some((turn, *x, *y))
-//   } else {
-//     None
-//   }
-// }
+fn parse_move_content(
+    turn: char,
+    i: usize,
+    chars: &Vec<char>,
+    content: String,
+) -> Option<CharTriple> {
+    let first_slash = content.find('/').unwrap_or(content.len());
+    let first_element = content.get(0..first_slash).unwrap();
+    if first_element == "pass" {
+        None
+    } else {
+        let x = chars.get(i + 1).unwrap();
+        let y = chars.get(i + 2).unwrap();
+        Some((turn, *x, *y))
+    }
+}
 
 #[allow(dead_code)] // TODO: remove
 pub fn parse(game_string: String) -> Game {
@@ -91,24 +96,18 @@ pub fn parse(game_string: String) -> Game {
             }
             "B[" => {
                 let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
-                let first_slash = content.find('/').unwrap_or(content.len());
-                let first_element = content.get(0..first_slash).unwrap();
-                if first_element != "pass" {
-                    let x = chars.get(i + 1).unwrap();
-                    let y = chars.get(i + 2).unwrap();
-                    game.moves.push(('B', *x, *y));
+                match parse_move_content('B', i, &chars, content) {
+                    Some(next_move) => game.moves.push(next_move),
+                    None => (),
                 }
                 i = i_next;
                 buffer.clear();
             }
             "W[" => {
                 let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
-                let first_slash = content.find('/').unwrap_or(content.len());
-                let first_element = content.get(0..first_slash).unwrap();
-                if first_element != "pass" {
-                    let x = chars.get(i + 1).unwrap();
-                    let y = chars.get(i + 2).unwrap();
-                    game.moves.push(('W', *x, *y));
+                match parse_move_content('W', i, &chars, content) {
+                    Some(next_move) => game.moves.push(next_move),
+                    None => (),
                 }
                 i = i_next;
                 buffer.clear();
