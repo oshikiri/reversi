@@ -186,7 +186,7 @@ mod tests {
     #[test]
     fn parse_game_01e4_1_modified() {
         // https://www.skatgame.net/mburo/ggs/game-archive/Othello/
-        // bzgrep . Othello.01e4.ggf.bz2 | head -1
+        // bzgrep . Othello.02e4.ggf.bz2 | head -1
         let game_string = String::from("(;GM[Othello]PC[GGS/os]DT[2000-4-16 11:13 EST]PB[fangr]PW[patzer]RB[1457.12]RW[1631.74]TI[15:00//02:00]TY[8]RE[-40.00:r]BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]B[E6//4.09]W[H8/40.00/0.01]B[pass//1.67]W[G7/40.00/0.01]B[pass//2.10]W[G8];)");
 
         let actual = parse(game_string);
