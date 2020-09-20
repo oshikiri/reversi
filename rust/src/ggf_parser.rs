@@ -2,6 +2,7 @@ type CharTriple = (char, char, char);
 
 #[derive(Debug, PartialEq)]
 pub struct Game {
+    name: String,
     first_name: String,
     second_name: String,
     game_type: String,
@@ -10,12 +11,14 @@ pub struct Game {
 
 #[allow(dead_code)] // TODO: remove
 pub fn new_game(
+    name_str: &str,
     first_name_str: &str,
     second_name_str: &str,
     game_type_str: &str,
     moves: Vec<CharTriple>,
 ) -> Game {
     Game {
+        name: name_str.to_string(),
         first_name: first_name_str.to_string(),
         second_name: second_name_str.to_string(),
         game_type: game_type_str.to_string(),
@@ -51,7 +54,7 @@ fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) 
 
 #[allow(dead_code)] // TODO: remove
 pub fn parse(game_string: String) -> Game {
-    let mut game = new_game("", "", "", Vec::new());
+    let mut game = new_game("", "", "", "", Vec::new());
 
     let mut buffer = String::from("");
     let chars = game_string.chars().collect::<Vec<char>>();
@@ -68,8 +71,8 @@ pub fn parse(game_string: String) -> Game {
             "GM[" => {
                 let (i_next, game_name) = comsume_until_close_bracket(&chars, i + 1);
                 i = i_next;
+                game.name = game_name;
                 buffer.clear();
-                println!("name: {}", game_name);
             }
             "PB[" => {
                 let (i_next, player_black) = comsume_until_close_bracket(&chars, i + 1);
@@ -133,6 +136,7 @@ mod tests {
 
         let actual = parse(game_string);
         let expected = new_game(
+            "Othello",
             "fangr",
             "patzer",
             "8",
