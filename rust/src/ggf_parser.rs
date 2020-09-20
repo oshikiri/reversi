@@ -137,7 +137,8 @@ pub fn parse(game_string: String) -> Game {
             "RE[" => {
                 let (i_next, result_score_str) = comsume_until_close_bracket(&chars, i + 1);
                 i = i_next;
-                game.result_score = result_score_str.parse::<f64>().unwrap();
+                let result_score_str: Vec<&str> = result_score_str.split(':').collect();
+                game.result_score = result_score_str[0].parse::<f64>().unwrap();
                 buffer.clear();
             }
             "BO[" => {
@@ -186,7 +187,7 @@ mod tests {
     fn parse_game_01e4_1_modified() {
         // https://www.skatgame.net/mburo/ggs/game-archive/Othello/
         // bzgrep . Othello.01e4.ggf.bz2 | head -1
-        let game_string = String::from("(;GM[Othello]PC[GGS/os]DT[2000-4-16 11:13 EST]PB[fangr]PW[patzer]RB[1457.12]RW[1631.74]TI[15:00//02:00]TY[8]RE[-40.00]BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]B[E6//4.09]W[H8/40.00/0.01]B[pass//1.67]W[G7/40.00/0.01]B[pass//2.10]W[G8];)");
+        let game_string = String::from("(;GM[Othello]PC[GGS/os]DT[2000-4-16 11:13 EST]PB[fangr]PW[patzer]RB[1457.12]RW[1631.74]TI[15:00//02:00]TY[8]RE[-40.00:r]BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]B[E6//4.09]W[H8/40.00/0.01]B[pass//1.67]W[G7/40.00/0.01]B[pass//2.10]W[G8];)");
 
         let actual = parse(game_string);
         let expected = new_game(
