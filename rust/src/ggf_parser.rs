@@ -4,9 +4,14 @@ type CharTriple = (char, char, char);
 pub struct Game {
     name: String,
     place: String,
+    datetime: String,
     first_name: String,
     second_name: String,
+    first_rating: f64,
+    second_rating: f64,
     game_type: String,
+    result_score: f64,
+    board_type: String,
     moves: Vec<CharTriple>,
 }
 
@@ -14,17 +19,27 @@ pub struct Game {
 pub fn new_game(
     name_str: &str,
     place_str: &str,
+    datetime_str: &str,
     first_name_str: &str,
     second_name_str: &str,
+    first_rating: f64,
+    second_rating: f64,
     game_type_str: &str,
+    result_score: f64,
+    board_type_str: &str,
     moves: Vec<CharTriple>,
 ) -> Game {
     Game {
         name: name_str.to_string(),
         place: place_str.to_string(),
+        datetime: datetime_str.to_string(),
         first_name: first_name_str.to_string(),
         second_name: second_name_str.to_string(),
+        first_rating,
+        second_rating,
         game_type: game_type_str.to_string(),
+        result_score,
+        board_type: board_type_str.to_string(),
         moves,
     }
 }
@@ -57,7 +72,7 @@ fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) 
 
 #[allow(dead_code)] // TODO: remove
 pub fn parse(game_string: String) -> Game {
-    let mut game = new_game("", "", "", "", "", Vec::new());
+    let mut game = new_game("", "", "", "", "", 0.0, 0.0, "", 0.0, "", Vec::new());
 
     let mut buffer = String::from("");
     let chars = game_string.chars().collect::<Vec<char>>();
@@ -83,6 +98,12 @@ pub fn parse(game_string: String) -> Game {
                 game.place = place;
                 buffer.clear();
             }
+            "DT[" => {
+                let (i_next, datetime_str) = comsume_until_close_bracket(&chars, i + 1);
+                i = i_next;
+                game.datetime = datetime_str;
+                buffer.clear();
+            }
             "PB[" => {
                 let (i_next, player_black) = comsume_until_close_bracket(&chars, i + 1);
                 i = i_next;
@@ -95,10 +116,34 @@ pub fn parse(game_string: String) -> Game {
                 game.second_name = player_white;
                 buffer.clear();
             }
+            "RB[" => {
+                let (i_next, rating_str) = comsume_until_close_bracket(&chars, i + 1);
+                i = i_next;
+                game.first_rating = rating_str.parse::<f64>().unwrap();
+                buffer.clear();
+            }
+            "RW[" => {
+                let (i_next, rating_str) = comsume_until_close_bracket(&chars, i + 1);
+                i = i_next;
+                game.second_rating = rating_str.parse::<f64>().unwrap();
+                buffer.clear();
+            }
             "TY[" => {
                 let (i_next, game_type) = comsume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.game_type = game_type;
+                buffer.clear();
+            }
+            "RE[" => {
+                let (i_next, result_score_str) = comsume_until_close_bracket(&chars, i + 1);
+                i = i_next;
+                game.result_score = result_score_str.parse::<f64>().unwrap();
+                buffer.clear();
+            }
+            "BO[" => {
+                let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
+                game.board_type = content;
+                i = i_next;
                 buffer.clear();
             }
             "B[" => {
@@ -147,9 +192,14 @@ mod tests {
         let expected = new_game(
             "Othello",
             "GGS/os",
+            "2000-4-16 11:13 EST",
             "fangr",
             "patzer",
+            1457.12,
+            1631.74,
             "8",
+            -40.0,
+            "8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *",
             vec![
                 ('B', 'E', '6'),
                 ('W', 'H', '8'),
