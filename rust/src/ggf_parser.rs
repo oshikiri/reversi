@@ -37,20 +37,15 @@ fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
     (j, content)
 }
 
-fn parse_move_content(
-    turn: char,
-    i: usize,
-    chars: &Vec<char>,
-    content: String,
-) -> Option<CharTriple> {
+fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) -> CharTriple {
     let first_slash = content.find('/').unwrap_or(content.len());
     let first_element = content.get(0..first_slash).unwrap();
     if first_element == "pass" {
-        None
+        (turn, '*', '*')
     } else {
         let x = chars.get(i + 1).unwrap();
         let y = chars.get(i + 2).unwrap();
-        Some((turn, *x, *y))
+        (turn, *x, *y)
     }
 }
 
@@ -96,19 +91,15 @@ pub fn parse(game_string: String) -> Game {
             }
             "B[" => {
                 let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
-                match parse_move_content('B', i, &chars, content) {
-                    Some(next_move) => game.moves.push(next_move),
-                    None => (),
-                }
+                let next_move = parse_move_content('B', i, &chars, content);
+                game.moves.push(next_move);
                 i = i_next;
                 buffer.clear();
             }
             "W[" => {
                 let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
-                match parse_move_content('W', i, &chars, content) {
-                    Some(next_move) => game.moves.push(next_move),
-                    None => (),
-                }
+                let next_move = parse_move_content('W', i, &chars, content);
+                game.moves.push(next_move);
                 i = i_next;
                 buffer.clear();
             }
@@ -134,7 +125,7 @@ mod tests {
     use ggf_parser::*;
 
     #[test]
-    fn parse_game_01e4_1() {
+    fn parse_game_01e4_1_modified() {
         // https://www.skatgame.net/mburo/ggs/game-archive/Othello/
         // bzgrep . Othello.01e4.ggf.bz2 | head -1
         let game_string = String::from("(;GM[Othello]PC[GGS/os]DT[2000-4-16 11:13 EST]PB[fangr]PW[patzer]RB[1457.12]RW[1631.74]TI[15:00//02:00]TY[8]RE[-40.00]BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]B[E6//4.09]W[H8/40.00/0.01]B[pass//1.67]W[G7/40.00/0.01]B[pass//2.10]W[G8];)");
@@ -147,7 +138,9 @@ mod tests {
             vec![
                 ('B', 'E', '6'),
                 ('W', 'H', '8'),
+                ('B', '*', '*'),
                 ('W', 'G', '7'),
+                ('B', '*', '*'),
                 ('W', 'G', '8'),
             ],
         );
