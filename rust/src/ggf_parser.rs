@@ -1,12 +1,12 @@
+type CharTriple = (char, char, char);
+
 #[derive(Debug, PartialEq)]
 pub struct Game {
     first_name: String,
     second_name: String,
     game_type: String,
-    moves: Vec<(char, char, char)>,
+    moves: Vec<CharTriple>,
 }
-
-type CharTriple = (char, char, char);
 
 #[allow(dead_code)] // TODO: remove
 pub fn new_game(
@@ -104,6 +104,7 @@ pub fn parse(game_string: String) -> Game {
                 buffer.clear();
             }
             _ => {
+                // Skip when it is unhandled case
                 if c == ']' {
                     println!("{}", buffer);
                     buffer.clear();
