@@ -175,7 +175,6 @@ impl Board {
             let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
             reverse_patterns.push(reverse_pattern);
         }
-        reverse_patterns.reverse();
 
         reverse_patterns
     }
@@ -196,7 +195,7 @@ impl Board {
 
         match positive_argmax(reverse_counts) {
             Some(i_max) => {
-                let put_position = 1 << (63 - i_max);
+                let put_position = 1 << i_max;
                 self.put_and_reverse(is_second, put_position);
             }
             None => {}
@@ -310,12 +309,12 @@ mod tests {
 
         for c in String::from(board_str).chars() {
             if c == '-' || c == 'o' || c == 'x' {
-                n_cells = n_cells + 1;
                 if c == 'o' {
-                    first |= 1 << (64 - n_cells);
+                    first |= 1 << n_cells;
                 } else if c == 'x' {
-                    second |= 1 << (64 - n_cells);
+                    second |= 1 << n_cells;
                 }
+                n_cells = n_cells + 1;
             }
         }
 
@@ -324,7 +323,23 @@ mod tests {
 
     #[test]
     fn test_create_board_fixture() {
-        // TODO: 1 が a1 になるようにすべき
+        let actual = create_board_fixture(
+            "
+            o - - - - - - -
+            - - - - - - - x
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+        ",
+        );
+        let expected = Board {
+            first: 1,
+            second: 1 << 15,
+        };
+        assert_eq!(actual, expected);
     }
 
     mod board_test {
@@ -387,6 +402,7 @@ mod tests {
         fn entire_reverse_patterns() {
             let board = create_board_fixture(
                 "
+                o x - - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
@@ -394,13 +410,12 @@ mod tests {
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - - - - x o
             ",
             );
             let reverse_patterns = board.entire_reverse_patterns(false);
 
             let mut expected = vec![0; 64];
-            expected[61] = 2;
+            expected[2] = 2;
 
             assert_eq!(reverse_patterns, expected)
         }
@@ -475,6 +490,7 @@ mod tests {
         fn put_and_reverse_should_reverse_pieces() {
             let mut board = create_board_fixture(
                 "
+                o x x - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
@@ -482,7 +498,6 @@ mod tests {
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - - - x x o
             ",
             );
             board.put_and_reverse(false, 8);
@@ -497,6 +512,7 @@ mod tests {
         fn is_empty() {
             let board = create_board_fixture(
                 "
+                o x - - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
@@ -504,7 +520,6 @@ mod tests {
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - - - - x o
             ",
             );
             assert_eq!(board.is_empty(1), false);
@@ -531,14 +546,14 @@ mod tests {
         fn extract_pattern_instances() {
             let board = create_board_fixture(
                 "
-                x - - - - - - -
+                o - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
                 - - - - - - - -
-                - - - - - - - o
+                - - - - - - - x
             ",
             );
             println!("{:?}", board);
