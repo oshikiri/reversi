@@ -275,7 +275,7 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     mod board_test {
-        use board::Board;
+        use crate::board::Board;
 
         #[test]
         fn equivalence() {
@@ -478,7 +478,7 @@ mod tests {
     }
 
     mod utils_test {
-        use board;
+        use crate::board;
         #[test]
         fn count_bits_should_return_count_bits() {
             assert_eq!(board::count_bits(0), 0);

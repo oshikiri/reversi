@@ -182,7 +182,7 @@ pub fn parse(game_string: String) -> Game {
 
 #[cfg(test)]
 mod tests {
-    use ggf_parser::*;
+    use crate::ggf::*;
 
     #[test]
     fn parse_game_01e4_1_modified() {
