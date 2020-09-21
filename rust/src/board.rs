@@ -272,9 +272,63 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
     1 << (63 - i)
 }
 
+pub fn extract_pattern_instances(x: char, y: char) -> u64 {
+    let ix = match x {
+        'A' => 0,
+        'B' => 1,
+        'C' => 2,
+        'D' => 3,
+        'E' => 4,
+        'F' => 5,
+        'G' => 6,
+        'H' => 7,
+        _ => panic!("invalid x={}", x), // TODO
+    };
+    let iy = match y {
+        '1' => 0,
+        '2' => 1,
+        '3' => 2,
+        '4' => 3,
+        '5' => 4,
+        '6' => 5,
+        '7' => 6,
+        '8' => 7,
+        _ => panic!("invalid y={}", y), // TODO
+    };
+    let i = ix + 8 * iy;
+    1 << i
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::board::Board;
+
+    fn create_board_fixture(board_str: &str) -> Board {
+        let mut n_cells = 0;
+        let mut first = 0;
+        let mut second = 0;
+
+        for c in String::from(board_str).chars() {
+            if c == '-' || c == 'o' || c == 'x' {
+                n_cells = n_cells + 1;
+                if c == 'o' {
+                    first |= 1 << (64 - n_cells);
+                } else if c == 'x' {
+                    second |= 1 << (64 - n_cells);
+                }
+            }
+        }
+
+        Board { first, second }
+    }
+
+    #[test]
+    fn test_create_board_fixture() {
+        // TODO: 1 が a1 になるようにすべき
+    }
+
     mod board_test {
+        use super::create_board_fixture;
         use crate::board::Board;
 
         #[test]
@@ -293,25 +347,6 @@ mod tests {
             };
             assert_eq!(board1, board2);
             assert_ne!(board1, board3);
-        }
-
-        fn create_board_fixture(board_str: &str) -> Board {
-            let mut n_cells = 0;
-            let mut first = 0;
-            let mut second = 0;
-
-            for c in String::from(board_str).chars() {
-                if c == '-' || c == 'o' || c == 'x' {
-                    n_cells = n_cells + 1;
-                    if c == 'o' {
-                        first |= 1 << (64 - n_cells);
-                    } else if c == 'x' {
-                        second |= 1 << (64 - n_cells);
-                    }
-                }
-            }
-
-            Board { first, second }
         }
 
         #[test]
@@ -478,6 +513,7 @@ mod tests {
     }
 
     mod utils_test {
+        use super::create_board_fixture;
         use crate::board;
         #[test]
         fn count_bits_should_return_count_bits() {
@@ -489,6 +525,29 @@ mod tests {
         fn coordinate_to_bitboard_should_convert_notations() {
             assert_eq!(board::coordinate_to_bitboard(0, 0), 1 << 63);
             assert_eq!(board::coordinate_to_bitboard(7, 7), 1);
+        }
+
+        #[test]
+        fn extract_pattern_instances() {
+            let board = create_board_fixture(
+                "
+                x - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - o
+            ",
+            );
+            println!("{:?}", board);
+
+            let bitboard_a1 = board::extract_pattern_instances('A', '1');
+            let bitboard_h8 = board::extract_pattern_instances('H', '8');
+
+            assert_eq!(bitboard_a1, board.first);
+            assert_eq!(bitboard_h8, board.second);
         }
     }
 }
