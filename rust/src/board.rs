@@ -324,7 +324,23 @@ mod tests {
 
     #[test]
     fn test_create_board_fixture() {
-        // TODO: 1 が a1 になるようにすべき
+        let actual = create_board_fixture(
+            "
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            x - - - - - - -
+            - - - - - - - o
+        ",
+        );
+        let expected = Board {
+            first: 1,
+            second: 1 << 15,
+        };
+        assert_eq!(actual, expected);
     }
 
     mod board_test {
