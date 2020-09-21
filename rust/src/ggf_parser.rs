@@ -70,6 +70,7 @@ fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) 
     }
 }
 
+// Specification?: http://www.soongsky.com/othello/other/format_ggf.txt
 #[allow(dead_code)] // TODO: remove
 pub fn parse(game_string: String) -> Game {
     let mut game = new_game("", "", "", "", "", 0.0, 0.0, "", 0.0, "", Vec::new());
