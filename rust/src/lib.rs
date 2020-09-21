@@ -1,5 +1,5 @@
 extern crate wasm_bindgen;
 
 mod board;
-mod ggf_parser;
+pub mod ggf;
 mod utils;
