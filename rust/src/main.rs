@@ -11,12 +11,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for result in BufReader::new(File::open(path)?).lines() {
         let line: String = result?;
         let game: ggf::Game = ggf::parse(line);
-        // let pattern_instance_histories: Vec<PatternInstanceHistory> = extract_pattarn_instance_histries(game);
-        //   convert_a1_format_to_bitboard
-        //   extract_pattern_instances
+        let pattern_instance_histories: Vec<ggf::PatternInstanceHistory> =
+            ggf::extract_pattarn_instance_histories(&game);
         println!("{:?}", game);
+        println!("{:?}", pattern_instance_histories);
         i += 1;
-        if i > 100 {
+        if i >= 1 {
             break;
         }
     }

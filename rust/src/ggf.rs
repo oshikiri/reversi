@@ -1,3 +1,5 @@
+use crate::board;
+
 type CharTriple = (char, char, char);
 
 #[derive(Debug, PartialEq)]
@@ -42,6 +44,33 @@ pub fn new_game(
         board_type: board_type_str.to_string(),
         moves,
     }
+}
+
+#[derive(Debug)]
+pub struct PatternInstanceHistory {
+    is_second: bool,
+    hor_vert_2: u64,
+}
+
+pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHistory> {
+    let mut board = board::newBoard();
+    let mut histories = Vec::new();
+    for move_ in &game.moves {
+        let (turn, x, y) = move_;
+        if *x == '*' || *y == '*' {
+            continue;
+        }
+        let is_second = *turn == 'W';
+        let put_position = board::convert_indices_to_bitboard(*x, *y);
+        board.put_and_reverse(is_second, put_position);
+
+        let history = PatternInstanceHistory {
+            is_second,
+            hor_vert_2: 0,
+        };
+        histories.push(history);
+    }
+    histories
 }
 
 fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
