@@ -271,7 +271,7 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
     1 << (63 - i)
 }
 
-pub fn extract_pattern_instances(x: char, y: char) -> u64 {
+pub fn convert_indices_to_bitboard(x: char, y: char) -> u64 {
     let ix = match x {
         'A' => 0,
         'B' => 1,
@@ -558,8 +558,8 @@ mod tests {
             );
             println!("{:?}", board);
 
-            let bitboard_a1 = board::extract_pattern_instances('A', '1');
-            let bitboard_h8 = board::extract_pattern_instances('H', '8');
+            let bitboard_a1 = board::convert_indices_to_bitboard('A', '1');
+            let bitboard_h8 = board::convert_indices_to_bitboard('H', '8');
 
             assert_eq!(bitboard_a1, board.first);
             assert_eq!(bitboard_h8, board.second);
