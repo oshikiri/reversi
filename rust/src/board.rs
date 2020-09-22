@@ -11,8 +11,8 @@ pub enum Strategy {
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
 pub struct Board {
-    first: u64,  // black, 先手
-    second: u64, // white, 後手
+    pub first: u64,  // black, 先手
+    pub second: u64, // white, 後手
 }
 
 #[wasm_bindgen]
