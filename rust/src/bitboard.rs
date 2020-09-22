@@ -1,5 +1,6 @@
 use crate::board::Board;
 
+// Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 mod pattern {
     pub type Pattern = [i64; 10];
     pub const HOR_VERT_2: Pattern = [8, 9, 10, 11, 12, 13, 14, 15, -1, -1];
@@ -35,28 +36,10 @@ fn cell_state_vec_to_pattern_instance_index(
     index
 }
 
-// [hor./vert.2]
-// - - - - - - - -
-// * * * * * * * *
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
 pub fn pattern_instance_hor_vert_2(first: Vec<u64>, second: Vec<u64>) -> u64 {
     cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_2)
 }
 
-// [hor./vert.3]
-// - - - - - - - -
-// - - - - - - - -
-// * * * * * * * *
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
-// - - - - - - - -
 pub fn pattern_instance_hor_vert_3(first: Vec<u64>, second: Vec<u64>) -> u64 {
     cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_3)
 }
