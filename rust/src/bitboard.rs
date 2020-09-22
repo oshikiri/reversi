@@ -36,14 +36,6 @@ fn cell_state_vec_to_pattern_instance_index(
     index
 }
 
-pub fn pattern_instance_hor_vert_2(first: Vec<u64>, second: Vec<u64>) -> u64 {
-    cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_2)
-}
-
-pub fn pattern_instance_hor_vert_3(first: Vec<u64>, second: Vec<u64>) -> u64 {
-    cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_3)
-}
-
 pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     let mut n = n_original;
     let mut bitvec = vec![0; 64];
@@ -118,7 +110,11 @@ mod tests {
             let first = bitboard::u64_to_bitvec(board.first);
             let second = bitboard::u64_to_bitvec(board.second);
 
-            let actual = bitboard::pattern_instance_hor_vert_2(first, second);
+            let actual = bitboard::cell_state_vec_to_pattern_instance_index(
+                &first,
+                &second,
+                bitboard::pattern::HOR_VERT_2,
+            );
             let expected = 2
                 + 3 * 1
                 + 3 * 3 * 2
