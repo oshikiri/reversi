@@ -3,8 +3,20 @@ use crate::board::Board;
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 mod pattern {
     pub type Pattern = [i64; 10];
+
+    pub const DIAG_4: Pattern = [3, 10, 17, 24, -1, -1, -1, -1, -1, -1];
+    pub const DIAG_5: Pattern = [4, 11, 18, 25, 32, -1, -1, -1, -1, -1];
+    pub const DIAG_6: Pattern = [5, 12, 19, 26, 33, 40, -1, -1, -1, -1];
+    pub const DIAG_7: Pattern = [6, 13, 20, 27, 34, 41, 48, -1, -1, -1];
+    pub const DIAG_8: Pattern = [7, 14, 21, 28, 35, 42, 49, 56, -1, -1];
+
     pub const HOR_VERT_2: Pattern = [8, 9, 10, 11, 12, 13, 14, 15, -1, -1];
     pub const HOR_VERT_3: Pattern = [16, 17, 18, 19, 20, 21, 22, 23, -1, -1];
+    pub const HOR_VERT_4: Pattern = [24, 25, 26, 27, 28, 29, 30, 31, -1, -1];
+
+    pub const EDGE_2X: Pattern = [0, 1, 2, 3, 4, 5, 6, 7, 9, 14];
+    pub const CORNER_2_5: Pattern = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12];
+    pub const CORNER_3_3: Pattern = [0, 1, 2, 8, 9, 10, 16, 17, 18, -1];
 }
 
 pub fn extract_pattern_instance_indices(board: Board) -> Vec<u64> {
