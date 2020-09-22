@@ -1,5 +1,12 @@
-fn cell_state_vec_to_pattern_instance_index(_v: Vec<u64>) -> u64 {
-  0
+fn cell_state_vec_to_pattern_instance_index(v: Vec<u64>) -> u64 {
+    let length = v.len();
+    let mut power = 1;
+    let mut index = 0;
+    for i in 0..length {
+        index += v[i] * power;
+        power *= 3;
+    }
+    index
 }
 
 // [hor./vert.2]
@@ -32,7 +39,7 @@ pub fn pattern_instance_hor_vert_2(first: Vec<u64>, second: Vec<u64>) -> u64 {
 // - - - - - - - -
 // - - - - - - - -
 pub fn pattern_instance_hor_vert_3(first: Vec<u64>, second: Vec<u64>) -> u64 {
-  0
+    0
 }
 
 pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
@@ -71,6 +78,14 @@ mod tests {
     mod bitboard_test {
         use super::create_board_fixture;
         use crate::bitboard;
+
+        #[test]
+        fn cell_state_vec_to_pattern_instance_index() {
+            let v: Vec<u64> = vec![1, 2, 0, 2, 2];
+            let actual = bitboard::cell_state_vec_to_pattern_instance_index(v);
+            let expected = 1 + 2 * 3 + 2 * 3 * 3 * 3 + 2 * 3 * 3 * 3 * 3;
+            assert_eq!(actual, expected);
+        }
 
         #[test]
         fn u64_to_bitvec() {
