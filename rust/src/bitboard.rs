@@ -19,14 +19,17 @@ fn cell_state_vec_to_pattern_instance_index(v: Vec<u64>) -> u64 {
 // - - - - - - - -
 // - - - - - - - -
 pub fn pattern_instance_hor_vert_2(first: Vec<u64>, second: Vec<u64>) -> u64 {
-    (first[8] + 2 * second[8])
-        + 3 * ((first[9] + 2 * second[9])
-            + 3 * ((first[10] + 2 * second[10])
-                + 3 * ((first[11] + 2 * second[11])
-                    + 3 * ((first[12] + 2 * second[12])
-                        + 3 * ((first[13] + 2 * second[13])
-                            + 3 * ((first[14] + 2 * second[14])
-                                + 3 * (first[15] + 2 * second[15])))))))
+    let states = vec![
+        first[8] + 2 * second[8],
+        first[9] + 2 * second[9],
+        first[10] + 2 * second[10],
+        first[11] + 2 * second[11],
+        first[12] + 2 * second[12],
+        first[13] + 2 * second[13],
+        first[14] + 2 * second[14],
+        first[15] + 2 * second[15],
+    ];
+    cell_state_vec_to_pattern_instance_index(states)
 }
 
 // [hor./vert.3]
@@ -39,7 +42,17 @@ pub fn pattern_instance_hor_vert_2(first: Vec<u64>, second: Vec<u64>) -> u64 {
 // - - - - - - - -
 // - - - - - - - -
 pub fn pattern_instance_hor_vert_3(first: Vec<u64>, second: Vec<u64>) -> u64 {
-    0
+  let states = vec![
+    first[16] + 2 * second[16],
+    first[17] + 2 * second[17],
+    first[18] + 2 * second[18],
+    first[19] + 2 * second[19],
+    first[20] + 2 * second[20],
+    first[21] + 2 * second[21],
+    first[22] + 2 * second[22],
+    first[23] + 2 * second[23],
+];
+cell_state_vec_to_pattern_instance_index(states)
 }
 
 pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
@@ -83,7 +96,7 @@ mod tests {
         fn cell_state_vec_to_pattern_instance_index() {
             let v: Vec<u64> = vec![1, 2, 0, 2, 2];
             let actual = bitboard::cell_state_vec_to_pattern_instance_index(v);
-            let expected = 1 + 2 * 3 + 2 * 3 * 3 * 3 + 2 * 3 * 3 * 3 * 3;
+            let expected = 1 + 2 * 3 + 0 * 3 * 3 + 2 * 3 * 3 * 3 + 2 * 3 * 3 * 3 * 3;
             assert_eq!(actual, expected);
         }
 
