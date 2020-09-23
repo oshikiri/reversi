@@ -14,7 +14,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let pattern_instance_histories: Vec<ggf::PatternInstanceHistory> =
             ggf::extract_pattarn_instance_histories(&game);
         println!("{:?}", game);
-        println!("{:?}", pattern_instance_histories);
+
+        for history in pattern_instance_histories {
+            println!("{:?}", history);
+        }
+
         i += 1;
         if i >= 1 {
             break;

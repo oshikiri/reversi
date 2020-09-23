@@ -1,7 +1,7 @@
 use crate::board::Board;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
-mod pattern {
+pub mod pattern {
     pub type Pattern = [i64; 10];
 
     pub const DIAG_4: Pattern = [3, 10, 17, 24, -1, -1, -1, -1, -1, -1];
@@ -19,7 +19,26 @@ mod pattern {
     pub const CORNER_3_3: Pattern = [0, 1, 2, 8, 9, 10, 16, 17, 18, -1];
 }
 
-fn cell_state_vec_to_pattern_instance_index(
+pub fn extract_pattern_instance_indices(board: &Board) -> Vec<u64> {
+    let first = u64_to_bitvec(board.first);
+    let second = u64_to_bitvec(board.second);
+
+    vec![
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::DIAG_4),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::DIAG_5),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::DIAG_6),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::DIAG_7),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::DIAG_8),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_2),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_3),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_4),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::EDGE_2X),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::CORNER_2_5),
+        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::CORNER_3_3),
+    ]
+}
+
+pub fn cell_state_vec_to_pattern_instance_index(
     first: &Vec<u64>,
     second: &Vec<u64>,
     pattern: pattern::Pattern,

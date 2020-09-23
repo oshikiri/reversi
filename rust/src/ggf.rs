@@ -1,3 +1,4 @@
+use crate::bitboard;
 use crate::board;
 
 type CharTriple = (char, char, char);
@@ -12,7 +13,7 @@ pub struct Game {
     first_rating: f64,
     second_rating: f64,
     game_type: String,
-    result_score: f64,
+    pub result_score: f64,
     board_type: String,
     moves: Vec<CharTriple>,
 }
@@ -49,7 +50,7 @@ pub fn new_game(
 #[derive(Debug)]
 pub struct PatternInstanceHistory {
     is_second: bool,
-    hor_vert_2: u64,
+    pattern_instance_indices_0: Vec<u64>,
 }
 
 pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHistory> {
@@ -66,7 +67,7 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
 
         let history = PatternInstanceHistory {
             is_second,
-            hor_vert_2: 0,
+            pattern_instance_indices_0: bitboard::extract_pattern_instance_indices(&board),
         };
         histories.push(history);
     }
