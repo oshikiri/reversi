@@ -270,7 +270,7 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
         panic!("out of index");
     }
     let i = x + 8 * y;
-    1 << (63 - i)
+    1 << i
 }
 
 pub fn convert_indices_to_bitboard(x: char, y: char) -> u64 {
