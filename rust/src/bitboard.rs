@@ -19,16 +19,6 @@ mod pattern {
     pub const CORNER_3_3: Pattern = [0, 1, 2, 8, 9, 10, 16, 17, 18, -1];
 }
 
-pub fn extract_pattern_instance_indices(board: Board) -> Vec<u64> {
-    let first = u64_to_bitvec(board.first);
-    let second = u64_to_bitvec(board.second);
-
-    vec![
-        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_2),
-        cell_state_vec_to_pattern_instance_index(&first, &second, pattern::HOR_VERT_3),
-    ]
-}
-
 fn cell_state_vec_to_pattern_instance_index(
     first: &Vec<u64>,
     second: &Vec<u64>,
