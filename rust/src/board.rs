@@ -3,6 +3,8 @@ extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
+use crate::bitboard;
+
 #[wasm_bindgen]
 pub enum Strategy {
     Greedy,
@@ -34,7 +36,7 @@ impl Board {
             false => self.first,
             true => self.second,
         };
-        let bitarray = convert_bitboard_to_array(bitboard);
+        let bitarray = bitboard::u64_to_bitvec(bitboard);
         convert_vec_to_jsarray(bitarray)
     }
 
@@ -230,18 +232,6 @@ fn generate_mask(i: u64) -> u64 {
         6 => 0b_00000000_00000000_00000000_00000000_11111111_11111111_11111111_11111111,
         _ => panic!("i should be smaller than 7"),
     }
-}
-
-pub fn convert_bitboard_to_array(bitboard: u64) -> Vec<u64> {
-    let mut reverse_patterns = Vec::<u64>::new();
-
-    for i in 0..64 {
-        let occupied = (bitboard >> i) & 1;
-        reverse_patterns.push(occupied);
-    }
-    reverse_patterns.reverse();
-
-    reverse_patterns
 }
 
 pub fn convert_vec_to_jsarray(vector: Vec<u64>) -> js_sys::Array {
