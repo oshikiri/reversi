@@ -265,8 +265,8 @@ pub fn count_bits(bitboard: u64) -> u64 {
     return bits;
 }
 
-pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
-    if x >= 8 && y >= 8 {
+pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 { // FIXME: Result<u64, OutOfIndexErr>
+    if x >= 8 && y >= 8 { // FIXME: ||?
         panic!("out of index");
     }
     let i = x + 8 * y;
