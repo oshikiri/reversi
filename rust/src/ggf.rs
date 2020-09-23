@@ -49,13 +49,18 @@ pub fn new_game(
 
 #[derive(Debug)]
 pub struct PatternInstanceHistory {
-    is_second: bool,
-    pattern_instance_indices_0: Vec<u64>,
+    step: usize,
+    final_score: f64,
+    pattern_instance_indices_0: Vec<u64>, // +0°
+    pattern_instance_indices_1: Vec<u64>, // +90°
+    pattern_instance_indices_2: Vec<u64>, // +180°
+    pattern_instance_indices_3: Vec<u64>, // +270°
 }
 
 pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHistory> {
     let mut board = board::newBoard();
     let mut histories = Vec::new();
+    let mut i_move = 0;
     for move_ in &game.moves {
         let (turn, x, y) = move_;
         if *x == '*' || *y == '*' {
@@ -66,10 +71,22 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
         board.put_and_reverse(is_second, put_position);
 
         let history = PatternInstanceHistory {
-            is_second,
-            pattern_instance_indices_0: bitboard::extract_pattern_instance_indices(&board),
+            step: i_move,
+            final_score: if !is_second {
+                game.result_score
+            } else {
+                -game.result_score
+            },
+            pattern_instance_indices_0: bitboard::extract_pattern_instance_indices(
+                &board, is_second,
+            ),
+            pattern_instance_indices_1: vec![0],
+            pattern_instance_indices_2: vec![0],
+            pattern_instance_indices_3: vec![0],
         };
+
         histories.push(history);
+        i_move += 1; // since we don't want to count pass
     }
     histories
 }
