@@ -20,8 +20,8 @@ pub mod pattern {
 }
 
 pub fn extract_pattern_instance_indices(board: &Board) -> Vec<u64> {
-    let first = u64_to_bitvec(board.first);
-    let second = u64_to_bitvec(board.second);
+    let first = u64_to_bitvec(board.first());
+    let second = u64_to_bitvec(board.second());
 
     vec![
         cell_state_vec_to_pattern_instance_index(&first, &second, pattern::DIAG_4),
@@ -87,7 +87,7 @@ mod tests {
             }
         }
 
-        Board { first, second }
+        Board::create(first, second)
     }
 
     mod bitboard_test {
@@ -134,8 +134,8 @@ mod tests {
               x - x x - x o o
           ",
             );
-            let first = bitboard::u64_to_bitvec(board.first);
-            let second = bitboard::u64_to_bitvec(board.second);
+            let first = bitboard::u64_to_bitvec(board.first());
+            let second = bitboard::u64_to_bitvec(board.second());
 
             let actual = bitboard::cell_state_vec_to_pattern_instance_index(
                 &first,

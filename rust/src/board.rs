@@ -13,8 +13,8 @@ pub enum Strategy {
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
 pub struct Board {
-    pub first: u64,  // black, 先手
-    pub second: u64, // white, 後手
+    first: u64,  // black, 先手
+    second: u64, // white, 後手
 }
 
 #[wasm_bindgen]
@@ -30,6 +30,10 @@ pub fn newBoard() -> Board {
 #[wasm_bindgen]
 impl Board {
     #![allow(non_snake_case)]
+
+    pub fn create(first: u64, second: u64) -> Board {
+        Board { first, second }
+    }
 
     pub fn getBitboard(&self, is_second: bool) -> js_sys::Array {
         let bitboard = match is_second {
@@ -65,6 +69,14 @@ impl Board {
 }
 
 impl Board {
+    pub fn first(&self) -> u64 {
+        self.first
+    }
+
+    pub fn second(&self) -> u64 {
+        self.second
+    }
+
     pub fn is_full(&self) -> bool {
         (self.first | self.second) == u64::MAX
     }
