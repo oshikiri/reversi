@@ -1,6 +1,20 @@
 use crate::board::Board;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
+//
+// for n in range(64):
+//      if n % 8 == 0:
+//          print("\n|", end="")
+//      print(f"{n}|", end="")
+//
+// | 0| 1| 2| 3| 4| 5| 6| 7|
+// | 8| 9|10|11|12|13|14|15|
+// |16|17|18|19|20|21|22|23|
+// |24|25|26|27|28|29|30|31|
+// |32|33|34|35|36|37|38|39|
+// |40|41|42|43|44|45|46|47|
+// |48|49|50|51|52|53|54|55|
+// |56|57|58|59|60|61|62|63|
 pub mod pattern {
     pub type Pattern = [i64; 10];
 
