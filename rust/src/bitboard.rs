@@ -105,18 +105,24 @@ mod tests {
             assert_eq!(actual, expected);
         }
 
+        // import random
+        // for n in range(64):
+        //   if n % 8 == 0:
+        //     print("\n", end="")
+        //   x = random.choice(['-', 'o', 'x'])
+        //   print(f"{x} ", end="")
         #[test]
         fn pattern_instance_hor_vert_2() {
             let board = create_board_fixture(
                 "
-              x o x o x o x o
-              x o x o x o x o
-              x o x o x o x o
-              x o x o x o x o
-              x o x o x o x o
-              x o x o x o x o
-              x o x o x o x o
-              x o x o x o x o
+              x o x - x o o x
+              - o - o x - o -
+              x x o x o - o x
+              x - o o x o x -
+              - x - - o - - o
+              - o - x x x o o
+              x - x x o - x -
+              x - x x - x o o
           ",
             );
             let first = bitboard::u64_to_bitvec(board.first);
@@ -127,14 +133,14 @@ mod tests {
                 &second,
                 bitboard::pattern::HOR_VERT_2,
             );
-            let expected = 2
+            let expected = 0
                 + 1 * 3
-                + 2 * 3 * 3
+                + 0 * 3 * 3
                 + 1 * 3 * 3 * 3
                 + 2 * 3 * 3 * 3 * 3
-                + 1 * 3 * 3 * 3 * 3 * 3
-                + 2 * 3 * 3 * 3 * 3 * 3 * 3
-                + 1 * 3 * 3 * 3 * 3 * 3 * 3 * 3;
+                + 0 * 3 * 3 * 3 * 3 * 3
+                + 1 * 3 * 3 * 3 * 3 * 3 * 3
+                + 0 * 3 * 3 * 3 * 3 * 3 * 3 * 3;
             assert_eq!(actual, expected);
         }
     }
