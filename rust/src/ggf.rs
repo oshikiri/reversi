@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::bitboard;
 use crate::board;
 
@@ -55,6 +57,31 @@ pub struct PatternInstanceHistory {
     pattern_instance_indices_1: Vec<u64>, // +90°
     pattern_instance_indices_2: Vec<u64>, // +180°
     pattern_instance_indices_3: Vec<u64>, // +270°
+}
+
+impl PatternInstanceHistory {
+    fn pattern_instance_indices_to_csv(v: &Vec<u64>) -> String {
+        let csv: String = v
+            .iter()
+            .map(|vi| vi.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
+        csv
+    }
+}
+
+impl fmt::Display for PatternInstanceHistory {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{},{},{}",
+            self.step,
+            self.final_score,
+            PatternInstanceHistory::pattern_instance_indices_to_csv(
+                &self.pattern_instance_indices_0
+            ),
+        )
+    }
 }
 
 pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHistory> {
@@ -212,7 +239,7 @@ pub fn parse(game_string: String) -> Game {
             _ => {
                 // Skip when it is unhandled case
                 if c == ']' {
-                    println!("{}", buffer);
+                    // println!("{}", buffer);
                     buffer.clear();
                 }
             }
