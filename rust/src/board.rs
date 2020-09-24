@@ -540,8 +540,8 @@ mod tests {
 
         #[test]
         fn coordinate_to_bitboard_should_convert_notations() {
-            assert_eq!(board::coordinate_to_bitboard(0, 0), 1 << 63);
-            assert_eq!(board::coordinate_to_bitboard(7, 7), 1);
+            assert_eq!(board::coordinate_to_bitboard(0, 0), 1);
+            assert_eq!(board::coordinate_to_bitboard(7, 7), 1 << 63);
         }
 
         #[test]
