@@ -7,7 +7,7 @@ use crate::bitboard;
 
 #[wasm_bindgen]
 pub enum Strategy {
-    Greedy,
+    NumdiskLookahead1,
 }
 
 #[wasm_bindgen]
@@ -196,11 +196,11 @@ impl Board {
     pub fn put_next_move(&mut self, is_second: bool, strategy: Strategy) {
         use self::Strategy::*;
         match strategy {
-            Greedy => self.put_next_move_greedy(is_second),
+            NumdiskLookahead1 => self.put_next_move_numdisk_lookahead_1(is_second),
         };
     }
 
-    fn put_next_move_greedy(&mut self, is_second: bool) {
+    fn put_next_move_numdisk_lookahead_1(&mut self, is_second: bool) {
         let reverse_counts: Vec<u64> = self
             .entire_reverse_patterns(is_second)
             .into_iter()
@@ -425,7 +425,7 @@ mod tests {
         }
 
         #[test]
-        fn put_next_move_greedy_bug_0_0() {
+        fn put_next_move_numdisk_lookahead_1_bug_0_0() {
             // https://github.com/oshikiri/reversi/pull/7
             let mut board = create_board_fixture(
                 "
@@ -439,7 +439,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_next_move_greedy(true);
+            board.put_next_move_numdisk_lookahead_1(true);
 
             let expected = create_board_fixture(
                 "
@@ -458,7 +458,7 @@ mod tests {
         }
 
         #[test]
-        fn put_next_move_greedy_initial_move() {
+        fn put_next_move_numdisk_lookahead_1_initial_move() {
             // https://github.com/oshikiri/reversi/pull/8
             let mut board = create_board_fixture(
                 "
@@ -472,7 +472,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_next_move_greedy(false);
+            board.put_next_move_numdisk_lookahead_1(false);
 
             let expected = create_board_fixture(
                 "
