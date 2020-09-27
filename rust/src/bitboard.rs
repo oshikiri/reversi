@@ -22,19 +22,20 @@ pub mod pattern {
     pub const N_PATTERNS: usize = N_PATTERN_CELLS.len();
     pub type PatternIndices = [u64; N_PATTERNS];
 
-    pub const DIAG_4: Pattern = [3, 10, 17, 24, -1, -1, -1, -1, -1, -1];
-    pub const DIAG_5: Pattern = [4, 11, 18, 25, 32, -1, -1, -1, -1, -1];
-    pub const DIAG_6: Pattern = [5, 12, 19, 26, 33, 40, -1, -1, -1, -1];
-    pub const DIAG_7: Pattern = [6, 13, 20, 27, 34, 41, 48, -1, -1, -1];
-    pub const DIAG_8: Pattern = [7, 14, 21, 28, 35, 42, 49, 56, -1, -1];
-
-    pub const HOR_VERT_2: Pattern = [8, 9, 10, 11, 12, 13, 14, 15, -1, -1];
-    pub const HOR_VERT_3: Pattern = [16, 17, 18, 19, 20, 21, 22, 23, -1, -1];
-    pub const HOR_VERT_4: Pattern = [24, 25, 26, 27, 28, 29, 30, 31, -1, -1];
-
-    pub const EDGE_2X: Pattern = [0, 1, 2, 3, 4, 5, 6, 7, 9, 14];
-    pub const CORNER_2_5: Pattern = [0, 1, 2, 3, 4, 8, 9, 10, 11, 12];
-    pub const CORNER_3_3: Pattern = [0, 1, 2, 8, 9, 10, 16, 17, 18, -1];
+    pub const ALL_PATTERNS: [Pattern; N_PATTERNS] = [
+        // rotate: +0
+        [3, 10, 17, 24, -1, -1, -1, -1, -1, -1],  // diag4
+        [4, 11, 18, 25, 32, -1, -1, -1, -1, -1],  // diag5
+        [5, 12, 19, 26, 33, 40, -1, -1, -1, -1],  // diag6
+        [6, 13, 20, 27, 34, 41, 48, -1, -1, -1],  // diag7
+        [7, 14, 21, 28, 35, 42, 49, 56, -1, -1],  // diag8
+        [8, 9, 10, 11, 12, 13, 14, 15, -1, -1],   // hor./vert. 2
+        [16, 17, 18, 19, 20, 21, 22, 23, -1, -1], // hor./vert. 3
+        [24, 25, 26, 27, 28, 29, 30, 31, -1, -1], // hor./vert. 4
+        [0, 1, 2, 3, 4, 5, 6, 7, 9, 14],          // edge-2x
+        [0, 1, 2, 3, 4, 8, 9, 10, 11, 12],        // corner-2x5
+        [0, 1, 2, 8, 9, 10, 16, 17, 18, -1],      // corner-3x3
+    ];
 }
 
 pub fn extract_pattern_instance_indices(board: &Board, is_second: bool) -> Vec<u64> {
@@ -46,19 +47,7 @@ pub fn extract_pattern_instance_indices(board: &Board, is_second: bool) -> Vec<u
     let current = u64_to_bitvec(current);
     let opponent = u64_to_bitvec(opponent);
 
-    let patterns: Vec<pattern::Pattern> = vec![
-        pattern::DIAG_4,
-        pattern::DIAG_5,
-        pattern::DIAG_6,
-        pattern::DIAG_7,
-        pattern::DIAG_8,
-        pattern::HOR_VERT_2,
-        pattern::HOR_VERT_3,
-        pattern::HOR_VERT_4,
-        pattern::EDGE_2X,
-        pattern::CORNER_2_5,
-        pattern::CORNER_3_3,
-    ];
+    let patterns: Vec<pattern::Pattern> = pattern::ALL_PATTERNS.to_vec();
 
     patterns
         .iter()
@@ -168,7 +157,7 @@ mod tests {
             let actual = bitboard::cell_state_vec_to_pattern_instance_index(
                 &first,
                 &second,
-                bitboard::pattern::HOR_VERT_2,
+                bitboard::pattern::ALL_PATTERNS[5], // rotate:+0, hor./vert. 2
             );
             let expected = 0
                 + 1 * 3
