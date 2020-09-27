@@ -55,6 +55,14 @@ df_params.to_csv('data/parameters/0925.csv', index = False)
 df_params.sort_values('coef')
 
 # %%
+np.savetxt(
+  'data/parameters/0925.txt',
+  df_params.iloc[:, 2].values,
+  fmt='%.3f',
+  newline = ','
+)
+
+# %%
 def base_10_to_base_n(x, n):
     if int(x / n):
         return base_10_to_base_n(int(x / n), n) + str(x % n)
