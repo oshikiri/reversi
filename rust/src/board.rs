@@ -1,13 +1,17 @@
 extern crate wasm_bindgen;
 
+use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::bitboard;
+use crate::console_log;
+use crate::parameters::parameters::PATTERN_INSTANCES;
 
 #[wasm_bindgen]
 pub enum Strategy {
     NumdiskLookahead1,
+    PatternLookahead1,
 }
 
 #[wasm_bindgen]
@@ -197,6 +201,7 @@ impl Board {
         use self::Strategy::*;
         match strategy {
             NumdiskLookahead1 => self.put_next_move_numdisk_lookahead_1(is_second),
+            PatternLookahead1 => self.put_next_move_pattern_lookahead_1(is_second),
         };
     }
 
@@ -223,6 +228,65 @@ impl Board {
             None => {}
         }
     }
+
+    fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
+        // offsets = np.hstack([[0], (3 ** np.array(n_cells_each_pattern[:10])).cumsum()])
+        let offsets: [usize; 11] = [
+            0, 81, 324, 1053, 3240, 9801, 16362, 22923, 29484, 88533, 147582,
+        ];
+
+        let mut total_score = 0.0;
+        for (i, pattern_instance_index) in pattern_instance_indices.iter().enumerate() {
+            let pattern_instance_index: usize = TryFrom::try_from(*pattern_instance_index).unwrap();
+            total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i]];
+        }
+        total_score
+    }
+
+    // TODO: 高速化
+    fn put_next_move_pattern_lookahead_1(&mut self, is_second: bool) {
+        let mut total = 0.0;
+        for x in PATTERN_INSTANCES.iter() {
+            total += x;
+        }
+        println!("{}", total);
+
+        let mut scores = [-f32::MAX].repeat(64);
+
+        for i_cell in 0..64 {
+            let (current, opponent) = match is_second {
+                false => (self.first, self.second),
+                true => (self.second, self.first),
+            };
+            let put_position = 1 << i_cell;
+            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
+            if count_bits(reverse_pattern) <= 0 {
+                continue;
+            }
+
+            let mut next_board = Board {
+                first: self.first,
+                second: self.second,
+            };
+            next_board.put_and_reverse(is_second, put_position);
+
+            let pattern_instance_indices =
+                bitboard::extract_pattern_instance_indices(&next_board, is_second);
+            scores[i_cell] = Board::calculate_pattern_score(pattern_instance_indices);
+        }
+
+        console_log!("{:?}", scores);
+
+        match argmax_f32(scores) {
+            Some(i_max) => {
+                let put_position = 1 << i_max;
+                self.put_and_reverse(is_second, put_position);
+            }
+            None => {
+                self.put_next_move_numdisk_lookahead_1(is_second);
+            }
+        }
+    }
 }
 
 pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
@@ -236,6 +300,23 @@ pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
         }
     }
     if v_max == 0 {
+        None
+    } else {
+        Some(i_max)
+    }
+}
+
+pub fn argmax_f32(v: Vec<f32>) -> Option<usize> {
+    let mut v_max = -f32::MAX;
+    let mut i_max = 0;
+
+    for i in 1..v.len() {
+        if v[i] > v_max {
+            v_max = v[i];
+            i_max = i;
+        }
+    }
+    if v_max == -f32::MAX {
         None
     } else {
         Some(i_max)

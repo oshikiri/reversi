@@ -30,7 +30,7 @@ if (canvas.getContext) {
 
         await sleep(500);
 
-        board.putNextMove(true, Strategy.NumdiskLookahead1);
+        board.putNextMove(true, Strategy.PatternLookahead1);
 
         drawDisks(context, board);
         legalPositions = board.getAllLegalPosition(false);
