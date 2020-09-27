@@ -1,3 +1,13 @@
+extern crate web_sys;
+
+// https://rustwasm.github.io/book/game-of-life/debugging.html
+#[macro_export]
+macro_rules! console_log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 #[allow(dead_code)]
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
