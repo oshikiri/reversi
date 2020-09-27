@@ -238,7 +238,7 @@ impl Board {
         let mut total_score = 0.0;
         for (i, pattern_instance_index) in pattern_instance_indices.iter().enumerate() {
             let pattern_instance_index: usize = TryFrom::try_from(*pattern_instance_index).unwrap();
-            total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i]];
+            total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i % offsets.len()]];
         }
         total_score
     }

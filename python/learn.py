@@ -28,10 +28,15 @@ n_patterns = len(n_cells_each_pattern)
 xcol = (3 ** np.array(n_cells_each_pattern)).sum()
 
 # %%
-i1 = np.arange(histories.shape[0] * 11)
-
+i1 = np.repeat(
+  np.arange(histories.shape[0] * n_patterns),
+  4
+)
 i2_vstacked = histories[:, 3:]
-offsets = np.hstack([[0], (3 ** np.array(n_cells_each_pattern[:10])).cumsum()])
+offsets = np.tile(
+  np.hstack([[0], (3 ** np.array(n_cells_each_pattern[:10])).cumsum()]),
+  4
+)
 i2 = np.ravel(i2_vstacked + offsets)
 
 X = coo_matrix(
@@ -45,11 +50,17 @@ model = SGDRegressor(penalty = 'l2')
 model.fit(X, y)
 
 # %%
-df_params = pd.DataFrame({
-  'pattern_id': np.repeat(pattern_ids, 3 ** np.array(n_cells_each_pattern)),
-  'pattern_index': np.hstack([np.arange(n) for n in 3 ** np.array(n_cells_each_pattern)]),
-  'coef': model.coef_
-})
+df_params = (
+  pd
+  .DataFrame({
+    'pattern_id': np.repeat(pattern_ids, 3 ** np.array(n_cells_each_pattern)),
+    'pattern_index': np.hstack([np.arange(n) for n in 3 ** np.array(n_cells_each_pattern)]),
+    'coef': model.coef_
+  })
+  .assign(
+    pattern_name = lambda d: d.pattern_id.map(lambda i: pattern_names[i])
+  )
+)
 df_params.to_csv('data/parameters/0925.csv', index = False)
 
 df_params.sort_values('coef')
