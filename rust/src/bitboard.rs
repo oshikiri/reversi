@@ -88,7 +88,7 @@ pub fn cell_state_vec_to_pattern_instance_index(
 pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     let mut n = n_original;
     let mut bitvec = vec![0; 64];
-    for i in 0..63 {
+    for i in 0..64 {
         bitvec[i] = n & 1;
         n = n >> 1;
     }
@@ -124,7 +124,7 @@ mod tests {
 
         #[test]
         fn u64_to_bitvec() {
-            let n = 0b_01000000_00000000_00000000_00000000_00000000_00000000_00000000_00010001;
+            let n = 0b_11000000_00000000_00000000_00000000_00000000_00000000_00000000_00010001;
             let actual = bitboard::u64_to_bitvec(n);
 
             #[rustfmt::skip]
@@ -136,7 +136,7 @@ mod tests {
               0, 0, 0, 0, 0, 0, 0, 0,
               0, 0, 0, 0, 0, 0, 0, 0,
               0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 1, 0,
+              0, 0, 0, 0, 0, 0, 1, 1,
           ];
 
             assert_eq!(actual, expected);
