@@ -4,7 +4,6 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::bitboard;
-use crate::console_log;
 
 #[wasm_bindgen]
 pub enum Strategy {
@@ -214,7 +213,7 @@ impl Board {
             let e = 8 * j + 8;
             console_output += &format!("{:?}\n", reverse_counts.get(s..e).unwrap()).to_string();
         }
-        console_log!("{}", console_output);
+        // crate::console_log!("{}", console_output);
 
         match positive_argmax(reverse_counts) {
             Some(i_max) => {
