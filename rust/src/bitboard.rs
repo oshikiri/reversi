@@ -18,6 +18,10 @@ use crate::board::Board;
 pub mod pattern {
     pub type Pattern = [i64; 10];
 
+    pub const N_PATTERN_CELLS: [usize; 11] = [4, 5, 6, 7, 8, 8, 8, 8, 10, 10, 9];
+    pub const N_PATTERNS: usize = N_PATTERN_CELLS.len();
+    pub type PatternIndices = [u64; N_PATTERNS];
+
     pub const DIAG_4: Pattern = [3, 10, 17, 24, -1, -1, -1, -1, -1, -1];
     pub const DIAG_5: Pattern = [4, 11, 18, 25, 32, -1, -1, -1, -1, -1];
     pub const DIAG_6: Pattern = [5, 12, 19, 26, 33, 40, -1, -1, -1, -1];
@@ -42,19 +46,24 @@ pub fn extract_pattern_instance_indices(board: &Board, is_second: bool) -> Vec<u
     let current = u64_to_bitvec(current);
     let opponent = u64_to_bitvec(opponent);
 
-    vec![
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::DIAG_4),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::DIAG_5),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::DIAG_6),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::DIAG_7),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::DIAG_8),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::HOR_VERT_2),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::HOR_VERT_3),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::HOR_VERT_4),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::EDGE_2X),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::CORNER_2_5),
-        cell_state_vec_to_pattern_instance_index(&current, &opponent, pattern::CORNER_3_3),
-    ]
+    let patterns: Vec<pattern::Pattern> = vec![
+        pattern::DIAG_4,
+        pattern::DIAG_5,
+        pattern::DIAG_6,
+        pattern::DIAG_7,
+        pattern::DIAG_8,
+        pattern::HOR_VERT_2,
+        pattern::HOR_VERT_3,
+        pattern::HOR_VERT_4,
+        pattern::EDGE_2X,
+        pattern::CORNER_2_5,
+        pattern::CORNER_3_3,
+    ];
+
+    patterns
+        .iter()
+        .map(|&p| cell_state_vec_to_pattern_instance_index(&current, &opponent, p))
+        .collect()
 }
 
 pub fn cell_state_vec_to_pattern_instance_index(
