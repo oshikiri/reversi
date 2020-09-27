@@ -245,12 +245,6 @@ impl Board {
 
     // TODO: 高速化
     fn put_next_move_pattern_lookahead_1(&mut self, is_second: bool) {
-        let mut total = 0.0;
-        for x in PATTERN_INSTANCES.iter() {
-            total += x;
-        }
-        println!("{}", total);
-
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
