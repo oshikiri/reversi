@@ -7,7 +7,7 @@ use wasm_bindgen::JsValue;
 use crate::bitboard;
 use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
-use crate::strategy::Strategy;
+use crate::strategy::StrategyType;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
@@ -62,7 +62,7 @@ impl Board {
         convert_vec_to_jsarray(legal_positions)
     }
 
-    pub fn putNextMove(&mut self, is_second: bool, strategy: Strategy) {
+    pub fn putNextMove(&mut self, is_second: bool, strategy: StrategyType) {
         self.put_next_move(is_second, strategy);
     }
 }
@@ -192,8 +192,8 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn put_next_move(&mut self, is_second: bool, strategy: Strategy) {
-        use self::Strategy::*;
+    pub fn put_next_move(&mut self, is_second: bool, strategy: StrategyType) {
+        use StrategyType::*;
         match strategy {
             NumdiskLookahead1 => self.put_next_move_numdisk_lookahead_1(is_second),
             PatternLookahead1 => self.put_next_move_pattern_lookahead_1(is_second),
