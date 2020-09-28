@@ -7,12 +7,7 @@ use wasm_bindgen::JsValue;
 use crate::bitboard;
 use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
-
-#[wasm_bindgen]
-pub enum Strategy {
-    NumdiskLookahead1,
-    PatternLookahead1,
-}
+use crate::strategy::Strategy;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
