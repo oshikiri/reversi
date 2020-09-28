@@ -7,7 +7,7 @@ use wasm_bindgen::JsValue;
 use crate::bitboard;
 use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
-use crate::strategy::StrategyType;
+use crate::strategy::*;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
@@ -176,7 +176,7 @@ impl Board {
         }
     }
 
-    fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
+    pub fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
         let (current, opponent) = match is_second {
             false => (self.first, self.second),
             true => (self.second, self.first),
@@ -201,27 +201,9 @@ impl Board {
     }
 
     fn put_next_move_numdisk_lookahead_1(&mut self, is_second: bool) {
-        let reverse_counts: Vec<u64> = self
-            .entire_reverse_patterns(is_second)
-            .into_iter()
-            .map(|cell| count_bits(cell))
-            .collect();
-
-        let mut console_output = "".to_string();
-        for j in 0..8 {
-            let s = 8 * j;
-            let e = 8 * j + 8;
-            console_output += &format!("{:?}\n", reverse_counts.get(s..e).unwrap()).to_string();
-        }
-        // crate::console_log!("{}", console_output);
-
-        match positive_argmax(reverse_counts) {
-            Some(i_max) => {
-                let put_position = 1 << i_max;
-                self.put_and_reverse(is_second, put_position);
-            }
-            None => {}
-        }
+        let strategy: NumdiskLookahead1Strategy = new_strategy();
+        let next_position = strategy.get_next_move(self, is_second);
+        self.put_and_reverse(is_second, next_position);
     }
 
     fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
@@ -275,23 +257,6 @@ impl Board {
                 self.put_next_move_numdisk_lookahead_1(is_second);
             }
         }
-    }
-}
-
-pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
-    let mut v_max = 0;
-    let mut i_max = 0;
-
-    for i in 0..v.len() {
-        if v[i] > 0 && v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
-        }
-    }
-    if v_max == 0 {
-        None
-    } else {
-        Some(i_max)
     }
 }
 
