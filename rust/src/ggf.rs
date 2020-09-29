@@ -2,6 +2,7 @@ use std::fmt;
 
 use crate::bitboard;
 use crate::board;
+use crate::board::Player;
 
 type CharTriple = (char, char, char);
 
@@ -92,20 +93,21 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
         if *x == '*' || *y == '*' {
             continue;
         }
-        let is_second = *turn == 'W';
+        let player = if *turn == 'B' {
+            Player::First
+        } else {
+            Player::Second
+        };
         let put_position = board::convert_indices_to_bitboard(*x, *y);
-        board.put_and_reverse(is_second, put_position);
+        board.put_and_reverse(&player, put_position);
 
         let history = PatternInstanceHistory {
             step: i_move,
-            final_score: if !is_second {
-                game.result_score
-            } else {
-                -game.result_score
+            final_score: match player {
+                Player::First => game.result_score,
+                Player::Second => -game.result_score,
             },
-            pattern_instance_indices_0: bitboard::extract_pattern_instance_indices(
-                &board, is_second,
-            ),
+            pattern_instance_indices_0: bitboard::extract_pattern_instance_indices(&board, &player),
             pattern_instance_indices_1: vec![0],
             pattern_instance_indices_2: vec![0],
             pattern_instance_indices_3: vec![0],

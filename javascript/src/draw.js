@@ -1,3 +1,5 @@
+import { Player } from "reversi-wasm";
+
 // TODO: Refactor constants
 const BOARD_OFFSET = 30;
 const GRID_WIDTH = 3;
@@ -55,8 +57,8 @@ const drawDisk = (ctx, i, j, color) => {
 };
 
 export const drawDisks = (ctx, board) => {
-  const first = board.getBitboard(false);
-  const second = board.getBitboard(true);
+  const first = board.getBitboard(Player.First);
+  const second = board.getBitboard(Player.Second);
 
   let firstScore = 0;
   let secondScore = 0;

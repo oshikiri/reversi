@@ -1,4 +1,5 @@
 use crate::board::Board;
+use crate::board::Player;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 //
@@ -74,11 +75,10 @@ pub mod pattern {
     ];
 }
 
-pub fn extract_pattern_instance_indices(board: &Board, is_second: bool) -> Vec<u64> {
-    let (current, opponent) = if !is_second {
-        (board.first(), board.second())
-    } else {
-        (board.second(), board.first())
+pub fn extract_pattern_instance_indices(board: &Board, player: &Player) -> Vec<u64> {
+    let (current, opponent) = match player {
+        Player::First => (board.first(), board.second()),
+        Player::Second => (board.second(), board.first()),
     };
     let current = u64_to_bitvec(current);
     let opponent = u64_to_bitvec(opponent);

@@ -1,9 +1,9 @@
-import { newBoard, StrategyType } from "reversi-wasm";
+import { newBoard, StrategyType, Player } from "reversi-wasm";
 import { sleep } from "./utils";
 import { convertToIdx, drawBackground, drawDisks, drawGrid } from "./draw";
 
 const board = newBoard();
-let legalPositions = board.getAllLegalPosition(false);
+let legalPositions = board.getAllLegalPosition(Player.First);
 let boardLocked = false;
 
 const canvas = document.getElementById("reversi-board");
@@ -25,15 +25,15 @@ if (canvas.getContext) {
     if (idx) {
       const [i, j] = idx;
       if (legalPositions[i + 8 * j] > 0) {
-        board.putAndReverse(false, i, j);
+        board.putAndReverse(Player.First, i, j);
         drawDisks(context, board);
 
         await sleep(500);
 
-        board.putNextMove(true, StrategyType.NumdiskLookahead1);
+        board.putNextMove(Player.Second, StrategyType.NumdiskLookahead1);
 
         drawDisks(context, board);
-        legalPositions = board.getAllLegalPosition(false);
+        legalPositions = board.getAllLegalPosition(Player.First);
       }
     }
 

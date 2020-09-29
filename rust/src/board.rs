@@ -9,6 +9,12 @@ use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::strategy::*;
 
 #[wasm_bindgen]
+pub enum Player {
+    First,
+    Second,
+}
+
+#[wasm_bindgen]
 #[derive(Debug, PartialEq)]
 pub struct Board {
     first: u64,  // black, 先手
@@ -33,36 +39,36 @@ impl Board {
         Board { first, second }
     }
 
-    pub fn getBitboard(&self, is_second: bool) -> js_sys::Array {
-        let bitboard = match is_second {
-            false => self.first,
-            true => self.second,
+    pub fn getBitboard(&self, player: Player) -> js_sys::Array {
+        let bitboard = match player {
+            Player::First => self.first,
+            Player::Second => self.second,
         };
         let bitarray = bitboard::u64_to_bitvec(bitboard);
         convert_vec_to_jsarray(bitarray)
     }
 
-    pub fn putAndReverse(&mut self, is_second: bool, i: u8, j: u8) {
+    pub fn putAndReverse(&mut self, player: Player, i: u8, j: u8) {
         let put_position = coordinate_to_bitboard(i as u64, j as u64);
-        self.put_and_reverse(is_second, put_position);
+        self.put_and_reverse(&player, put_position);
     }
 
-    pub fn entireReversePatterns(&self, is_second: bool) -> js_sys::Array {
-        let reverse_patterns = self.entire_reverse_patterns(is_second);
+    pub fn entireReversePatterns(&self, player: Player) -> js_sys::Array {
+        let reverse_patterns = self.entire_reverse_patterns(&player);
         convert_vec_to_jsarray(reverse_patterns)
     }
 
-    pub fn getAllLegalPosition(&self, is_second: bool) -> js_sys::Array {
+    pub fn getAllLegalPosition(&self, player: Player) -> js_sys::Array {
         let legal_positions: Vec<u64> = self
-            .entire_reverse_patterns(is_second)
+            .entire_reverse_patterns(&player)
             .into_iter()
             .map(count_bits)
             .collect();
         convert_vec_to_jsarray(legal_positions)
     }
 
-    pub fn putNextMove(&mut self, is_second: bool, strategy: StrategyType) {
-        self.put_next_move(is_second, strategy);
+    pub fn putNextMove(&mut self, player: Player, strategy: StrategyType) {
+        self.put_next_move(&player, strategy);
     }
 }
 
@@ -83,15 +89,20 @@ impl Board {
         ((self.first | self.second) & position) == 0
     }
 
-    pub fn put_and_reverse(&mut self, is_second: bool, put_position: u64) {
-        if !is_second {
-            let reverse_pattern = self.get_reverse_pattern(self.first, self.second, put_position);
-            self.first ^= put_position | reverse_pattern;
-            self.second ^= reverse_pattern;
-        } else {
-            let reverse_pattern = self.get_reverse_pattern(self.second, self.first, put_position);
-            self.first ^= reverse_pattern;
-            self.second ^= put_position | reverse_pattern;
+    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) {
+        match player {
+            Player::First => {
+                let reverse_pattern =
+                    self.get_reverse_pattern(self.first, self.second, put_position);
+                self.first ^= put_position | reverse_pattern;
+                self.second ^= reverse_pattern;
+            }
+            Player::Second => {
+                let reverse_pattern =
+                    self.get_reverse_pattern(self.second, self.first, put_position);
+                self.first ^= reverse_pattern;
+                self.second ^= put_position | reverse_pattern;
+            }
         }
     }
 
@@ -175,10 +186,10 @@ impl Board {
         }
     }
 
-    pub fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
-        let (current, opponent) = match is_second {
-            false => (self.first, self.second),
-            true => (self.second, self.first),
+    pub fn entire_reverse_patterns(&self, player: &Player) -> Vec<u64> {
+        let (current, opponent) = match player {
+            Player::First => (self.first, self.second),
+            Player::Second => (self.second, self.first),
         };
         let mut reverse_patterns = Vec::new();
 
@@ -191,14 +202,14 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn put_next_move(&mut self, is_second: bool, strategy_type: StrategyType) {
+    pub fn put_next_move(&mut self, player: &Player, strategy_type: StrategyType) {
         use StrategyType::*;
         let strategy: Box<dyn Strategy> = match strategy_type {
             NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
             PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
-        let next_position = strategy.get_next_move(&*self, is_second);
-        self.put_and_reverse(is_second, next_position);
+        let next_position = strategy.get_next_move(&*self, &player);
+        self.put_and_reverse(&player, next_position);
     }
 
     pub fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
@@ -330,7 +341,7 @@ mod tests {
 
     mod board_test {
         use super::create_board_fixture;
-        use crate::board::Board;
+        use crate::board::{Board, Player};
 
         #[test]
         fn equivalence() {
@@ -398,7 +409,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            let reverse_patterns = board.entire_reverse_patterns(false);
+            let reverse_patterns = board.entire_reverse_patterns(&Player::First);
 
             let mut expected = vec![0; 64];
             expected[2] = 2;
@@ -421,7 +432,10 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_next_move(false, crate::strategy::StrategyType::NumdiskLookahead1);
+            board.put_next_move(
+                &Player::First,
+                crate::strategy::StrategyType::NumdiskLookahead1,
+            );
 
             let expected = create_board_fixture(
                 "
@@ -453,7 +467,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_and_reverse(false, 8);
+            board.put_and_reverse(&Player::First, 8);
             let expected = Board {
                 first: 15,
                 second: 0,

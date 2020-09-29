@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::bitboard;
 use crate::board;
-use crate::board::Board;
+use crate::board::{Board, Player};
 use crate::console_log;
 
 #[wasm_bindgen]
@@ -16,15 +16,15 @@ pub fn new_strategy() -> NumdiskLookahead1Strategy {
 }
 
 pub trait Strategy {
-    fn get_next_move(&self, board: &Board, is_second: bool) -> u64;
+    fn get_next_move(&self, board: &Board, palyer: &Player) -> u64;
 }
 
 pub struct NumdiskLookahead1Strategy {}
 
 impl Strategy for NumdiskLookahead1Strategy {
-    fn get_next_move(&self, board: &Board, is_second: bool) -> u64 {
+    fn get_next_move(&self, board: &Board, player: &Player) -> u64 {
         let reverse_counts: Vec<u64> = board
-            .entire_reverse_patterns(is_second)
+            .entire_reverse_patterns(&player)
             .into_iter()
             .map(|cell| board::count_bits(cell))
             .collect();
@@ -38,13 +38,13 @@ pub struct PatternLookahead1Strategy {}
 
 impl Strategy for PatternLookahead1Strategy {
     // TODO: 高速化
-    fn get_next_move(&self, current_board: &Board, is_second: bool) -> u64 {
+    fn get_next_move(&self, current_board: &Board, player: &Player) -> u64 {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
-            let (current, opponent) = match is_second {
-                false => (current_board.first(), current_board.second()),
-                true => (current_board.second(), current_board.first()),
+            let (current, opponent) = match player {
+                Player::First => (current_board.first(), current_board.second()),
+                Player::Second => (current_board.second(), current_board.first()),
             };
             let put_position = 1 << i_cell;
             let reverse_pattern =
@@ -54,10 +54,10 @@ impl Strategy for PatternLookahead1Strategy {
             }
 
             let mut next_board = Board::create(current_board.first(), current_board.second());
-            next_board.put_and_reverse(is_second, put_position);
+            next_board.put_and_reverse(&player, put_position);
 
             let pattern_instance_indices =
-                bitboard::extract_pattern_instance_indices(&next_board, is_second);
+                bitboard::extract_pattern_instance_indices(&next_board, &player);
             scores[i_cell] = Board::calculate_pattern_score(pattern_instance_indices);
         }
 
