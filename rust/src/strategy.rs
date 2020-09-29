@@ -10,7 +10,7 @@ pub enum StrategyType {
 }
 
 pub fn new_strategy() -> NumdiskLookahead1Strategy {
-  NumdiskLookahead1Strategy {}
+    NumdiskLookahead1Strategy {}
 }
 
 pub trait Strategy {
