@@ -5,7 +5,6 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::bitboard;
-use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::strategy::*;
 
@@ -96,7 +95,7 @@ impl Board {
         }
     }
 
-    fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
+    pub fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
         if !self.is_empty(put_position) {
             return 0;
         }
@@ -206,7 +205,7 @@ impl Board {
         self.put_and_reverse(is_second, next_position);
     }
 
-    fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
+    pub fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
         // offsets = np.hstack([[0], (3 ** np.array(n_cells_each_pattern[:10])).cumsum()])
         let offsets: [usize; 11] = [
             0, 81, 324, 1053, 3240, 9801, 16362, 22923, 29484, 88533, 147582,
@@ -220,60 +219,10 @@ impl Board {
         total_score
     }
 
-    // TODO: 高速化
     fn put_next_move_pattern_lookahead_1(&mut self, is_second: bool) {
-        let mut scores = [-f32::MAX].repeat(64);
-
-        for i_cell in 0..64 {
-            let (current, opponent) = match is_second {
-                false => (self.first, self.second),
-                true => (self.second, self.first),
-            };
-            let put_position = 1 << i_cell;
-            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
-            if count_bits(reverse_pattern) <= 0 {
-                continue;
-            }
-
-            let mut next_board = Board {
-                first: self.first,
-                second: self.second,
-            };
-            next_board.put_and_reverse(is_second, put_position);
-
-            let pattern_instance_indices =
-                bitboard::extract_pattern_instance_indices(&next_board, is_second);
-            scores[i_cell] = Board::calculate_pattern_score(pattern_instance_indices);
-        }
-
-        console_log!("{:?}", scores);
-
-        match argmax_f32(scores) {
-            Some(i_max) => {
-                let put_position = 1 << i_max;
-                self.put_and_reverse(is_second, put_position);
-            }
-            None => {
-                self.put_next_move_numdisk_lookahead_1(is_second);
-            }
-        }
-    }
-}
-
-pub fn argmax_f32(v: Vec<f32>) -> Option<usize> {
-    let mut v_max = -f32::MAX;
-    let mut i_max = 0;
-
-    for i in 1..v.len() {
-        if v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
-        }
-    }
-    if v_max == -f32::MAX {
-        None
-    } else {
-        Some(i_max)
+        let strategy = PatternLookahead1Strategy {};
+        let next_position = strategy.get_next_move(&*self, is_second);
+        self.put_and_reverse(is_second, next_position);
     }
 }
 
