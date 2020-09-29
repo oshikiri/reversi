@@ -5,14 +5,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::bitboard;
-use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
-
-#[wasm_bindgen]
-pub enum Strategy {
-    NumdiskLookahead1,
-    PatternLookahead1,
-}
+use crate::strategy::*;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq)]
@@ -26,8 +20,8 @@ pub struct Board {
 #[allow(non_snake_case)]
 pub fn newBoard() -> Board {
     Board {
-        first: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
-        second: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
+        first: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
+        second: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
     }
 }
 
@@ -67,7 +61,7 @@ impl Board {
         convert_vec_to_jsarray(legal_positions)
     }
 
-    pub fn putNextMove(&mut self, is_second: bool, strategy: Strategy) {
+    pub fn putNextMove(&mut self, is_second: bool, strategy: StrategyType) {
         self.put_next_move(is_second, strategy);
     }
 }
@@ -101,7 +95,7 @@ impl Board {
         }
     }
 
-    fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
+    pub fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
         if !self.is_empty(put_position) {
             return 0;
         }
@@ -181,7 +175,7 @@ impl Board {
         }
     }
 
-    fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
+    pub fn entire_reverse_patterns(&self, is_second: bool) -> Vec<u64> {
         let (current, opponent) = match is_second {
             false => (self.first, self.second),
             true => (self.second, self.first),
@@ -197,39 +191,17 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn put_next_move(&mut self, is_second: bool, strategy: Strategy) {
-        use self::Strategy::*;
-        match strategy {
-            NumdiskLookahead1 => self.put_next_move_numdisk_lookahead_1(is_second),
-            PatternLookahead1 => self.put_next_move_pattern_lookahead_1(is_second),
+    pub fn put_next_move(&mut self, is_second: bool, strategy_type: StrategyType) {
+        use StrategyType::*;
+        let strategy: Box<dyn Strategy> = match strategy_type {
+            NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
+            PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
+        let next_position = strategy.get_next_move(&*self, is_second);
+        self.put_and_reverse(is_second, next_position);
     }
 
-    fn put_next_move_numdisk_lookahead_1(&mut self, is_second: bool) {
-        let reverse_counts: Vec<u64> = self
-            .entire_reverse_patterns(is_second)
-            .into_iter()
-            .map(|cell| count_bits(cell))
-            .collect();
-
-        let mut console_output = "".to_string();
-        for j in 0..8 {
-            let s = 8 * j;
-            let e = 8 * j + 8;
-            console_output += &format!("{:?}\n", reverse_counts.get(s..e).unwrap()).to_string();
-        }
-        // crate::console_log!("{}", console_output);
-
-        match positive_argmax(reverse_counts) {
-            Some(i_max) => {
-                let put_position = 1 << i_max;
-                self.put_and_reverse(is_second, put_position);
-            }
-            None => {}
-        }
-    }
-
-    fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
+    pub fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
         // offsets = np.hstack([[0], (3 ** np.array(n_cells_each_pattern[:10])).cumsum()])
         let offsets: [usize; 11] = [
             0, 81, 324, 1053, 3240, 9801, 16362, 22923, 29484, 88533, 147582,
@@ -241,79 +213,6 @@ impl Board {
             total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i % offsets.len()]];
         }
         total_score
-    }
-
-    // TODO: 高速化
-    fn put_next_move_pattern_lookahead_1(&mut self, is_second: bool) {
-        let mut scores = [-f32::MAX].repeat(64);
-
-        for i_cell in 0..64 {
-            let (current, opponent) = match is_second {
-                false => (self.first, self.second),
-                true => (self.second, self.first),
-            };
-            let put_position = 1 << i_cell;
-            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
-            if count_bits(reverse_pattern) <= 0 {
-                continue;
-            }
-
-            let mut next_board = Board {
-                first: self.first,
-                second: self.second,
-            };
-            next_board.put_and_reverse(is_second, put_position);
-
-            let pattern_instance_indices =
-                bitboard::extract_pattern_instance_indices(&next_board, is_second);
-            scores[i_cell] = Board::calculate_pattern_score(pattern_instance_indices);
-        }
-
-        console_log!("{:?}", scores);
-
-        match argmax_f32(scores) {
-            Some(i_max) => {
-                let put_position = 1 << i_max;
-                self.put_and_reverse(is_second, put_position);
-            }
-            None => {
-                self.put_next_move_numdisk_lookahead_1(is_second);
-            }
-        }
-    }
-}
-
-pub fn positive_argmax(v: Vec<u64>) -> Option<usize> {
-    let mut v_max = 0;
-    let mut i_max = 0;
-
-    for i in 0..v.len() {
-        if v[i] > 0 && v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
-        }
-    }
-    if v_max == 0 {
-        None
-    } else {
-        Some(i_max)
-    }
-}
-
-pub fn argmax_f32(v: Vec<f32>) -> Option<usize> {
-    let mut v_max = -f32::MAX;
-    let mut i_max = 0;
-
-    for i in 1..v.len() {
-        if v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
-        }
-    }
-    if v_max == -f32::MAX {
-        None
-    } else {
-        Some(i_max)
     }
 }
 
@@ -508,39 +407,6 @@ mod tests {
         }
 
         #[test]
-        fn put_next_move_numdisk_lookahead_1_bug_0_0() {
-            // https://github.com/oshikiri/reversi/pull/7
-            let mut board = create_board_fixture(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-            board.put_next_move_numdisk_lookahead_1(true);
-
-            let expected = create_board_fixture(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-
-            assert_eq!(board, expected);
-        }
-
-        #[test]
         fn put_next_move_numdisk_lookahead_1_initial_move() {
             // https://github.com/oshikiri/reversi/pull/8
             let mut board = create_board_fixture(
@@ -555,7 +421,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_next_move_numdisk_lookahead_1(false);
+            board.put_next_move(false, crate::strategy::StrategyType::NumdiskLookahead1);
 
             let expected = create_board_fixture(
                 "
