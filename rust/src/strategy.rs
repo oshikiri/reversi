@@ -1,8 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::bitboard;
-use crate::board;
-use crate::board::{Board, Player};
+use crate::board::{count_bits, Board, Player};
 use crate::console_log;
 
 #[wasm_bindgen]
@@ -26,7 +25,7 @@ impl Strategy for NumdiskLookahead1Strategy {
         let reverse_counts: Vec<u64> = board
             .entire_reverse_patterns(&player)
             .into_iter()
-            .map(|cell| board::count_bits(cell))
+            .map(|cell| count_bits(cell))
             .collect();
 
         let i_max = positive_argmax(reverse_counts).unwrap();
@@ -49,7 +48,7 @@ impl Strategy for PatternLookahead1Strategy {
             let put_position = 1 << i_cell;
             let reverse_pattern =
                 current_board.get_reverse_pattern(current, opponent, put_position);
-            if board::count_bits(reverse_pattern) <= 0 {
+            if count_bits(reverse_pattern) <= 0 {
                 continue;
             }
 
