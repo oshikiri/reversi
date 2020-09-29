@@ -1,4 +1,4 @@
-import { newBoard, Strategy } from "reversi-wasm";
+import { newBoard, StrategyType } from "reversi-wasm";
 import { sleep } from "./utils";
 import { convertToIdx, drawBackground, drawDisks, drawGrid } from "./draw";
 
@@ -30,7 +30,7 @@ if (canvas.getContext) {
 
         await sleep(500);
 
-        board.putNextMove(true, Strategy.NumdiskLookahead1);
+        board.putNextMove(true, StrategyType.NumdiskLookahead1);
 
         drawDisks(context, board);
         legalPositions = board.getAllLegalPosition(false);
