@@ -14,13 +14,13 @@ pub fn new_strategy() -> NumdiskLookahead1Strategy {
 }
 
 pub trait Strategy {
-    fn get_next_move(&self, board: Board, is_second: bool) -> u64;
+    fn get_next_move(&self, board: &Board, is_second: bool) -> u64;
 }
 
 pub struct NumdiskLookahead1Strategy {}
 
 impl Strategy for NumdiskLookahead1Strategy {
-    fn get_next_move(&self, board: Board, is_second: bool) -> u64 {
+    fn get_next_move(&self, board: &Board, is_second: bool) -> u64 {
         let reverse_counts: Vec<u64> = board
             .entire_reverse_patterns(is_second)
             .into_iter()

@@ -202,7 +202,7 @@ impl Board {
 
     fn put_next_move_numdisk_lookahead_1(&mut self, is_second: bool) {
         let strategy: NumdiskLookahead1Strategy = new_strategy();
-        let next_position = strategy.get_next_move(self, is_second);
+        let next_position = strategy.get_next_move(&*self, is_second);
         self.put_and_reverse(is_second, next_position);
     }
 
@@ -465,39 +465,6 @@ mod tests {
             expected[2] = 2;
 
             assert_eq!(reverse_patterns, expected)
-        }
-
-        #[test]
-        fn put_next_move_numdisk_lookahead_1_bug_0_0() {
-            // https://github.com/oshikiri/reversi/pull/7
-            let mut board = create_board_fixture(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-            board.put_next_move_numdisk_lookahead_1(true);
-
-            let expected = create_board_fixture(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-
-            assert_eq!(board, expected);
         }
 
         #[test]
