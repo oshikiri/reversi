@@ -191,16 +191,12 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn put_next_move(&mut self, is_second: bool, strategy: StrategyType) {
+    pub fn put_next_move(&mut self, is_second: bool, strategy_type: StrategyType) {
         use StrategyType::*;
-        match strategy {
-            NumdiskLookahead1 => self.put_next_move_numdisk_lookahead_1(is_second),
-            PatternLookahead1 => self.put_next_move_pattern_lookahead_1(is_second),
+        let strategy: Box<dyn Strategy> = match strategy_type {
+            NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
+            PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
-    }
-
-    fn put_next_move_numdisk_lookahead_1(&mut self, is_second: bool) {
-        let strategy: NumdiskLookahead1Strategy = new_strategy();
         let next_position = strategy.get_next_move(&*self, is_second);
         self.put_and_reverse(is_second, next_position);
     }
@@ -217,12 +213,6 @@ impl Board {
             total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i % offsets.len()]];
         }
         total_score
-    }
-
-    fn put_next_move_pattern_lookahead_1(&mut self, is_second: bool) {
-        let strategy = PatternLookahead1Strategy {};
-        let next_position = strategy.get_next_move(&*self, is_second);
-        self.put_and_reverse(is_second, next_position);
     }
 }
 
@@ -431,7 +421,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_next_move_numdisk_lookahead_1(false);
+            board.put_next_move(false, crate::strategy::StrategyType::NumdiskLookahead1);
 
             let expected = create_board_fixture(
                 "
