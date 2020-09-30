@@ -33,6 +33,94 @@ impl Strategy for NumdiskLookahead1Strategy {
     }
 }
 
+pub struct NumdiskLookaheadMoreStrategy {
+    game_tree: GameTree,
+}
+
+impl Strategy for NumdiskLookaheadMoreStrategy {
+    fn get_next_move(&self, board: &Board, player: &Player) -> u64 {
+        let root_board: Board = board;
+        self.game_tree = GameTree::create(board, player);
+        let best_move = self.game_tree.get_best_move();
+        best_move.unwrap().put_position
+    }
+}
+
+impl NumdiskLookaheadMoreStrategy {
+    fn fill_children(&self, board: &Board, player: &Player, current_node: &mut GameTreeNode) {
+        for (i, reverse_pattern) in board
+            .entire_reverse_patterns(&player)
+            .into_iter()
+            .enumerate()
+        {
+            if count_bits(reverse_pattern) == 0 {
+                continue;
+            }
+
+            let put_position = 1 << i;
+            let mut current_board = Board::create(board.first(), board.second());
+            current_board.put_and_reverse(player, put_position);
+            let node = GameTreeNode::create(put_position, current_board);
+
+            current_node.children.push(node);
+        }
+    }
+
+    fn fill_score(&self) {
+        for child in self.game_tree.children {
+            child.score = child.current_board.score_numdisk(player);
+        }
+    }
+}
+
+struct GameTree {
+    root_board: Board,
+    player: Player,
+    children: Vec<GameTreeNode>,
+}
+
+impl GameTree {
+    fn create(root_board: Board, player: Player) -> GameTree {
+        GameTree {
+            root_board,
+            player,
+            children: vec![],
+        }
+    }
+
+    fn fill_children(&mut self, depth: u16) {
+        for legal_move in self.root_board.get_all_legal_moves(self.player) {
+            let current_board: Board = self.root_board.put_and_reverse(self.player, legal_move);
+            let child = GameTreeNode::create(legal_move, current_board);
+            self.children.push(child);
+        }
+    }
+
+    fn get_best_move(&self) -> Option<GameTreeNode> {
+        self.children.iter().fold(None, |m, &x| {
+            m.map_or(Some(x), |mv| Some(if x.score > mv.score { x } else { mv }))
+        })
+    }
+}
+
+struct GameTreeNode {
+    put_position: u64,
+    current_board: Board,
+    score: f64,
+    children: Vec<GameTreeNode>,
+}
+
+impl GameTreeNode {
+    fn create(put_position: u64, current_board: Board) -> GameTreeNode {
+        GameTreeNode {
+            put_position,
+            current_board,
+            score: 0.0,
+            children: vec![],
+        }
+    }
+}
+
 pub struct PatternLookahead1Strategy {}
 
 impl Strategy for PatternLookahead1Strategy {
