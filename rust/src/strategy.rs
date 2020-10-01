@@ -47,37 +47,6 @@ impl Strategy for NumdiskLookaheadMoreStrategy {
     }
 }
 
-fn alpha_beta_pruning_search(node: &mut GameTreeNode, depth: u64, alpha: f32, beta: f32) -> f32 {
-    node.fill_children();
-
-    if node.has_children() && depth > 0 {
-        match node.player {
-            Player::First => {
-                let mut alpha = alpha;
-                for child in node.children.iter_mut() {
-                    alpha = alpha_beta_pruning_search(child, depth - 1, alpha, beta).max(alpha);
-                    if alpha >= beta {
-                        break;
-                    }
-                }
-                alpha
-            }
-            Player::Second => {
-                let mut beta = beta;
-                for child in &mut node.children.iter_mut() {
-                    beta = alpha_beta_pruning_search(child, depth - 1, alpha, beta).min(beta);
-                    if alpha >= beta {
-                        break;
-                    }
-                }
-                beta
-            }
-        }
-    } else {
-        node.current_board.score_numdisk(node.player.clone())
-    }
-}
-
 struct GameTree {
     root_board: Board,
     player: Player,
@@ -113,7 +82,7 @@ impl GameTree {
         let mut max_score_opt: Option<f32> = None;
 
         for child in &mut self.children {
-            let child_score = alpha_beta_pruning_search(child, depth - 1, -f32::MAX, f32::MAX);
+            let child_score = child.alpha_beta_pruning_search(depth - 1, -f32::MAX, f32::MAX);
             child.score = Some(child_score);
             match (child_score, max_score_opt) {
                 (child_score, None) => max_score_opt = Some(child_score),
@@ -158,6 +127,41 @@ impl GameTreeNode {
             current_board.put_and_reverse(&self.player, legal_move);
             let child = GameTreeNode::create(self.player.clone(), legal_move, current_board);
             self.children.push(child);
+        }
+    }
+
+    fn alpha_beta_pruning_search(&mut self, depth: u64, alpha: f32, beta: f32) -> f32 {
+        self.fill_children();
+
+        if self.has_children() && depth > 0 {
+            match self.player {
+                Player::First => {
+                    let mut alpha = alpha;
+                    for child in self.children.iter_mut() {
+                        alpha = child
+                            .alpha_beta_pruning_search(depth - 1, alpha, beta)
+                            .max(alpha);
+                        if alpha >= beta {
+                            break;
+                        }
+                    }
+                    alpha
+                }
+                Player::Second => {
+                    let mut beta = beta;
+                    for child in &mut self.children.iter_mut() {
+                        beta = child
+                            .alpha_beta_pruning_search(depth - 1, alpha, beta)
+                            .min(beta);
+                        if alpha >= beta {
+                            break;
+                        }
+                    }
+                    beta
+                }
+            }
+        } else {
+            self.current_board.score_numdisk(self.player.clone())
         }
     }
 }
