@@ -110,13 +110,20 @@ impl GameTree {
         self.fill_children(player);
 
         let mut node_max_score: Option<&mut GameTreeNode> = None;
-        let mut max_score = -f32::MAX;
+        let mut max_score_opt: Option<f32> = None;
+
         for child in &mut self.children {
-            child.score = alpha_beta_pruning_search(child, depth - 1, -f32::MAX, f32::MAX);
-            if child.score >= max_score {
-                max_score = child.score;
-                node_max_score = Some(child);
-            }
+            let child_score = alpha_beta_pruning_search(child, depth - 1, -f32::MAX, f32::MAX);
+            child.score = Some(child_score);
+            match (child_score, max_score_opt) {
+                (child_score, None) => max_score_opt = Some(child_score),
+                (child_score, Some(max_score)) => {
+                    if child_score >= max_score {
+                        max_score_opt = Some(child_score);
+                        node_max_score = Some(child);
+                    }
+                }
+            };
         }
         node_max_score
     }
@@ -126,7 +133,7 @@ struct GameTreeNode {
     player: Player,
     put_position: u64,
     current_board: Board,
-    score: f32,
+    score: Option<f32>,
     children: Vec<GameTreeNode>,
 }
 
@@ -136,7 +143,7 @@ impl GameTreeNode {
             player,
             put_position,
             current_board,
-            score: 0.0,
+            score: None,
             children: vec![],
         }
     }
