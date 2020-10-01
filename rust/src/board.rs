@@ -9,13 +9,14 @@ use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::strategy::*;
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub enum Player {
     First,
     Second,
 }
 
 #[wasm_bindgen]
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Board {
     first: u64,  // black, 先手
     second: u64, // white, 後手
@@ -204,7 +205,7 @@ impl Board {
 
     pub fn put_next_move(&mut self, player: &Player, strategy_type: StrategyType) {
         use StrategyType::*;
-        let strategy: Box<dyn Strategy> = match strategy_type {
+        let mut strategy: Box<dyn Strategy> = match strategy_type {
             NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
             PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
@@ -224,6 +225,19 @@ impl Board {
             total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i % offsets.len()]];
         }
         total_score
+    }
+
+    pub fn score_numdisk(&self, player: Player) -> f32 {
+        let score = count_bits(self.first) - count_bits(self.second);
+        match player {
+            Player::First => score as f32,
+            Player::Second => -(score as f32),
+        }
+    }
+
+    // FIXME
+    pub fn get_all_legal_moves(&self, _player: &Player) -> Vec<u64> {
+        vec![0]
     }
 }
 

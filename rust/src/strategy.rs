@@ -15,13 +15,13 @@ pub fn new_strategy() -> NumdiskLookahead1Strategy {
 }
 
 pub trait Strategy {
-    fn get_next_move(&self, board: &Board, palyer: &Player) -> u64;
+    fn get_next_move(&mut self, board: &Board, palyer: &Player) -> u64;
 }
 
 pub struct NumdiskLookahead1Strategy {}
 
 impl Strategy for NumdiskLookahead1Strategy {
-    fn get_next_move(&self, board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
         let reverse_counts: Vec<u64> = board
             .entire_reverse_patterns(&player)
             .into_iter()
@@ -38,38 +38,52 @@ pub struct NumdiskLookaheadMoreStrategy {
 }
 
 impl Strategy for NumdiskLookaheadMoreStrategy {
-    fn get_next_move(&self, board: &Board, player: &Player) -> u64 {
-        let root_board: Board = board;
-        self.game_tree = GameTree::create(board, player);
-        let best_move = self.game_tree.get_best_move();
+    fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
+        let depth = 3;
+        let root_board: Board = board.clone();
+        self.game_tree = GameTree::create(root_board, player.clone());
+        let best_move = self.game_tree.alpha_beta_pruning_search(player, depth);
         best_move.unwrap().put_position
     }
 }
 
 impl NumdiskLookaheadMoreStrategy {
-    fn fill_children(&self, board: &Board, player: &Player, current_node: &mut GameTreeNode) {
-        for (i, reverse_pattern) in board
-            .entire_reverse_patterns(&player)
-            .into_iter()
-            .enumerate()
-        {
-            if count_bits(reverse_pattern) == 0 {
-                continue;
-            }
-
-            let put_position = 1 << i;
-            let mut current_board = Board::create(board.first(), board.second());
-            current_board.put_and_reverse(player, put_position);
-            let node = GameTreeNode::create(put_position, current_board);
-
-            current_node.children.push(node);
+    #[allow(dead_code)]
+    fn fill_score(&mut self) {
+        for child in self.game_tree.children.iter_mut() {
+            child.score = child.current_board.score_numdisk(Player::Second);
         }
     }
+}
 
-    fn fill_score(&self) {
-        for child in self.game_tree.children {
-            child.score = child.current_board.score_numdisk(player);
+fn alpha_beta_pruning_search(node: &mut GameTreeNode, depth: u64, alpha: f32, beta: f32) -> f32 {
+    node.fill_children();
+
+    if node.has_children() && depth > 0 {
+        match node.player {
+            Player::First => {
+                let mut alpha = alpha;
+                for child in node.children.iter_mut() {
+                    alpha = alpha_beta_pruning_search(child, depth - 1, alpha, beta).max(alpha);
+                    if alpha >= beta {
+                        break;
+                    }
+                }
+                alpha
+            }
+            Player::Second => {
+                let mut beta = beta;
+                for child in &mut node.children.iter_mut() {
+                    beta = alpha_beta_pruning_search(child, depth - 1, alpha, beta).min(beta);
+                    if alpha >= beta {
+                        break;
+                    }
+                }
+                beta
+            }
         }
+    } else {
+        node.current_board.score_numdisk(node.player.clone())
     }
 }
 
@@ -88,35 +102,64 @@ impl GameTree {
         }
     }
 
-    fn fill_children(&mut self, depth: u16) {
-        for legal_move in self.root_board.get_all_legal_moves(self.player) {
-            let current_board: Board = self.root_board.put_and_reverse(self.player, legal_move);
-            let child = GameTreeNode::create(legal_move, current_board);
+    fn fill_children(&mut self, player: &Player) {
+        for legal_move in self.root_board.get_all_legal_moves(&self.player) {
+            let mut current_board: Board = self.root_board.clone();
+            current_board.put_and_reverse(&self.player, legal_move);
+            let child = GameTreeNode::create(player.clone(), legal_move, current_board);
             self.children.push(child);
         }
     }
 
-    fn get_best_move(&self) -> Option<GameTreeNode> {
-        self.children.iter().fold(None, |m, &x| {
-            m.map_or(Some(x), |mv| Some(if x.score > mv.score { x } else { mv }))
-        })
+    fn alpha_beta_pruning_search(
+        &mut self,
+        player: &Player,
+        depth: u64,
+    ) -> Option<&mut GameTreeNode> {
+        self.fill_children(player);
+
+        let mut node_max_score: Option<&mut GameTreeNode> = None;
+        let mut max_score = -f32::MAX;
+        for child in &mut self.children {
+            child.score = alpha_beta_pruning_search(child, depth - 1, -f32::MAX, f32::MAX);
+            if child.score >= max_score {
+                max_score = child.score;
+                node_max_score = Some(child);
+            }
+        }
+        node_max_score
     }
 }
 
 struct GameTreeNode {
+    player: Player,
     put_position: u64,
     current_board: Board,
-    score: f64,
+    score: f32,
     children: Vec<GameTreeNode>,
 }
 
 impl GameTreeNode {
-    fn create(put_position: u64, current_board: Board) -> GameTreeNode {
+    fn create(player: Player, put_position: u64, current_board: Board) -> GameTreeNode {
         GameTreeNode {
+            player,
             put_position,
             current_board,
             score: 0.0,
             children: vec![],
+        }
+    }
+
+    fn has_children(&self) -> bool {
+        self.children.len() > 0
+    }
+
+    fn fill_children(&mut self) {
+        for legal_move in self.current_board.get_all_legal_moves(&self.player) {
+            let mut current_board: Board = self.current_board.clone();
+            current_board.put_and_reverse(&self.player, legal_move);
+            let child = GameTreeNode::create(self.player.clone(), legal_move, current_board);
+            self.children.push(child);
         }
     }
 }
@@ -125,7 +168,7 @@ pub struct PatternLookahead1Strategy {}
 
 impl Strategy for PatternLookahead1Strategy {
     // TODO: 高速化
-    fn get_next_move(&self, current_board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, current_board: &Board, player: &Player) -> u64 {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
