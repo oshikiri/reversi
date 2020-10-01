@@ -47,15 +47,6 @@ impl Strategy for NumdiskLookaheadMoreStrategy {
     }
 }
 
-impl NumdiskLookaheadMoreStrategy {
-    #[allow(dead_code)]
-    fn fill_score(&mut self) {
-        for child in self.game_tree.children.iter_mut() {
-            child.score = child.current_board.score_numdisk(Player::Second);
-        }
-    }
-}
-
 fn alpha_beta_pruning_search(node: &mut GameTreeNode, depth: u64, alpha: f32, beta: f32) -> f32 {
     node.fill_children();
 
