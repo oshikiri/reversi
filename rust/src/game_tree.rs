@@ -86,35 +86,19 @@ impl GameTreeNode {
     fn alpha_beta_pruning_search(&mut self, depth: u64, alpha: f32, beta: f32) -> f32 {
         self.fill_children();
 
-        if self.has_children() && depth > 0 {
-            match self.player {
-                Player::First => {
-                    let mut alpha = alpha;
-                    for child in self.children.iter_mut() {
-                        alpha = child
-                            .alpha_beta_pruning_search(depth - 1, alpha, beta)
-                            .max(alpha);
-                        if alpha >= beta {
-                            break;
-                        }
-                    }
-                    alpha
-                }
-                Player::Second => {
-                    let mut beta = beta;
-                    for child in &mut self.children.iter_mut() {
-                        beta = child
-                            .alpha_beta_pruning_search(depth - 1, alpha, beta)
-                            .min(beta);
-                        if alpha >= beta {
-                            break;
-                        }
-                    }
-                    beta
+        let score = if self.has_children() && depth > 0 {
+            let mut alpha = alpha;
+            for child in self.children.iter_mut() {
+                alpha = alpha.max(-child.alpha_beta_pruning_search(depth - 1, -beta, -alpha));
+                if alpha >= beta {
+                    break;
                 }
             }
+            alpha
         } else {
             self.current_board.score_numdisk(self.player.clone())
-        }
+        };
+        self.score = Some(score);
+        score
     }
 }
