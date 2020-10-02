@@ -1,4 +1,6 @@
+use crate::bitboard;
 use crate::board::{Board, Player};
+use crate::console_log;
 
 pub struct GameTree {
     root_board: Board,
@@ -28,7 +30,7 @@ impl GameTree {
         &mut self,
         player: &Player,
         depth: u64,
-    ) -> Option<&mut GameTreeNode> {
+    ) -> Option<GameTreeNode> {
         self.fill_children(player);
 
         let mut node_max_score: Option<&mut GameTreeNode> = None;
@@ -50,10 +52,19 @@ impl GameTree {
                 }
             };
         }
-        node_max_score
+
+        node_max_score.map(|x| x.clone())
+    }
+
+    pub fn print_tree(&self) {
+        for child in &self.children {
+            let next_move = bitboard::put_position_to_coord(child.put_position);
+            child.print_tree(1, vec![next_move]);
+        }
     }
 }
 
+#[derive(Clone)]
 pub struct GameTreeNode {
     player: Player,
     pub put_position: u64,
@@ -104,5 +115,16 @@ impl GameTreeNode {
         };
         self.score = Some(score);
         score
+    }
+
+    pub fn print_tree(&self, depth: usize, move_histories: Vec<String>) {
+        for child in &self.children {
+            if child.has_children() {
+                let mut move_histories = move_histories.clone();
+                move_histories.push(bitboard::put_position_to_coord(child.put_position));
+                console_log!("{:?} {:?}", move_histories, child.score);
+                child.print_tree(depth+1, move_histories);
+            }
+        }
     }
 }
