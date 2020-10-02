@@ -228,10 +228,10 @@ impl Board {
     }
 
     pub fn score_numdisk(&self, player: Player) -> f32 {
-        let score = count_bits(self.first) - count_bits(self.second);
+        let score = count_bits(self.first) as f32 - count_bits(self.second) as f32;
         match player {
-            Player::First => score as f32,
-            Player::Second => -(score as f32),
+            Player::First => score,
+            Player::Second => -score,
         }
     }
 
