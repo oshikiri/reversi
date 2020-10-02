@@ -6,8 +6,10 @@ use crate::console_log;
 use crate::game_tree::GameTree;
 
 #[wasm_bindgen]
+#[derive(Debug)]
 pub enum StrategyType {
     NumdiskLookahead1,
+    NumdiskLookahead,
     PatternLookahead1,
 }
 

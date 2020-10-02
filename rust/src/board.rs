@@ -207,6 +207,7 @@ impl Board {
         use StrategyType::*;
         let mut strategy: Box<dyn Strategy> = match strategy_type {
             NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
+            NumdiskLookahead => Box::new(NumdiskLookaheadMoreStrategy {}),
             PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
         let next_position = strategy.get_next_move(&*self, &player);
