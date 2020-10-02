@@ -236,8 +236,22 @@ impl Board {
     }
 
     // FIXME
-    pub fn get_all_legal_moves(&self, _player: &Player) -> Vec<u64> {
-        vec![0]
+    pub fn get_all_legal_moves(&self, player: &Player) -> Vec<u64> {
+        let (current, opponent) = match player {
+            Player::First => (self.first, self.second),
+            Player::Second => (self.second, self.first),
+        };
+        let mut legal_moves = Vec::new();
+
+        for i in 0..64 {
+            let put_position = 1 << i;
+            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
+            if reverse_pattern > 0 {
+                legal_moves.push(put_position);
+            }
+        }
+
+        legal_moves
     }
 }
 
