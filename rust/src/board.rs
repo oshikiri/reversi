@@ -15,6 +15,15 @@ pub enum Player {
     Second,
 }
 
+impl Player {
+    pub fn opponent(&self) -> Player {
+        match self {
+            Player::First => Player::Second,
+            Player::Second => Player::First,
+        }
+    }
+}
+
 #[wasm_bindgen]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Board {

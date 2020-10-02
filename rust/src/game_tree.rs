@@ -19,7 +19,7 @@ impl GameTree {
         for legal_move in self.root_board.get_all_legal_moves(&self.player) {
             let mut current_board: Board = self.root_board.clone();
             current_board.put_and_reverse(&self.player, legal_move);
-            let child = GameTreeNode::create(player.clone(), legal_move, current_board);
+            let child = GameTreeNode::create(player.opponent().clone(), legal_move, current_board);
             self.children.push(child);
         }
     }
@@ -38,9 +38,12 @@ impl GameTree {
             let child_score = child.alpha_beta_pruning_search(depth - 1, -f32::MAX, f32::MAX);
             child.score = Some(child_score);
             match (child_score, max_score_opt) {
-                (child_score, None) => max_score_opt = Some(child_score),
+                (child_score, None) => {
+                    max_score_opt = Some(child_score);
+                    node_max_score = Some(child);
+                }
                 (child_score, Some(max_score)) => {
-                    if child_score >= max_score {
+                    if child_score > max_score {
                         max_score_opt = Some(child_score);
                         node_max_score = Some(child);
                     }
@@ -78,7 +81,8 @@ impl GameTreeNode {
         for legal_move in self.current_board.get_all_legal_moves(&self.player) {
             let mut current_board: Board = self.current_board.clone();
             current_board.put_and_reverse(&self.player, legal_move);
-            let child = GameTreeNode::create(self.player.clone(), legal_move, current_board);
+            let child =
+                GameTreeNode::create(self.player.opponent().clone(), legal_move, current_board);
             self.children.push(child);
         }
     }
