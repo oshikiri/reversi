@@ -5,6 +5,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::bitboard;
+use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::player::Player;
 use crate::strategy::*;
@@ -45,6 +46,11 @@ impl Board {
 
     pub fn putAndReverse(&mut self, player: Player, i: u8, j: u8) {
         let put_position = coordinate_to_bitboard(i as u64, j as u64);
+        console_log!(
+            "move {:?} {}",
+            player,
+            bitboard::put_position_to_coord(put_position)
+        );
         self.put_and_reverse(&player, put_position);
     }
 
@@ -63,7 +69,15 @@ impl Board {
     }
 
     pub fn putNextMove(&mut self, player: Player, strategy: StrategyType) {
-        self.put_next_move(&player, strategy);
+        let result = self.put_next_move(&player, strategy);
+        match result {
+            Ok(put_position) => console_log!(
+                "move {:?} {}",
+                player,
+                bitboard::put_position_to_coord(put_position)
+            ),
+            Err(msg) => console_log!("passed (reason: {})", msg),
+        };
     }
 }
 
@@ -84,7 +98,7 @@ impl Board {
         ((self.first | self.second) & position) == 0
     }
 
-    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) {
+    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) -> (Player, u64) {
         match player {
             Player::First => {
                 let reverse_pattern =
@@ -98,7 +112,8 @@ impl Board {
                 self.first ^= reverse_pattern;
                 self.second ^= put_position | reverse_pattern;
             }
-        }
+        };
+        (player.clone(), put_position)
     }
 
     pub fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
@@ -197,15 +212,25 @@ impl Board {
         reverse_patterns
     }
 
-    pub fn put_next_move(&mut self, player: &Player, strategy_type: StrategyType) {
+    pub fn put_next_move(
+        &mut self,
+        player: &Player,
+        strategy_type: StrategyType,
+    ) -> Result<u64, String> {
         use StrategyType::*;
         let mut strategy: Box<dyn Strategy> = match strategy_type {
             NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
             NumdiskLookahead => Box::new(NumdiskLookaheadMoreStrategy {}),
             PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
-        let next_position = strategy.get_next_move(&*self, &player);
-        self.put_and_reverse(&player, next_position);
+
+        match strategy.get_next_move(&*self, &player) {
+            Ok(next_position) => {
+                let (_player, put_position) = self.put_and_reverse(&player, next_position);
+                Ok(put_position)
+            }
+            Err(msg) => Err(format!("Skipped because: {}", msg)),
+        }
     }
 
     pub fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
@@ -461,7 +486,7 @@ mod tests {
                 - - - - - - - -
             ",
             );
-            board.put_next_move(
+            let result = board.put_next_move(
                 &Player::First,
                 crate::strategy::StrategyType::NumdiskLookahead1,
             );
@@ -479,7 +504,47 @@ mod tests {
             ",
             );
 
+            assert_eq!(result, Ok(1 << 20));
             assert_eq!(board, expected);
+        }
+
+        #[test]
+        fn put_next_move_no_legal_move() {
+            let mut board = Board::create_from_str(
+                "
+                x o - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            let result = board.put_next_move(
+                &Player::First,
+                crate::strategy::StrategyType::NumdiskLookahead1,
+            );
+
+            let expected = Board::create_from_str(
+                "
+                x o - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+
+            assert_eq!(board, expected);
+            assert_eq!(
+                result,
+                Err("Skipped because: reverse_counts is all zero".to_string())
+            )
         }
 
         #[test]
