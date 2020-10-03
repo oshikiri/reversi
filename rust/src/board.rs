@@ -263,6 +263,25 @@ impl Board {
 
         legal_moves
     }
+
+    pub fn create_from_str(board_str: &str) -> Board {
+        let mut n_cells = 0;
+        let mut first = 0;
+        let mut second = 0;
+
+        for c in String::from(board_str).chars() {
+            if c == '-' || c == 'o' || c == 'x' {
+                if c == 'o' {
+                    first |= 1 << n_cells;
+                } else if c == 'x' {
+                    second |= 1 << n_cells;
+                }
+                n_cells = n_cells + 1;
+            }
+        }
+
+        Board { first, second }
+    }
 }
 
 fn generate_mask(i: u64) -> u64 {
@@ -337,28 +356,9 @@ pub fn convert_indices_to_bitboard(x: char, y: char) -> u64 {
 mod tests {
     use crate::board::Board;
 
-    fn create_board_fixture(board_str: &str) -> Board {
-        let mut n_cells = 0;
-        let mut first = 0;
-        let mut second = 0;
-
-        for c in String::from(board_str).chars() {
-            if c == '-' || c == 'o' || c == 'x' {
-                if c == 'o' {
-                    first |= 1 << n_cells;
-                } else if c == 'x' {
-                    second |= 1 << n_cells;
-                }
-                n_cells = n_cells + 1;
-            }
-        }
-
-        Board { first, second }
-    }
-
     #[test]
     fn test_create_board_fixture() {
-        let actual = create_board_fixture(
+        let actual = Board::create_from_str(
             "
             o - - - - - - -
             - - - - - - - x
@@ -378,7 +378,6 @@ mod tests {
     }
 
     mod board_test {
-        use super::create_board_fixture;
         use crate::board::{Board, Player};
 
         #[test]
@@ -401,7 +400,7 @@ mod tests {
 
         #[test]
         fn is_full_should_return_false_when_board_is_empty() {
-            let board = create_board_fixture(
+            let board = Board::create_from_str(
                 "
                 - - - - - - - -
                 - - - - - - - -
@@ -418,7 +417,7 @@ mod tests {
 
         #[test]
         fn is_full_should_return_true_when_board_is_full() {
-            let board = create_board_fixture(
+            let board = Board::create_from_str(
                 "
                 x x x x x x x x
                 x x x x x x x x
@@ -435,7 +434,7 @@ mod tests {
 
         #[test]
         fn entire_reverse_patterns() {
-            let board = create_board_fixture(
+            let board = Board::create_from_str(
                 "
                 o x - - - - - -
                 - - - - - - - -
@@ -458,7 +457,7 @@ mod tests {
         #[test]
         fn put_next_move_numdisk_lookahead_1_initial_move() {
             // https://github.com/oshikiri/reversi/pull/8
-            let mut board = create_board_fixture(
+            let mut board = Board::create_from_str(
                 "
                 - - - - - - - -
                 - - - - - - - -
@@ -475,7 +474,7 @@ mod tests {
                 crate::strategy::StrategyType::NumdiskLookahead1,
             );
 
-            let expected = create_board_fixture(
+            let expected = Board::create_from_str(
                 "
                 - - - - - - - -
                 - - - - - - - -
@@ -493,7 +492,7 @@ mod tests {
 
         #[test]
         fn put_and_reverse_should_reverse_pieces() {
-            let mut board = create_board_fixture(
+            let mut board = Board::create_from_str(
                 "
                 o x x - - - - -
                 - - - - - - - -
@@ -515,7 +514,7 @@ mod tests {
 
         #[test]
         fn is_empty() {
-            let board = create_board_fixture(
+            let board = Board::create_from_str(
                 "
                 o x - - - - - -
                 - - - - - - - -
@@ -533,7 +532,6 @@ mod tests {
     }
 
     mod utils_test {
-        use super::create_board_fixture;
         use crate::board;
         #[test]
         fn count_bits_should_return_count_bits() {
@@ -549,7 +547,7 @@ mod tests {
 
         #[test]
         fn extract_pattern_instances() {
-            let board = create_board_fixture(
+            let board = board::Board::create_from_str(
                 "
                 o - - - - - - -
                 - - - - - - - -

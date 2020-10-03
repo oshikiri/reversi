@@ -152,30 +152,9 @@ pub fn put_position_to_coord(position: u64) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::board::Board;
-
-    fn create_board_fixture(board_str: &str) -> Board {
-        let mut n_cells = 0;
-        let mut first = 0;
-        let mut second = 0;
-
-        for c in String::from(board_str).chars() {
-            if c == '-' || c == 'o' || c == 'x' {
-                if c == 'o' {
-                    first |= 1 << n_cells;
-                } else if c == 'x' {
-                    second |= 1 << n_cells;
-                }
-                n_cells = n_cells + 1;
-            }
-        }
-
-        Board::create(first, second)
-    }
-
     mod bitboard_test {
-        use super::create_board_fixture;
         use crate::bitboard;
+        use crate::board::Board;
 
         #[test]
         fn u64_to_bitvec() {
@@ -205,7 +184,7 @@ mod tests {
         //   print(f"{x} ", end="")
         #[test]
         fn pattern_instance_hor_vert_2() {
-            let board = create_board_fixture(
+            let board = Board::create_from_str(
                 "
               x o x - x o o x
               - o - o x - o -
