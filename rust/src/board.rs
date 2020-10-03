@@ -9,7 +9,7 @@ use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::strategy::*;
 
 #[wasm_bindgen]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Player {
     First,
     Second,
@@ -21,6 +21,19 @@ impl Player {
             Player::First => Player::Second,
             Player::Second => Player::First,
         }
+    }
+}
+
+#[cfg(test)]
+mod player_tests {
+    use crate::board::Player;
+    #[test]
+    fn opponent() {
+        let first = Player::First;
+        assert_eq!(first.opponent().clone(), Player::Second);
+
+        let second = Player::Second;
+        assert_eq!(second.opponent(), Player::First);
     }
 }
 
