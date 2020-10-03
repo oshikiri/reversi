@@ -295,6 +295,13 @@ impl Board {
 
         Board { first, second }
     }
+
+    pub fn reverse(board: &Board) -> Board {
+        Board {
+            first: board.second,
+            second: board.first,
+        }
+    }
 }
 
 fn generate_mask(i: u64) -> u64 {
