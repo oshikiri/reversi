@@ -1,6 +1,6 @@
 use crate::bitboard;
-use crate::board::{Board, Player};
-use crate::console_log;
+use crate::board::Board;
+use crate::player::Player;
 
 pub struct GameTree {
     root_board: Board,
@@ -129,8 +129,9 @@ impl GameTreeNode {
 mod tests {
     mod game_tree_test {
         use crate::bitboard;
-        use crate::board::{Board, Player};
+        use crate::board::Board;
         use crate::game_tree::GameTree;
+        use crate::player::Player;
 
         #[test]
         fn alpha_beta_pruning_search() {

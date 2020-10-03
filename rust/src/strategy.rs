@@ -1,9 +1,10 @@
 use wasm_bindgen::prelude::*;
 
 use crate::bitboard;
-use crate::board::{count_bits, Board, Player};
+use crate::board::{count_bits, Board};
 use crate::console_log;
 use crate::game_tree::GameTree;
+use crate::player::Player;
 
 #[wasm_bindgen]
 #[derive(Debug)]

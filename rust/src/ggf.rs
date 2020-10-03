@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::bitboard;
 use crate::board;
-use crate::board::Player;
+use crate::player::Player;
 
 type CharTriple = (char, char, char);
 
