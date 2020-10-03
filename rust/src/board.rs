@@ -9,7 +9,7 @@ use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::strategy::*;
 
 #[wasm_bindgen]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Player {
     First,
     Second,

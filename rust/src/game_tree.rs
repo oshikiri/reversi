@@ -9,7 +9,7 @@ pub struct GameTree {
 }
 
 impl GameTree {
-    pub fn create(root_board: Board, player: Player) -> GameTree {
+    pub fn create(player: Player, root_board: Board) -> GameTree {
         GameTree {
             root_board,
             player,
@@ -17,21 +17,17 @@ impl GameTree {
         }
     }
 
-    fn fill_children(&mut self, player: &Player) {
-        for legal_move in self.root_board.get_all_legal_moves(&self.player) {
+    fn fill_children(&mut self, player: Player) {
+        for legal_move in self.root_board.get_all_legal_moves(&player) {
             let mut current_board: Board = self.root_board.clone();
-            current_board.put_and_reverse(&self.player, legal_move);
+            current_board.put_and_reverse(&player, legal_move);
             let child = GameTreeNode::create(player.opponent().clone(), legal_move, current_board);
             self.children.push(child);
         }
     }
 
-    pub fn alpha_beta_pruning_search(
-        &mut self,
-        player: &Player,
-        depth: u64,
-    ) -> Option<GameTreeNode> {
-        self.fill_children(player);
+    pub fn alpha_beta_pruning_search(&mut self, depth: u64) -> Option<GameTreeNode> {
+        self.fill_children(self.player.clone());
 
         let mut node_max_score: Option<&mut GameTreeNode> = None;
         let mut max_score_opt: Option<f32> = None;
@@ -64,7 +60,7 @@ impl GameTree {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct GameTreeNode {
     player: Player,
     pub put_position: u64,

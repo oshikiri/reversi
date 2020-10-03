@@ -42,8 +42,8 @@ impl Strategy for NumdiskLookaheadMoreStrategy {
     fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
         let depth = 3;
         let root_board: Board = board.clone();
-        let mut game_tree = GameTree::create(root_board, player.clone());
-        let best_move = game_tree.alpha_beta_pruning_search(player, depth);
+        let mut game_tree = GameTree::create(player.clone(), root_board);
+        let best_move = game_tree.alpha_beta_pruning_search(depth);
         game_tree.print_tree();
         best_move.unwrap().put_position
     }
