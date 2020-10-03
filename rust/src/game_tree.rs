@@ -115,10 +115,10 @@ impl GameTreeNode {
 
     pub fn print_tree(&self, depth: usize, move_histories: Vec<String>) {
         for child in &self.children {
+            let mut move_histories = move_histories.clone();
+            move_histories.push(bitboard::put_position_to_coord(child.put_position));
+            println!("{:?} {:?}", move_histories, child.score);
             if child.has_children() {
-                let mut move_histories = move_histories.clone();
-                move_histories.push(bitboard::put_position_to_coord(child.put_position));
-                console_log!("{:?} {:?}", move_histories, child.score);
                 child.print_tree(depth + 1, move_histories);
             }
         }
