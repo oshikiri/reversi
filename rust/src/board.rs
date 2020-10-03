@@ -49,7 +49,7 @@ impl Board {
         console_log!(
             "move {:?} {}",
             player,
-            bitboard::put_position_to_coord(put_position)
+            bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
         );
         self.put_and_reverse(&player, put_position);
     }
@@ -74,7 +74,7 @@ impl Board {
             Ok(put_position) => console_log!(
                 "move {:?} {}",
                 player,
-                bitboard::put_position_to_coord(put_position)
+                bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
             ),
             Err(msg) => console_log!("passed (reason: {})", msg),
         };

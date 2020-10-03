@@ -120,8 +120,7 @@ pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     bitvec
 }
 
-// TODO: Result<String, _>
-pub fn put_position_to_coord(position: u64) -> String {
+pub fn put_position_to_coord(position: u64) -> Result<String, String> {
     let mut position = position;
     let mut i_position = None;
     for i in 0..64 {
@@ -133,20 +132,20 @@ pub fn put_position_to_coord(position: u64) -> String {
     match i_position {
         Some(k) => {
             let i_str = match k % 8 {
-                0 => 'a',
-                1 => 'b',
-                2 => 'c',
-                3 => 'd',
-                4 => 'e',
-                5 => 'f',
-                6 => 'g',
-                7 => 'h',
-                _ => panic!("invalid i"),
+                0 => Ok("a"),
+                1 => Ok("b"),
+                2 => Ok("c"),
+                3 => Ok("d"),
+                4 => Ok("e"),
+                5 => Ok("f"),
+                6 => Ok("g"),
+                7 => Ok("h"),
+                _ => Err("invalid i"),
             };
             let j = k / 8 + 1;
-            format!("{}{}", i_str, j)
+            Ok(format!("{}{}", i_str?, j))
         }
-        None => panic!("invalid position = {}", position),
+        None => Err(format!("invalid position = {:?}", position)),
     }
 }
 
@@ -217,9 +216,15 @@ mod tests {
 
         #[test]
         fn put_position_to_coord() {
-            assert_eq!(bitboard::put_position_to_coord(1), "a1");
-            assert_eq!(bitboard::put_position_to_coord(1 << 7), "h1");
-            assert_eq!(bitboard::put_position_to_coord(1 << 63), "h8");
+            assert_eq!(bitboard::put_position_to_coord(1), Ok("a1".to_string()));
+            assert_eq!(
+                bitboard::put_position_to_coord(1 << 7),
+                Ok("h1".to_string())
+            );
+            assert_eq!(
+                bitboard::put_position_to_coord(1 << 63),
+                Ok("h8".to_string())
+            );
         }
     }
 }

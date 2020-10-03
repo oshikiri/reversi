@@ -52,11 +52,12 @@ impl GameTree {
         node_max_score.map(|x| x.clone())
     }
 
-    pub fn print_tree(&self) {
+    pub fn print_tree(&self) -> Result<(), String> {
         for child in &self.children {
-            let next_move = bitboard::put_position_to_coord(child.put_position);
-            child.print_tree(1, vec![next_move]);
+            let next_move = bitboard::put_position_to_coord(child.put_position)?;
+            child.print_tree(1, vec![next_move])?;
         }
+        Ok(())
     }
 }
 
@@ -113,15 +114,16 @@ impl GameTreeNode {
         score
     }
 
-    pub fn print_tree(&self, depth: usize, move_histories: Vec<String>) {
+    pub fn print_tree(&self, depth: usize, move_histories: Vec<String>) -> Result<(), String> {
         for child in &self.children {
             let mut move_histories = move_histories.clone();
-            move_histories.push(bitboard::put_position_to_coord(child.put_position));
+            move_histories.push(bitboard::put_position_to_coord(child.put_position)?);
             println!("{:?} {:?}", move_histories, child.score);
             if child.has_children() {
-                child.print_tree(depth + 1, move_histories);
+                child.print_tree(depth + 1, move_histories)?;
             }
         }
+        Ok(())
     }
 }
 
@@ -153,7 +155,7 @@ mod tests {
 
             assert_eq!(
                 bitboard::put_position_to_coord(best_move.put_position),
-                "a8"
+                Ok("a8".to_string())
             );
             assert_eq!(best_move.score, Some(2.0));
         }
