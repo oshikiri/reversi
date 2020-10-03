@@ -120,6 +120,36 @@ pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     bitvec
 }
 
+// TODO: Result<String, _>
+pub fn put_position_to_coord(position: u64) -> String {
+    let mut position = position;
+    let mut i_position = None;
+    for i in 0..64 {
+        if position & 1 == 1 {
+            i_position = Some(i);
+        }
+        position = position >> 1;
+    }
+    match i_position {
+        Some(k) => {
+            let i_str = match k % 8 {
+                0 => 'a',
+                1 => 'b',
+                2 => 'c',
+                3 => 'd',
+                4 => 'e',
+                5 => 'f',
+                6 => 'g',
+                7 => 'h',
+                _ => panic!("invalid i"),
+            };
+            let j = k / 8 + 1;
+            format!("{}{}", i_str, j)
+        }
+        None => panic!("invalid position = {}", position),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::board::Board;
@@ -204,6 +234,13 @@ mod tests {
                 + 1 * 3 * 3 * 3 * 3 * 3 * 3
                 + 0 * 3 * 3 * 3 * 3 * 3 * 3 * 3;
             assert_eq!(actual, expected);
+        }
+
+        #[test]
+        fn put_position_to_coord() {
+            assert_eq!(bitboard::put_position_to_coord(1), "a1");
+            assert_eq!(bitboard::put_position_to_coord(1 << 7), "h1");
+            assert_eq!(bitboard::put_position_to_coord(1 << 63), "h8");
         }
     }
 }

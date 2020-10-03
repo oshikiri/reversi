@@ -3,10 +3,13 @@ use wasm_bindgen::prelude::*;
 use crate::bitboard;
 use crate::board::{count_bits, Board, Player};
 use crate::console_log;
+use crate::game_tree::GameTree;
 
 #[wasm_bindgen]
+#[derive(Debug)]
 pub enum StrategyType {
     NumdiskLookahead1,
+    NumdiskLookahead,
     PatternLookahead1,
 }
 
@@ -15,13 +18,13 @@ pub fn new_strategy() -> NumdiskLookahead1Strategy {
 }
 
 pub trait Strategy {
-    fn get_next_move(&self, board: &Board, palyer: &Player) -> u64;
+    fn get_next_move(&mut self, board: &Board, palyer: &Player) -> u64;
 }
 
 pub struct NumdiskLookahead1Strategy {}
 
 impl Strategy for NumdiskLookahead1Strategy {
-    fn get_next_move(&self, board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
         let reverse_counts: Vec<u64> = board
             .entire_reverse_patterns(&player)
             .into_iter()
@@ -33,11 +36,24 @@ impl Strategy for NumdiskLookahead1Strategy {
     }
 }
 
+pub struct NumdiskLookaheadMoreStrategy {}
+
+impl Strategy for NumdiskLookaheadMoreStrategy {
+    fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
+        let depth = 3;
+        let root_board: Board = board.clone();
+        let mut game_tree = GameTree::create(root_board, player.clone());
+        let best_move = game_tree.alpha_beta_pruning_search(player, depth);
+        game_tree.print_tree();
+        best_move.unwrap().put_position
+    }
+}
+
 pub struct PatternLookahead1Strategy {}
 
 impl Strategy for PatternLookahead1Strategy {
     // TODO: 高速化
-    fn get_next_move(&self, current_board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, current_board: &Board, player: &Player) -> u64 {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {

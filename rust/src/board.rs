@@ -9,13 +9,23 @@ use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::strategy::*;
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub enum Player {
     First,
     Second,
 }
 
+impl Player {
+    pub fn opponent(&self) -> Player {
+        match self {
+            Player::First => Player::Second,
+            Player::Second => Player::First,
+        }
+    }
+}
+
 #[wasm_bindgen]
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Board {
     first: u64,  // black, 先手
     second: u64, // white, 後手
@@ -204,8 +214,9 @@ impl Board {
 
     pub fn put_next_move(&mut self, player: &Player, strategy_type: StrategyType) {
         use StrategyType::*;
-        let strategy: Box<dyn Strategy> = match strategy_type {
+        let mut strategy: Box<dyn Strategy> = match strategy_type {
             NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
+            NumdiskLookahead => Box::new(NumdiskLookaheadMoreStrategy {}),
             PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
         let next_position = strategy.get_next_move(&*self, &player);
@@ -224,6 +235,33 @@ impl Board {
             total_score += PATTERN_INSTANCES[pattern_instance_index + offsets[i % offsets.len()]];
         }
         total_score
+    }
+
+    pub fn score_numdisk(&self, player: Player) -> f32 {
+        let score = count_bits(self.first) as f32 - count_bits(self.second) as f32;
+        match player {
+            Player::First => score,
+            Player::Second => -score,
+        }
+    }
+
+    // FIXME
+    pub fn get_all_legal_moves(&self, player: &Player) -> Vec<u64> {
+        let (current, opponent) = match player {
+            Player::First => (self.first, self.second),
+            Player::Second => (self.second, self.first),
+        };
+        let mut legal_moves = Vec::new();
+
+        for i in 0..64 {
+            let put_position = 1 << i;
+            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
+            if reverse_pattern > 0 {
+                legal_moves.push(put_position);
+            }
+        }
+
+        legal_moves
     }
 }
 
