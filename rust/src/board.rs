@@ -45,7 +45,7 @@ impl Board {
     }
 
     pub fn putAndReverse(&mut self, player: Player, i: u8, j: u8) {
-        let put_position = coordinate_to_bitboard(i as u64, j as u64);
+        let put_position = coordinate_to_bitboard(i as u64, j as u64).unwrap();
         console_log!(
             "move {:?} {}",
             player,
@@ -331,14 +331,14 @@ pub fn count_bits(bitboard: u64) -> u64 {
     return bits;
 }
 
-pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
-    // FIXME: Result<u64, OutOfIndexErr>
+pub fn coordinate_to_bitboard(x: u64, y: u64) -> Result<u64, String> {
     if x >= 8 && y >= 8 {
         // FIXME: ||?
-        panic!("out of index");
+        Err("out of index".to_string())
+    } else {
+        let i = x + 8 * y;
+        Ok(1 << i)
     }
-    let i = x + 8 * y;
-    1 << i
 }
 
 pub fn convert_indices_to_bitboard(x: char, y: char) -> Result<u64, String> {
@@ -597,8 +597,8 @@ mod tests {
 
         #[test]
         fn coordinate_to_bitboard_should_convert_notations() {
-            assert_eq!(board::coordinate_to_bitboard(0, 0), 1);
-            assert_eq!(board::coordinate_to_bitboard(7, 7), 1 << 63);
+            assert_eq!(board::coordinate_to_bitboard(0, 0), Ok(1));
+            assert_eq!(board::coordinate_to_bitboard(7, 7), Ok(1 << 63));
         }
 
         #[test]
