@@ -46,6 +46,11 @@ impl Board {
 
     pub fn putAndReverse(&mut self, player: Player, i: u8, j: u8) {
         let put_position = coordinate_to_bitboard(i as u64, j as u64);
+        console_log!(
+            "move {:?} {}",
+            player,
+            bitboard::put_position_to_coord(put_position)
+        );
         self.put_and_reverse(&player, put_position);
     }
 
@@ -66,7 +71,11 @@ impl Board {
     pub fn putNextMove(&mut self, player: Player, strategy: StrategyType) {
         let result = self.put_next_move(&player, strategy);
         match result {
-            Ok(_) => console_log!("move"),
+            Ok(put_position) => console_log!(
+                "move {:?} {}",
+                player,
+                bitboard::put_position_to_coord(put_position)
+            ),
             Err(msg) => console_log!("passed (reason: {})", msg),
         };
     }
@@ -89,7 +98,7 @@ impl Board {
         ((self.first | self.second) & position) == 0
     }
 
-    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) {
+    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) -> (Player, u64) {
         match player {
             Player::First => {
                 let reverse_pattern =
@@ -103,7 +112,8 @@ impl Board {
                 self.first ^= reverse_pattern;
                 self.second ^= put_position | reverse_pattern;
             }
-        }
+        };
+        (player.clone(), put_position)
     }
 
     pub fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
@@ -206,7 +216,7 @@ impl Board {
         &mut self,
         player: &Player,
         strategy_type: StrategyType,
-    ) -> Result<(), String> {
+    ) -> Result<u64, String> {
         use StrategyType::*;
         let mut strategy: Box<dyn Strategy> = match strategy_type {
             NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
@@ -216,8 +226,8 @@ impl Board {
 
         match strategy.get_next_move(&*self, &player) {
             Ok(next_position) => {
-                self.put_and_reverse(&player, next_position);
-                Ok(())
+                let (_player, put_position) = self.put_and_reverse(&player, next_position);
+                Ok(put_position)
             }
             Err(msg) => Err(format!("Skipped because: {}", msg)),
         }
@@ -494,7 +504,7 @@ mod tests {
             ",
             );
 
-            assert_eq!(result, Ok(()));
+            assert_eq!(result, Ok(1 << 20));
             assert_eq!(board, expected);
         }
 
