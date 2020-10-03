@@ -11,9 +11,13 @@ canvas.height = "960";
 canvas.width = "960";
 if (canvas.getContext) {
   const context = canvas.getContext("2d");
-  drawBackground(context);
-  drawGrid(context);
-  drawDisks(context, board);
+
+  const draw = (board) => {
+    drawBackground(context);
+    drawGrid(context);
+    drawDisks(context, board);
+  };
+  draw(board);
 
   canvas.addEventListener("click", async function (clickEvent) {
     if (boardLocked) {
@@ -26,13 +30,13 @@ if (canvas.getContext) {
       const [i, j] = idx;
       if (legalPositions[i + 8 * j] > 0) {
         board.putAndReverse(Player.First, i, j);
-        drawDisks(context, board);
+        draw(board);
 
         await sleep(500);
 
         board.putNextMove(Player.Second, StrategyType.NumdiskLookahead);
 
-        drawDisks(context, board);
+        draw(board);
         legalPositions = board.getAllLegalPosition(Player.First);
       }
     }
