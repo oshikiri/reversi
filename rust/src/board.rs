@@ -341,31 +341,31 @@ pub fn coordinate_to_bitboard(x: u64, y: u64) -> u64 {
     1 << i
 }
 
-pub fn convert_indices_to_bitboard(x: char, y: char) -> u64 {
+pub fn convert_indices_to_bitboard(x: char, y: char) -> Result<u64, String> {
     let ix = match x {
-        'A' => 0,
-        'B' => 1,
-        'C' => 2,
-        'D' => 3,
-        'E' => 4,
-        'F' => 5,
-        'G' => 6,
-        'H' => 7,
-        _ => panic!("invalid x={}", x), // TODO
+        'A' => Ok(0),
+        'B' => Ok(1),
+        'C' => Ok(2),
+        'D' => Ok(3),
+        'E' => Ok(4),
+        'F' => Ok(5),
+        'G' => Ok(6),
+        'H' => Ok(7),
+        _ => Err(format!("invalid x={}", x)),
     };
     let iy = match y {
-        '1' => 0,
-        '2' => 1,
-        '3' => 2,
-        '4' => 3,
-        '5' => 4,
-        '6' => 5,
-        '7' => 6,
-        '8' => 7,
-        _ => panic!("invalid y={}", y), // TODO
+        '1' => Ok(0),
+        '2' => Ok(1),
+        '3' => Ok(2),
+        '4' => Ok(3),
+        '5' => Ok(4),
+        '6' => Ok(5),
+        '7' => Ok(6),
+        '8' => Ok(7),
+        _ => Err(format!("invalid y={}", y)),
     };
-    let i = ix + 8 * iy;
-    1 << i
+    let i = ix? + 8 * iy?;
+    Ok(1 << i)
 }
 
 #[cfg(test)]
@@ -620,8 +620,8 @@ mod tests {
             let bitboard_a1 = board::convert_indices_to_bitboard('A', '1');
             let bitboard_h8 = board::convert_indices_to_bitboard('H', '8');
 
-            assert_eq!(bitboard_a1, board.first);
-            assert_eq!(bitboard_h8, board.second);
+            assert_eq!(bitboard_a1, Ok(board.first));
+            assert_eq!(bitboard_h8, Ok(board.second));
         }
     }
 }

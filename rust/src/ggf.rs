@@ -98,7 +98,7 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
         } else {
             Player::Second
         };
-        let put_position = board::convert_indices_to_bitboard(*x, *y);
+        let put_position = board::convert_indices_to_bitboard(*x, *y).unwrap();
         board.put_and_reverse(&player, put_position);
 
         let history = PatternInstanceHistory {
