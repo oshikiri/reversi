@@ -483,6 +483,42 @@ mod tests {
         }
 
         #[test]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
+        fn put_next_move_no_legal_move() {
+            let mut board = Board::create_from_str(
+                "
+                x o - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            board.put_next_move(
+                &Player::First,
+                crate::strategy::StrategyType::NumdiskLookahead1,
+            );
+
+            // let expected = Board::create_from_str(
+            //     "
+            //     x o - - - - - -
+            //     - - - - - - - -
+            //     - - - - - - - -
+            //     - - - - - - - -
+            //     - - - - - - - -
+            //     - - - - - - - -
+            //     - - - - - - - -
+            //     - - - - - - - -
+            // ",
+            // );
+
+            // assert_eq!(board, expected);
+        }
+
+        #[test]
         fn put_and_reverse_should_reverse_pieces() {
             let mut board = Board::create_from_str(
                 "
