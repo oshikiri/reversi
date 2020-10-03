@@ -150,12 +150,11 @@ mod tests {
             let mut game_tree = GameTree::create(Player::Second, current_board);
             let best_move = game_tree.alpha_beta_pruning_search(3).unwrap();
 
-            // FIXME
-            assert_ne!(
+            assert_eq!(
                 bitboard::put_position_to_coord(best_move.put_position),
                 "a8"
             );
-            assert_ne!(best_move.score, Some(3.0));
+            assert_eq!(best_move.score, Some(2.0));
         }
     }
 }
