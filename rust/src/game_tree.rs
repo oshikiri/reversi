@@ -123,7 +123,7 @@ impl GameTreeNode {
                 let mut move_histories = move_histories.clone();
                 move_histories.push(bitboard::put_position_to_coord(child.put_position));
                 console_log!("{:?} {:?}", move_histories, child.score);
-                child.print_tree(depth+1, move_histories);
+                child.print_tree(depth + 1, move_histories);
             }
         }
     }
