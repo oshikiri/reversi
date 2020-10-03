@@ -19,28 +19,30 @@ pub fn new_strategy() -> NumdiskLookahead1Strategy {
 }
 
 pub trait Strategy {
-    fn get_next_move(&mut self, board: &Board, palyer: &Player) -> u64;
+    fn get_next_move(&mut self, board: &Board, palyer: &Player) -> Result<u64, String>;
 }
 
 pub struct NumdiskLookahead1Strategy {}
 
 impl Strategy for NumdiskLookahead1Strategy {
-    fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, board: &Board, player: &Player) -> Result<u64, String> {
         let reverse_counts: Vec<u64> = board
             .entire_reverse_patterns(&player)
             .into_iter()
             .map(|cell| count_bits(cell))
             .collect();
 
-        let i_max = positive_argmax(reverse_counts).unwrap();
-        1 << i_max
+        match positive_argmax(reverse_counts) {
+            Some(i_max) => Ok(1 << i_max),
+            None => Err(String::from("reverse_counts is all zero")),
+        }
     }
 }
 
 pub struct NumdiskLookaheadMoreStrategy {}
 
 impl Strategy for NumdiskLookaheadMoreStrategy {
-    fn get_next_move(&mut self, board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, board: &Board, player: &Player) -> Result<u64, String> {
         let depth = 3;
         let (player, root_board) = match player {
             Player::First => (player.clone(), board.clone()),
@@ -49,7 +51,10 @@ impl Strategy for NumdiskLookaheadMoreStrategy {
         let mut game_tree = GameTree::create(player.clone(), root_board);
         let best_move = game_tree.alpha_beta_pruning_search(depth);
         game_tree.print_tree();
-        best_move.unwrap().put_position
+        match best_move {
+            Some(best_move) => Ok(best_move.put_position),
+            None => Err(String::from("Result of alpha_beta_pruning_search is empty")),
+        }
     }
 }
 
@@ -57,7 +62,7 @@ pub struct PatternLookahead1Strategy {}
 
 impl Strategy for PatternLookahead1Strategy {
     // TODO: 高速化
-    fn get_next_move(&mut self, current_board: &Board, player: &Player) -> u64 {
+    fn get_next_move(&mut self, current_board: &Board, player: &Player) -> Result<u64, String> {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
@@ -82,8 +87,10 @@ impl Strategy for PatternLookahead1Strategy {
 
         console_log!("{:?}", scores);
 
-        let i_max = argmax_f32(scores).unwrap();
-        1 << i_max
+        match argmax_f32(scores) {
+            Some(i_max) => Ok(1 << i_max),
+            None => Err(String::from("reverse_counts is all zero")),
+        }
     }
 }
 
