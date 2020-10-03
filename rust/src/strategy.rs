@@ -43,9 +43,7 @@ impl Strategy for NumdiskLookaheadMoreStrategy {
         let depth = 3;
         let (player, root_board) = match player {
             Player::First => (player.clone(), board.clone()),
-            Player::Second => {
-                (player.opponent().clone(), Board::reverse(&board))
-            }
+            Player::Second => (player.opponent().clone(), Board::reverse(&board)),
         };
         let mut game_tree = GameTree::create(player.clone(), root_board);
         let best_move = game_tree.alpha_beta_pruning_search(depth);
