@@ -9,41 +9,23 @@ use crate::player::Player;
 #[wasm_bindgen]
 #[derive(Debug)]
 pub enum StrategyType {
-    NumdiskLookahead1,
     NumdiskLookahead,
     PatternLookahead1,
 }
 
-pub fn new_strategy() -> NumdiskLookahead1Strategy {
-    NumdiskLookahead1Strategy {}
+pub fn new_strategy() -> NumdiskLookaheadStrategy {
+    NumdiskLookaheadStrategy {}
 }
 
 pub trait Strategy {
     fn get_next_move(&mut self, board: &Board, palyer: &Player) -> Result<u64, String>;
 }
 
-pub struct NumdiskLookahead1Strategy {}
+pub struct NumdiskLookaheadStrategy {}
 
-impl Strategy for NumdiskLookahead1Strategy {
+impl Strategy for NumdiskLookaheadStrategy {
     fn get_next_move(&mut self, board: &Board, player: &Player) -> Result<u64, String> {
-        let reverse_counts: Vec<u64> = board
-            .entire_reverse_patterns(&player)
-            .into_iter()
-            .map(|cell| count_bits(cell))
-            .collect();
-
-        match positive_argmax(reverse_counts) {
-            Some(i_max) => Ok(1 << i_max),
-            None => Err(String::from("reverse_counts is all zero")),
-        }
-    }
-}
-
-pub struct NumdiskLookaheadMoreStrategy {}
-
-impl Strategy for NumdiskLookaheadMoreStrategy {
-    fn get_next_move(&mut self, board: &Board, player: &Player) -> Result<u64, String> {
-        let depth = 3;
+        let depth = 5;
         let (player, root_board) = match player {
             Player::First => (player.clone(), board.clone()),
             Player::Second => (player.opponent().clone(), Board::reverse(&board)),
@@ -91,23 +73,6 @@ impl Strategy for PatternLookahead1Strategy {
             Some(i_max) => Ok(1 << i_max),
             None => Err(String::from("reverse_counts is all zero")),
         }
-    }
-}
-
-fn positive_argmax(v: Vec<u64>) -> Option<usize> {
-    let mut v_max = 0;
-    let mut i_max = 0;
-
-    for i in 0..v.len() {
-        if v[i] > 0 && v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
-        }
-    }
-    if v_max == 0 {
-        None
-    } else {
-        Some(i_max)
     }
 }
 

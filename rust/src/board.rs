@@ -219,8 +219,7 @@ impl Board {
     ) -> Result<u64, String> {
         use StrategyType::*;
         let mut strategy: Box<dyn Strategy> = match strategy_type {
-            NumdiskLookahead1 => Box::new(NumdiskLookahead1Strategy {}),
-            NumdiskLookahead => Box::new(NumdiskLookaheadMoreStrategy {}),
+            NumdiskLookahead => Box::new(NumdiskLookaheadStrategy {}),
             PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
         };
 
@@ -488,7 +487,7 @@ mod tests {
             );
             let result = board.put_next_move(
                 &Player::First,
-                crate::strategy::StrategyType::NumdiskLookahead1,
+                crate::strategy::StrategyType::NumdiskLookahead,
             );
 
             let expected = Board::create_from_str(
@@ -524,7 +523,7 @@ mod tests {
             );
             let result = board.put_next_move(
                 &Player::First,
-                crate::strategy::StrategyType::NumdiskLookahead1,
+                crate::strategy::StrategyType::NumdiskLookahead,
             );
 
             let expected = Board::create_from_str(
@@ -543,7 +542,7 @@ mod tests {
             assert_eq!(board, expected);
             assert_eq!(
                 result,
-                Err("Skipped because: reverse_counts is all zero".to_string())
+                Err("Skipped because: Result of alpha_beta_pruning_search is empty".to_string())
             )
         }
 
