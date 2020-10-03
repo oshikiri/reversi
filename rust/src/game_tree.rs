@@ -33,7 +33,7 @@ impl GameTree {
         let mut max_score_opt: Option<f32> = None;
 
         for child in &mut self.children {
-            let child_score = child.alpha_beta_pruning_search(depth - 1, -f32::MAX, f32::MAX);
+            let child_score = -child.alpha_beta_pruning_search(depth - 1, -f32::MAX, f32::MAX);
             child.score = Some(child_score);
             match (child_score, max_score_opt) {
                 (child_score, None) => {
