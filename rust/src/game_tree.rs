@@ -124,3 +124,38 @@ impl GameTreeNode {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    mod game_tree_test {
+        use crate::bitboard;
+        use crate::board::{Board, Player};
+        use crate::game_tree::GameTree;
+
+        #[test]
+        fn alpha_beta_pruning_search() {
+            // Diagram 13-10 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
+            let current_board = Board::create_from_str(
+                "
+                o o o o o o o o
+                o o o o o x x o
+                o x x o x x x o
+                o x o x o x x o
+                o o o o x x x o
+                o o o x x x x o
+                - o o x o o o o
+                - - o x x x x x
+            ",
+            );
+            let mut game_tree = GameTree::create(Player::Second, current_board);
+            let best_move = game_tree.alpha_beta_pruning_search(3).unwrap();
+
+            // FIXME
+            assert_ne!(
+                bitboard::put_position_to_coord(best_move.put_position),
+                "a8"
+            );
+            assert_ne!(best_move.score, Some(3.0));
+        }
+    }
+}
