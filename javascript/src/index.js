@@ -1,4 +1,4 @@
-import { newBoard, StrategyType, Player } from "reversi-wasm";
+import { Game, StrategyType, Player } from "reversi-wasm";
 import { sleep } from "./utils";
 import {
   convertToIdx,
@@ -8,8 +8,8 @@ import {
   drawGrid,
 } from "./draw";
 
-const board = newBoard();
-let legalPositions = board.getAllLegalPosition(Player.First);
+const game = Game.create(Player.First, StrategyType.NumdiskLookahead);
+let legalPositions = game.getCurrentAllLegalPosition(Player.First);
 let boardLocked = false;
 
 const canvas = document.getElementById("reversi-board");
@@ -26,7 +26,7 @@ if (canvas.getContext) {
       drawCircle(context, i, j, "red", 5);
     }
   };
-  draw(board);
+  draw(game.currentBoard());
 
   canvas.addEventListener("click", async function (clickEvent) {
     if (boardLocked) {
@@ -38,18 +38,14 @@ if (canvas.getContext) {
     if (idx) {
       const [i, j] = idx;
       if (legalPositions[i + 8 * j] > 0) {
-        board.putAndReverse(Player.First, i, j);
-        draw(board, i, j);
+        game.putAndReverse(i, j);
+        draw(game.currentBoard(), i, j);
 
         await sleep(500);
 
-        const p = board.putNextMove(
-          Player.Second,
-          StrategyType.NumdiskLookahead
-        );
-
-        draw(board, p[0], p[1]);
-        legalPositions = board.getAllLegalPosition(Player.First);
+        const p = game.putAndReverseOpponent();
+        draw(game.currentBoard(), p[0], p[1]);
+        legalPositions = game.getCurrentAllLegalPosition(Player.First);
       }
     }
 
