@@ -263,7 +263,7 @@ impl Board {
         }
     }
 
-    // FIXME
+    // TODO: 高速化
     pub fn get_all_legal_moves(&self, player: &Player) -> Vec<u64> {
         let (current, opponent) = match player {
             Player::First => (self.first, self.second),
