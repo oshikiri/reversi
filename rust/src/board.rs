@@ -342,9 +342,8 @@ pub fn count_bits(bitboard: u64) -> u64 {
 }
 
 pub fn coordinate_to_bitboard(x: u64, y: u64) -> Result<u64, String> {
-    if x >= 8 && y >= 8 {
-        // FIXME: ||?
-        Err("out of index".to_string())
+    if x >= 8 || y >= 8 {
+        Err(format!("out of index: ({}, {})", x, y))
     } else {
         let i = x + 8 * y;
         Ok(1 << i)
@@ -609,6 +608,8 @@ mod tests {
         fn coordinate_to_bitboard_should_convert_notations() {
             assert_eq!(board::coordinate_to_bitboard(0, 0), Ok(1));
             assert_eq!(board::coordinate_to_bitboard(7, 7), Ok(1 << 63));
+            assert_eq!(board::coordinate_to_bitboard(8, 7), Err("out of index: (8, 7)".to_string()));
+            assert_eq!(board::coordinate_to_bitboard(8, 8), Err("out of index: (8, 8)".to_string()));
         }
 
         #[test]
