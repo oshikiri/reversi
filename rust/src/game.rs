@@ -16,6 +16,25 @@ pub struct Game {
     opponent_strategy: Box<dyn Strategy>,
 }
 
+impl Game {
+    fn put_and_reverse_opponent(&mut self) -> Result<u64, String> {
+        let player = self.player_human.opponent();
+        let next_position_result = self
+            .opponent_strategy
+            .get_next_move(&self.current_board, &player);
+
+        match next_position_result {
+            Ok(next_position) => {
+                let (_player, put_position) =
+                    self.current_board.put_and_reverse(&player, next_position);
+                self.history.push(put_position);
+                Ok(put_position)
+            }
+            Err(msg) => Err(format!("Skipped because: {}", msg)),
+        }
+    }
+}
+
 #[wasm_bindgen]
 impl Game {
     #![allow(non_snake_case)]
@@ -48,21 +67,7 @@ impl Game {
 
     pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
         let player = self.player_human.opponent();
-
-        let next_position_result = self
-            .opponent_strategy
-            .get_next_move(&self.current_board, &player);
-        let result = match next_position_result {
-            Ok(next_position) => {
-                let (_player, put_position) =
-                    self.current_board.put_and_reverse(&player, next_position);
-                self.history.push(put_position);
-                Ok(put_position)
-            }
-            Err(msg) => Err(format!("Skipped because: {}", msg)),
-        };
-
-        match result {
+        match self.put_and_reverse_opponent() {
             Ok(put_position) => {
                 self.print_move(&player, put_position);
                 match bitboard::put_position_to_xy(put_position) {
