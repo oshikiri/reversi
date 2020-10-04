@@ -52,6 +52,7 @@ impl GameTree {
         node_max_score.map(|x| x.clone())
     }
 
+    #[allow(dead_code)]
     pub fn print_tree(&self) -> Result<(), String> {
         for child in &self.children {
             let next_move = bitboard::put_position_to_coord(child.put_position)?;

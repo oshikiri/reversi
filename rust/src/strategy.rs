@@ -32,7 +32,7 @@ impl Strategy for NumdiskLookaheadStrategy {
         };
         let mut game_tree = GameTree::create(player.clone(), root_board);
         let best_move = game_tree.alpha_beta_pruning_search(depth);
-        game_tree.print_tree()?;
+        // game_tree.print_tree()?;
         match best_move {
             Some(best_move) => Ok(best_move.put_position),
             None => Err(String::from("Result of alpha_beta_pruning_search is empty")),
