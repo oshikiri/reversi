@@ -1,6 +1,12 @@
 import { newBoard, StrategyType, Player } from "reversi-wasm";
 import { sleep } from "./utils";
-import { convertToIdx, drawBackground, drawCircle, drawDisks, drawGrid } from "./draw";
+import {
+  convertToIdx,
+  drawBackground,
+  drawCircle,
+  drawDisks,
+  drawGrid,
+} from "./draw";
 
 const board = newBoard();
 let legalPositions = board.getAllLegalPosition(Player.First);
@@ -37,7 +43,10 @@ if (canvas.getContext) {
 
         await sleep(500);
 
-        const p = board.putNextMove(Player.Second, StrategyType.NumdiskLookahead);
+        const p = board.putNextMove(
+          Player.Second,
+          StrategyType.NumdiskLookahead
+        );
 
         draw(board, p[0], p[1]);
         legalPositions = board.getAllLegalPosition(Player.First);
