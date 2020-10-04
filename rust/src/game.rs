@@ -99,8 +99,8 @@ impl Game {
 #[cfg(test)]
 mod tests {
     use crate::board::Board;
-    use crate::player::Player;
     use crate::game::Game;
+    use crate::player::Player;
     use crate::strategy::StrategyType;
 
     #[test]
