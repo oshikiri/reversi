@@ -149,6 +149,18 @@ pub fn put_position_to_coord(position: u64) -> Result<String, String> {
     }
 }
 
+pub fn put_position_to_xy(position: u64) -> Option<(u64, u64)> {
+    let mut position = position;
+    let mut i_position = None;
+    for i in 0..64 {
+        if position & 1 == 1 {
+            i_position = Some(i);
+        }
+        position = position >> 1;
+    }
+    i_position.map(|i| (i % 8, i / 8))
+}
+
 #[cfg(test)]
 mod tests {
     mod bitboard_test {

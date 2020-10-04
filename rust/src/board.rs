@@ -68,16 +68,25 @@ impl Board {
         convert_vec_to_jsarray(legal_positions)
     }
 
-    pub fn putNextMove(&mut self, player: Player, strategy: StrategyType) {
+    pub fn putNextMove(&mut self, player: Player, strategy: StrategyType) -> js_sys::Array {
         let result = self.put_next_move(&player, strategy);
         match result {
-            Ok(put_position) => console_log!(
-                "move {:?} {}",
-                player,
-                bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
-            ),
-            Err(msg) => console_log!("passed (reason: {})", msg),
-        };
+            Ok(put_position) => {
+                console_log!(
+                    "move {:?} {}",
+                    player,
+                    bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
+                );
+                match bitboard::put_position_to_xy(put_position) {
+                    Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
+                    None => convert_vec_to_jsarray(vec![]),
+                }
+            }
+            Err(msg) => {
+                console_log!("passed (reason: {})", msg);
+                convert_vec_to_jsarray(vec![])
+            }
+        }
     }
 }
 
