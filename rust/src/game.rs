@@ -40,14 +40,10 @@ impl Game {
 
     pub fn putAndReverse(&mut self, i: u8, j: u8) {
         let put_position = coordinate_to_bitboard(i as u64, j as u64).unwrap();
-        console_log!(
-            "move {:?} {}",
-            self.player_human,
-            bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
-        );
         self.current_board
             .put_and_reverse(&self.player_human, put_position);
         self.history.push(put_position);
+        self.print_move(&self.player_human, put_position);
     }
 
     pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
@@ -60,6 +56,7 @@ impl Game {
             Ok(next_position) => {
                 let (_player, put_position) =
                     self.current_board.put_and_reverse(&player, next_position);
+                self.history.push(put_position);
                 Ok(put_position)
             }
             Err(msg) => Err(format!("Skipped because: {}", msg)),
@@ -67,11 +64,7 @@ impl Game {
 
         match result {
             Ok(put_position) => {
-                console_log!(
-                    "move {:?} {}",
-                    player,
-                    bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
-                );
+                self.print_move(&player, put_position);
                 match bitboard::put_position_to_xy(put_position) {
                     Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
                     None => convert_vec_to_jsarray(vec![]),
@@ -86,5 +79,14 @@ impl Game {
 
     pub fn getCurrentAllLegalPosition(&self, player: Player) -> js_sys::Array {
         self.current_board.getAllLegalPosition(player)
+    }
+
+    fn print_move(&self, player: &Player, put_position: u64) {
+        console_log!(
+            "move[{}] {} {:?}",
+            self.history.len(),
+            bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string()),
+            player,
+        );
     }
 }
