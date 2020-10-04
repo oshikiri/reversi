@@ -608,8 +608,14 @@ mod tests {
         fn coordinate_to_bitboard_should_convert_notations() {
             assert_eq!(board::coordinate_to_bitboard(0, 0), Ok(1));
             assert_eq!(board::coordinate_to_bitboard(7, 7), Ok(1 << 63));
-            assert_eq!(board::coordinate_to_bitboard(8, 7), Err("out of index: (8, 7)".to_string()));
-            assert_eq!(board::coordinate_to_bitboard(8, 8), Err("out of index: (8, 8)".to_string()));
+            assert_eq!(
+                board::coordinate_to_bitboard(8, 7),
+                Err("out of index: (8, 7)".to_string())
+            );
+            assert_eq!(
+                board::coordinate_to_bitboard(8, 8),
+                Err("out of index: (8, 8)".to_string())
+            );
         }
 
         #[test]
