@@ -313,9 +313,10 @@ fn generate_mask(i: u64) -> u64 {
 }
 
 pub fn convert_vec_to_jsarray(vector: Vec<u64>) -> js_sys::Array {
-    let jsarray = js_sys::Array::new_with_length(64);
+    let length = vector.len() as u32;
+    let jsarray = js_sys::Array::new_with_length(length);
 
-    for i in 0..64 {
+    for i in 0..length {
         jsarray.set(i, JsValue::from_f64(vector[i as usize] as f64));
     }
 
