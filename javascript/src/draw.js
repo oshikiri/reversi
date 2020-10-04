@@ -47,12 +47,16 @@ export const drawGrid = (ctx) => {
 };
 
 const drawDisk = (ctx, i, j, color) => {
+  drawCircle(ctx, i, j, color, DISK_RADIUS);
+};
+
+export const drawCircle = (ctx, i, j, color, radius) => {
   const x = BOARD_OFFSET + (i + 1 / 2) * (CELL_WIDTH + 1) + 1;
   const y = BOARD_OFFSET + (j + 1 / 2) * (CELL_WIDTH + 1) + 1;
 
   ctx.beginPath();
   ctx.fillStyle = color;
-  ctx.arc(x, y, DISK_RADIUS, 0, 2 * Math.PI);
+  ctx.arc(x, y, radius, 0, 2 * Math.PI);
   ctx.fill();
 };
 
