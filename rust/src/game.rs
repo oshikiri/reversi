@@ -95,3 +95,83 @@ impl Game {
         );
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::board::Board;
+    use crate::player::Player;
+    use crate::game::Game;
+    use crate::strategy::StrategyType;
+
+    #[test]
+    fn put_next_move_numdisk_lookahead_1_initial_move() {
+        // https://github.com/oshikiri/reversi/pull/8
+        let mut game = Game::create(Player::Second, StrategyType::NumdiskLookahead);
+        game.current_board = Board::create_from_str(
+            "
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - o x - - -
+            - - - x o - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+        ",
+        );
+        let result = game.put_and_reverse_opponent();
+
+        let expected = Board::create_from_str(
+            "
+            - - - - - - - -
+            - - - - - - - -
+            - - - - o - - -
+            - - - o o - - -
+            - - - x o - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+        ",
+        );
+
+        assert_eq!(result, Ok(1 << 20));
+        assert_eq!(game.current_board, expected);
+    }
+
+    #[test]
+    fn put_next_move_no_legal_move() {
+        let mut game = Game::create(Player::Second, StrategyType::NumdiskLookahead);
+        game.current_board = Board::create_from_str(
+            "
+            x o - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+        ",
+        );
+        let result = game.put_and_reverse_opponent();
+
+        let expected = Board::create_from_str(
+            "
+            x o - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+            - - - - - - - -
+        ",
+        );
+
+        assert_eq!(game.current_board, expected);
+        assert_eq!(
+            result,
+            Err("Skipped because: Result of alpha_beta_pruning_search is empty".to_string())
+        )
+    }
+}

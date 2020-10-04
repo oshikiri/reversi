@@ -8,7 +8,6 @@ use crate::bitboard;
 use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::player::Player;
-use crate::strategy::*;
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, PartialEq)]
@@ -66,27 +65,6 @@ impl Board {
             .map(count_bits)
             .collect();
         convert_vec_to_jsarray(legal_positions)
-    }
-
-    pub fn putNextMove(&mut self, player: Player, strategy: StrategyType) -> js_sys::Array {
-        let result = self.put_next_move(&player, strategy);
-        match result {
-            Ok(put_position) => {
-                console_log!(
-                    "move {:?} {}",
-                    player,
-                    bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
-                );
-                match bitboard::put_position_to_xy(put_position) {
-                    Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
-                    None => convert_vec_to_jsarray(vec![]),
-                }
-            }
-            Err(msg) => {
-                console_log!("passed (reason: {})", msg);
-                convert_vec_to_jsarray(vec![])
-            }
-        }
     }
 }
 
@@ -219,26 +197,6 @@ impl Board {
         }
 
         reverse_patterns
-    }
-
-    pub fn put_next_move(
-        &mut self,
-        player: &Player,
-        strategy_type: StrategyType,
-    ) -> Result<u64, String> {
-        use StrategyType::*;
-        let mut strategy: Box<dyn Strategy> = match strategy_type {
-            NumdiskLookahead => Box::new(NumdiskLookaheadStrategy {}),
-            PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
-        };
-
-        match strategy.get_next_move(&*self, &player) {
-            Ok(next_position) => {
-                let (_player, put_position) = self.put_and_reverse(&player, next_position);
-                Ok(put_position)
-            }
-            Err(msg) => Err(format!("Skipped because: {}", msg)),
-        }
     }
 
     pub fn calculate_pattern_score(pattern_instance_indices: Vec<u64>) -> f32 {
@@ -477,82 +435,6 @@ mod tests {
             expected[2] = 2;
 
             assert_eq!(reverse_patterns, expected)
-        }
-
-        #[test]
-        fn put_next_move_numdisk_lookahead_1_initial_move() {
-            // https://github.com/oshikiri/reversi/pull/8
-            let mut board = Board::create_from_str(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - o x - - -
-                - - - x o - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-            let result = board.put_next_move(
-                &Player::First,
-                crate::strategy::StrategyType::NumdiskLookahead,
-            );
-
-            let expected = Board::create_from_str(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - o - - -
-                - - - o o - - -
-                - - - x o - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-
-            assert_eq!(result, Ok(1 << 20));
-            assert_eq!(board, expected);
-        }
-
-        #[test]
-        fn put_next_move_no_legal_move() {
-            let mut board = Board::create_from_str(
-                "
-                x o - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-            let result = board.put_next_move(
-                &Player::First,
-                crate::strategy::StrategyType::NumdiskLookahead,
-            );
-
-            let expected = Board::create_from_str(
-                "
-                x o - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-
-            assert_eq!(board, expected);
-            assert_eq!(
-                result,
-                Err("Skipped because: Result of alpha_beta_pruning_search is empty".to_string())
-            )
         }
 
         #[test]
