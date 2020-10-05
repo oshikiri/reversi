@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 use crate::bitboard;
 use crate::board::{count_bits, Board};
 use crate::console_log;
-use crate::game_tree::GameTree;
+use crate::game_tree::{GameTree, GameTreeNode};
 use crate::player::Player;
 
 #[wasm_bindgen]
@@ -23,7 +23,7 @@ pub trait Strategy {
         board: &Board,
         palyer: &Player,
         i_step: usize,
-    ) -> Result<u64, String>;
+    ) -> Result<GameTreeNode, String>;
 }
 
 pub struct NumdiskLookaheadStrategy {}
@@ -34,7 +34,7 @@ impl Strategy for NumdiskLookaheadStrategy {
         board: &Board,
         player: &Player,
         i_step: usize,
-    ) -> Result<u64, String> {
+    ) -> Result<GameTreeNode, String> {
         let depth = match i_step {
             45..=61 => 11,
             _ => 7,
@@ -47,7 +47,7 @@ impl Strategy for NumdiskLookaheadStrategy {
         let best_move = game_tree.alpha_beta_pruning_search(depth);
         // game_tree.print_tree()?;
         match best_move {
-            Some(best_move) => Ok(best_move.put_position),
+            Some(best_move) => Ok(best_move),
             None => Err(String::from("Result of alpha_beta_pruning_search is empty")),
         }
     }
@@ -62,7 +62,7 @@ impl Strategy for PatternLookahead1Strategy {
         current_board: &Board,
         player: &Player,
         _i_step: usize,
-    ) -> Result<u64, String> {
+    ) -> Result<GameTreeNode, String> {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
@@ -87,14 +87,19 @@ impl Strategy for PatternLookahead1Strategy {
 
         console_log!("{:?}", scores);
 
-        match argmax_f32(scores) {
-            Some(i_max) => Ok(1 << i_max),
+        match argmax_f32(&scores) {
+            Some(i_max) => {
+                let mut node =
+                    GameTreeNode::create(player.clone(), 1 << i_max, current_board.clone());
+                node.score = Some(scores[i_max]);
+                Ok(node)
+            }
             None => Err(String::from("reverse_counts is all zero")),
         }
     }
 }
 
-fn argmax_f32(v: Vec<f32>) -> Option<usize> {
+fn argmax_f32(v: &Vec<f32>) -> Option<usize> {
     let mut v_max = -f32::MAX;
     let mut i_max = 0;
 

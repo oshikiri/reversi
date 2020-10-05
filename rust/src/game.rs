@@ -5,6 +5,7 @@ use wasm_bindgen::prelude::*;
 use crate::bitboard;
 use crate::board::*;
 use crate::console_log;
+use crate::game_tree::GameTreeNode;
 use crate::player::Player;
 use crate::strategy::*;
 
@@ -17,18 +18,19 @@ pub struct Game {
 }
 
 impl Game {
-    fn put_and_reverse_opponent(&mut self) -> Result<u64, String> {
+    fn put_and_reverse_opponent(&mut self) -> Result<GameTreeNode, String> {
         let player = self.player_human.opponent();
         let next_position_result =
             self.opponent_strategy
                 .get_next_move(&self.current_board, &player, self.history.len());
 
         match next_position_result {
-            Ok(next_position) => {
-                let (_player, put_position) =
-                    self.current_board.put_and_reverse(&player, next_position);
+            Ok(best_move) => {
+                let (_player, put_position) = self
+                    .current_board
+                    .put_and_reverse(&player, best_move.put_position);
                 self.history.push(put_position);
-                Ok(put_position)
+                Ok(best_move)
             }
             Err(msg) => Err(format!("Skipped because: {}", msg)),
         }
@@ -68,9 +70,12 @@ impl Game {
     pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
         let player = self.player_human.opponent();
         match self.put_and_reverse_opponent() {
-            Ok(put_position) => {
-                self.print_move(&player, put_position);
-                match bitboard::put_position_to_xy(put_position) {
+            Ok(best_move) => {
+                self.print_move(&player, best_move.put_position);
+                best_move
+                    .score
+                    .map(|score| console_log!("    score: {}", score));
+                match bitboard::put_position_to_xy(best_move.put_position) {
                     Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
                     None => convert_vec_to_jsarray(vec![]),
                 }
@@ -134,7 +139,8 @@ mod tests {
         ",
         );
 
-        assert_eq!(result, Ok(1 << 20));
+        assert_eq!(result.is_ok(), true);
+        assert_eq!(result.unwrap().put_position, 1 << 20);
         assert_eq!(game.current_board, expected);
     }
 
@@ -169,9 +175,10 @@ mod tests {
         );
 
         assert_eq!(game.current_board, expected);
+        assert_eq!(result.is_ok(), false);
         assert_eq!(
-            result,
-            Err("Skipped because: Result of alpha_beta_pruning_search is empty".to_string())
-        )
+            result.unwrap_err(),
+            "Skipped because: Result of alpha_beta_pruning_search is empty".to_string()
+        );
     }
 }

@@ -67,12 +67,12 @@ pub struct GameTreeNode {
     player: Player,
     pub put_position: u64,
     current_board: Board,
-    score: Option<f32>,
+    pub score: Option<f32>,
     children: Vec<GameTreeNode>,
 }
 
 impl GameTreeNode {
-    fn create(player: Player, put_position: u64, current_board: Board) -> GameTreeNode {
+    pub fn create(player: Player, put_position: u64, current_board: Board) -> GameTreeNode {
         GameTreeNode {
             player,
             put_position,
