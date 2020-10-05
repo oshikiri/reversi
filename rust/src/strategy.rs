@@ -18,14 +18,27 @@ pub fn new_strategy() -> NumdiskLookaheadStrategy {
 }
 
 pub trait Strategy {
-    fn get_next_move(&mut self, board: &Board, palyer: &Player) -> Result<u64, String>;
+    fn get_next_move(
+        &mut self,
+        board: &Board,
+        palyer: &Player,
+        i_step: usize,
+    ) -> Result<u64, String>;
 }
 
 pub struct NumdiskLookaheadStrategy {}
 
 impl Strategy for NumdiskLookaheadStrategy {
-    fn get_next_move(&mut self, board: &Board, player: &Player) -> Result<u64, String> {
-        let depth = 5;
+    fn get_next_move(
+        &mut self,
+        board: &Board,
+        player: &Player,
+        i_step: usize,
+    ) -> Result<u64, String> {
+        let depth = match i_step {
+            45..=61 => 11,
+            _ => 7,
+        };
         let (player, root_board) = match player {
             Player::First => (player.clone(), board.clone()),
             Player::Second => (player.opponent().clone(), Board::reverse(&board)),
@@ -44,7 +57,12 @@ pub struct PatternLookahead1Strategy {}
 
 impl Strategy for PatternLookahead1Strategy {
     // TODO: 高速化
-    fn get_next_move(&mut self, current_board: &Board, player: &Player) -> Result<u64, String> {
+    fn get_next_move(
+        &mut self,
+        current_board: &Board,
+        player: &Player,
+        _i_step: usize,
+    ) -> Result<u64, String> {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {

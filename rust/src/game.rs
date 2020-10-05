@@ -19,9 +19,9 @@ pub struct Game {
 impl Game {
     fn put_and_reverse_opponent(&mut self) -> Result<u64, String> {
         let player = self.player_human.opponent();
-        let next_position_result = self
-            .opponent_strategy
-            .get_next_move(&self.current_board, &player);
+        let next_position_result =
+            self.opponent_strategy
+                .get_next_move(&self.current_board, &player, self.history.len());
 
         match next_position_result {
             Ok(next_position) => {
