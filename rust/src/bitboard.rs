@@ -120,8 +120,11 @@ pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     bitvec
 }
 
-pub fn put_position_to_coord(position: u64) -> Result<String, String> {
-    let mut position = position;
+pub fn put_position_to_coord(position_opt: Option<u64>) -> Result<String, String> {
+    if position_opt.is_none() {
+        return Ok("passed".to_string());
+    }
+    let mut position = position_opt.unwrap();
     let mut i_position = None;
     for i in 0..64 {
         if position & 1 == 1 {
@@ -228,13 +231,16 @@ mod tests {
 
         #[test]
         fn put_position_to_coord() {
-            assert_eq!(bitboard::put_position_to_coord(1), Ok("a1".to_string()));
             assert_eq!(
-                bitboard::put_position_to_coord(1 << 7),
+                bitboard::put_position_to_coord(Some(1)),
+                Ok("a1".to_string())
+            );
+            assert_eq!(
+                bitboard::put_position_to_coord(Some(1 << 7)),
                 Ok("h1".to_string())
             );
             assert_eq!(
-                bitboard::put_position_to_coord(1 << 63),
+                bitboard::put_position_to_coord(Some(1 << 63)),
                 Ok("h8".to_string())
             );
         }

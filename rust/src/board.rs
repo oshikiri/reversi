@@ -48,7 +48,7 @@ impl Board {
         console_log!(
             "move {:?} {}",
             player,
-            bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string())
+            bitboard::put_position_to_coord(Some(put_position)).unwrap_or("*".to_string())
         );
         self.put_and_reverse(&player, put_position);
     }

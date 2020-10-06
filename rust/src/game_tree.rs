@@ -1,5 +1,6 @@
 use crate::bitboard;
 use crate::board::Board;
+use crate::console_log;
 use crate::player::Player;
 
 pub struct GameTree {
@@ -29,10 +30,19 @@ impl GameTree {
     pub fn alpha_beta_pruning_search(&mut self, depth: u64) -> Option<GameTreeNode> {
         self.fill_children(self.player.clone());
 
+        println!(
+            "{:?}",
+            self.children
+                .iter_mut()
+                .map(|c| bitboard::put_position_to_coord(c.put_position).unwrap())
+                .collect::<Vec<String>>()
+        );
+
         let mut node_max_score: Option<&mut GameTreeNode> = None;
         let mut max_score_opt: Option<f32> = None;
 
         for child in &mut self.children {
+            println!("{:?}", bitboard::put_position_to_coord(child.put_position));
             let child_score = -child.alpha_beta_pruning_search(depth - 1, -f32::MAX, f32::MAX);
             child.score = Some(child_score);
             match (child_score, max_score_opt) {
@@ -56,6 +66,7 @@ impl GameTree {
     pub fn print_tree(&self) -> Result<(), String> {
         for child in &self.children {
             let next_move = bitboard::put_position_to_coord(child.put_position)?;
+            console_log!("{:?} {:?}", next_move, child.score);
             child.print_tree(1, vec![next_move])?;
         }
         Ok(())
@@ -65,7 +76,7 @@ impl GameTree {
 #[derive(Clone, Debug)]
 pub struct GameTreeNode {
     player: Player,
-    pub put_position: u64,
+    pub put_position: Option<u64>,
     current_board: Board,
     pub score: Option<f32>,
     children: Vec<GameTreeNode>,
@@ -75,7 +86,7 @@ impl GameTreeNode {
     pub fn create(player: Player, put_position: u64, current_board: Board) -> GameTreeNode {
         GameTreeNode {
             player,
-            put_position,
+            put_position: Some(put_position),
             current_board,
             score: None,
             children: vec![],
@@ -98,6 +109,26 @@ impl GameTreeNode {
 
     fn alpha_beta_pruning_search(&mut self, depth: u64, alpha: f32, beta: f32) -> f32 {
         self.fill_children();
+
+        if self.children.len() == 0 {
+            let empty_child = GameTreeNode {
+                player: self.player.clone(),
+                put_position: None,
+                current_board: self.current_board.clone(),
+                score: None,
+                children: vec![],
+            };
+            self.children = vec![empty_child];
+        }
+
+        println!(
+            "GameTreeNode::alpha_beta_pruning_search {:?} {:?}",
+            bitboard::put_position_to_coord(self.put_position),
+            self.children
+                .iter_mut()
+                .map(|c| bitboard::put_position_to_coord(c.put_position).unwrap_or("empty".to_string()))
+                .collect::<Vec<String>>()
+        );
 
         let score = if self.has_children() && depth > 0 {
             let mut alpha = alpha;
@@ -153,6 +184,32 @@ mod tests {
             );
             let mut game_tree = GameTree::create(Player::Second, current_board);
             let best_move = game_tree.alpha_beta_pruning_search(3).unwrap();
+
+            assert_eq!(
+                bitboard::put_position_to_coord(best_move.put_position),
+                Ok("a8".to_string())
+            );
+            assert_eq!(best_move.score, Some(2.0));
+        }
+
+        #[test]
+        fn alpha_beta_pruning_search_pass() {
+            // Puzzle 99 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
+            let current_board = Board::create_from_str(
+                "
+                - x x x x x - o
+                - - x x x x x o
+                o x x x o x o o
+                o o o x x x o o
+                o x x x x x o o
+                o x x x x x o o
+                o - x x x x - o
+                - x x x x x x -
+            ",
+            );
+            let mut game_tree = GameTree::create(Player::First, current_board);
+            let best_move = game_tree.alpha_beta_pruning_search(1).unwrap();
+            game_tree.print_tree();
 
             assert_eq!(
                 bitboard::put_position_to_coord(best_move.put_position),
