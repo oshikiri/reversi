@@ -71,12 +71,17 @@ impl Game {
     pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
         let player = self.player_human.opponent();
         match self.put_and_reverse_opponent() {
-            Ok(best_move) => {
+            Ok(best_move) if best_move.put_position.is_some() => {
+                let put_position = best_move.put_position.unwrap();
                 self.print_move(&player, best_move.put_position.unwrap());
-                match bitboard::put_position_to_xy(best_move.put_position.unwrap()) {
+                match bitboard::put_position_to_xy(put_position) {
                     Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
                     None => convert_vec_to_jsarray(vec![]),
                 }
+            }
+            Ok(_) => {
+                console_log!("passed (reason: best_move.put_position = None)");
+                convert_vec_to_jsarray(vec![])
             }
             Err(msg) => {
                 console_log!("passed (reason: {})", msg);
