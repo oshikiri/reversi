@@ -120,11 +120,11 @@ pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     bitvec
 }
 
-pub fn put_position_to_coord(position_opt: Option<u64>) -> Result<String, String> {
-    if position_opt.is_none() {
+pub fn put_position_to_coord(position: Option<u64>) -> Result<String, String> {
+    if position.is_none() {
         return Ok("passed".to_string());
     }
-    let mut position = position_opt.unwrap();
+    let mut position = position.unwrap();
     let mut i_position = None;
     for i in 0..64 {
         if position & 1 == 1 {
