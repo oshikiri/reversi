@@ -26,9 +26,10 @@ impl Game {
 
         match next_position_result {
             Ok(best_move) => {
+                console_log!("score of choosen move = {:?}", best_move.score);
                 let (_player, put_position) = self
                     .current_board
-                    .put_and_reverse(&player, best_move.put_position);
+                    .put_and_reverse(&player, best_move.put_position.unwrap());
                 self.history.push(put_position);
                 Ok(best_move)
             }
@@ -70,15 +71,17 @@ impl Game {
     pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
         let player = self.player_human.opponent();
         match self.put_and_reverse_opponent() {
-            Ok(best_move) => {
-                self.print_move(&player, best_move.put_position);
-                best_move
-                    .score
-                    .map(|score| console_log!("    score: {}", score));
-                match bitboard::put_position_to_xy(best_move.put_position) {
+            Ok(best_move) if best_move.put_position.is_some() => {
+                let put_position = best_move.put_position.unwrap();
+                self.print_move(&player, best_move.put_position.unwrap());
+                match bitboard::put_position_to_xy(put_position) {
                     Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
                     None => convert_vec_to_jsarray(vec![]),
                 }
+            }
+            Ok(_) => {
+                console_log!("passed (reason: best_move.put_position = None)");
+                convert_vec_to_jsarray(vec![])
             }
             Err(msg) => {
                 console_log!("passed (reason: {})", msg);
@@ -92,10 +95,11 @@ impl Game {
     }
 
     fn print_move(&self, player: &Player, put_position: u64) {
+        println!("{:?}", bitboard::put_position_to_coord(Some(put_position)));
         console_log!(
             "move[{}] {} {:?}",
             self.history.len(),
-            bitboard::put_position_to_coord(put_position).unwrap_or("*".to_string()),
+            bitboard::put_position_to_coord(Some(put_position)).unwrap_or("*".to_string()),
             player,
         );
     }
@@ -140,7 +144,7 @@ mod tests {
         );
 
         assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().put_position, 1 << 20);
+        assert_eq!(result.unwrap().put_position, Some(1 << 20));
         assert_eq!(game.current_board, expected);
     }
 

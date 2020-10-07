@@ -36,7 +36,8 @@ impl Strategy for NumdiskLookaheadStrategy {
         i_step: usize,
     ) -> Result<GameTreeNode, String> {
         let depth = match i_step {
-            45..=61 => 9,
+            51..=61 => 11,
+            41..=50 => 7,
             _ => 5,
         };
         let (player, root_board) = match player {
@@ -47,8 +48,8 @@ impl Strategy for NumdiskLookaheadStrategy {
         let best_move = game_tree.alpha_beta_pruning_search(depth);
         // game_tree.print_tree()?;
         match best_move {
-            Some(best_move) => Ok(best_move),
-            None => Err(String::from("Result of alpha_beta_pruning_search is empty")),
+            Some(best_move) if best_move.put_position.is_some() => Ok(best_move),
+            _ => Err(String::from("Result of alpha_beta_pruning_search is empty")),
         }
     }
 }
