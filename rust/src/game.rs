@@ -26,6 +26,7 @@ impl Game {
 
         match next_position_result {
             Ok(best_move) => {
+                console_log!("score of choosen move = {:?}", best_move.score);
                 let (_player, put_position) = self
                     .current_board
                     .put_and_reverse(&player, best_move.put_position.unwrap());
@@ -72,9 +73,6 @@ impl Game {
         match self.put_and_reverse_opponent() {
             Ok(best_move) => {
                 self.print_move(&player, best_move.put_position.unwrap());
-                // best_move
-                //     .score
-                //     .map(|score| console_log!("    score: {}", score));
                 match bitboard::put_position_to_xy(best_move.put_position.unwrap()) {
                     Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
                     None => convert_vec_to_jsarray(vec![]),

@@ -30,19 +30,21 @@ impl GameTree {
     pub fn alpha_beta_pruning_search(&mut self, depth: u64) -> Option<GameTreeNode> {
         self.fill_children(self.player.clone());
 
-        println!(
-            "{:?}",
-            self.children
-                .iter_mut()
-                .map(|c| bitboard::put_position_to_coord(c.put_position).unwrap())
-                .collect::<Vec<String>>()
-        );
+        if self.children.len() == 0 {
+            let empty_child = GameTreeNode {
+                player: self.player.opponent().clone(),
+                put_position: None,
+                current_board: self.root_board.clone(),
+                score: None,
+                children: vec![],
+            };
+            self.children = vec![empty_child];
+        }
 
         let mut node_max_score: Option<&mut GameTreeNode> = None;
         let mut max_score_opt: Option<f32> = None;
 
         for child in &mut self.children {
-            println!("{:?}", bitboard::put_position_to_coord(child.put_position));
             let child_score = -child.alpha_beta_pruning_search(depth - 1, -f32::MAX, f32::MAX);
             child.score = Some(child_score);
             match (child_score, max_score_opt) {
@@ -110,9 +112,9 @@ impl GameTreeNode {
     fn alpha_beta_pruning_search(&mut self, depth: u64, alpha: f32, beta: f32) -> f32 {
         self.fill_children();
 
-        if self.children.len() == 0 {
+        if self.children.len() == 0 && !self.current_board.is_full() {
             let empty_child = GameTreeNode {
-                player: self.player.clone(),
+                player: self.player.opponent().clone(),
                 put_position: None,
                 current_board: self.current_board.clone(),
                 score: None,
@@ -120,15 +122,6 @@ impl GameTreeNode {
             };
             self.children = vec![empty_child];
         }
-
-        println!(
-            "GameTreeNode::alpha_beta_pruning_search {:?} {:?}",
-            bitboard::put_position_to_coord(self.put_position),
-            self.children
-                .iter_mut()
-                .map(|c| bitboard::put_position_to_coord(c.put_position).unwrap_or("empty".to_string()))
-                .collect::<Vec<String>>()
-        );
 
         let score = if self.has_children() && depth > 0 {
             let mut alpha = alpha;
@@ -182,9 +175,16 @@ mod tests {
                 - - o x x x x x
             ",
             );
-            let mut game_tree = GameTree::create(Player::Second, current_board);
-            let best_move = game_tree.alpha_beta_pruning_search(3).unwrap();
 
+            // when next turn is black
+            let mut game_tree = GameTree::create(Player::First, current_board.clone());
+            let best_move = game_tree.alpha_beta_pruning_search(5).unwrap();
+            assert_eq!(best_move.put_position, None);
+            assert_eq!(best_move.score, Some(-2.0));
+
+            // when next turn is white
+            let mut game_tree = GameTree::create(Player::Second, current_board.clone());
+            let best_move = game_tree.alpha_beta_pruning_search(3).unwrap();
             assert_eq!(
                 bitboard::put_position_to_coord(best_move.put_position),
                 Ok("a8".to_string())
@@ -208,15 +208,14 @@ mod tests {
             ",
             );
             let mut game_tree = GameTree::create(Player::First, current_board);
-            let best_move = game_tree.alpha_beta_pruning_search(1).unwrap();
-            game_tree.print_tree();
+            let best_move = game_tree.alpha_beta_pruning_search(13).unwrap();
 
-            // FIXME
-            assert_ne!(
+            // NOTE: b7 is also one of the best moves
+            assert_eq!(
                 bitboard::put_position_to_coord(best_move.put_position),
-                Ok("a8".to_string())
+                Ok("g1".to_string())
             );
-            assert_ne!(best_move.score, Some(2.0));
+            assert_eq!(best_move.score, Some(38.0));
         }
     }
 }
