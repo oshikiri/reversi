@@ -112,7 +112,8 @@ impl GameTreeNode {
     fn alpha_beta_pruning_search(&mut self, depth: u64, alpha: f32, beta: f32) -> f32 {
         self.fill_children();
 
-        if self.children.len() == 0 && !self.current_board.is_full() {
+        if self.children.len() == 0 && self.put_position.is_some() && !self.current_board.is_full()
+        {
             let empty_child = GameTreeNode {
                 player: self.player.opponent().clone(),
                 put_position: None,
@@ -126,7 +127,11 @@ impl GameTreeNode {
         let score = if self.has_children() && depth > 0 {
             let mut alpha = alpha;
             for child in self.children.iter_mut() {
-                alpha = alpha.max(-child.alpha_beta_pruning_search(depth - 1, -beta, -alpha));
+                let depth_new = match self.put_position {
+                    Some(_) => depth - 1,
+                    None => depth,
+                };
+                alpha = alpha.max(-child.alpha_beta_pruning_search(depth_new, -beta, -alpha));
                 if alpha >= beta {
                     break;
                 }
@@ -208,7 +213,7 @@ mod tests {
             ",
             );
             let mut game_tree = GameTree::create(Player::First, current_board);
-            let best_move = game_tree.alpha_beta_pruning_search(13).unwrap();
+            let best_move = game_tree.alpha_beta_pruning_search(9).unwrap();
 
             // NOTE: b7 is also one of the best moves
             assert_eq!(
