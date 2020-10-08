@@ -36,16 +36,30 @@ if (canvas.getContext) {
 
     const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
     if (idx) {
-      const [i, j] = idx;
+      let [i, j] = idx;
       if (legalPositions[i + 8 * j] > 0) {
         game.putAndReverse(i, j);
         draw(game.currentBoard(), i, j);
 
-        await sleep(500);
+        while (true) {
+          await sleep(500);
 
-        const p = game.putAndReverseOpponent();
-        draw(game.currentBoard(), p[0], p[1]);
-        legalPositions = game.getCurrentAllLegalPosition(Player.First);
+          const p = game.putAndReverseOpponent();
+          if (p[0] && p[1]) {
+            i = p[0];
+            j = p[1];
+          }
+          draw(game.currentBoard(), i, j);
+          legalPositions = game.getCurrentAllLegalPosition(Player.First);
+          if (legalPositions.reduce((l, r) => l + r) > 0) {
+            break;
+          }
+
+          const legalPositionsOpponent = game.getCurrentAllLegalPosition(Player.Second);
+          if (legalPositionsOpponent.reduce((l, r) => l + r) == 0) {
+            break;
+          }
+        }
       }
     }
 
