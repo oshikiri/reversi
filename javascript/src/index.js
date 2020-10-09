@@ -55,7 +55,9 @@ if (canvas.getContext) {
             break;
           }
 
-          const legalPositionsOpponent = game.getCurrentAllLegalPosition(Player.Second);
+          const legalPositionsOpponent = game.getCurrentAllLegalPosition(
+            Player.Second
+          );
           if (legalPositionsOpponent.reduce((l, r) => l + r) == 0) {
             break;
           }
