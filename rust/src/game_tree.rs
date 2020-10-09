@@ -223,4 +223,33 @@ mod tests {
             assert_eq!(best_move.score, Some(38.0));
         }
     }
+
+    mod benches {
+        extern crate test;
+        use test::Bencher;
+
+        use crate::board::Board;
+        use crate::game_tree::GameTree;
+        use crate::player::Player;
+
+        #[bench]
+        fn alpha_beta_pruning_search(bench: &mut Bencher) {
+            let current_board = Board::create_from_str(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - x o - - -
+                - - - o x - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            bench.iter(|| {
+                let mut game_tree = GameTree::create(Player::First, current_board.clone());
+                let _best_move = game_tree.alpha_beta_pruning_search(8).unwrap();
+            })
+        }
+    }
 }
