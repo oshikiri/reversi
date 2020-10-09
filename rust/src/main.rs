@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
             let mut game_tree = GameTree::create(Player::First, current_board);
             let best_move = game_tree.alpha_beta_pruning_search(7).unwrap();
-            println!("{:?}", best_move.score);
+            println!("{:?}", best_move);
 
             Ok(())
         }

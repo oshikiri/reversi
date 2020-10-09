@@ -23,7 +23,7 @@ pub trait Strategy {
         board: &Board,
         palyer: &Player,
         i_step: usize,
-    ) -> Result<GameTreeNode, String>;
+    ) -> Result<(GameTreeNode, f32), String>;
 }
 
 pub struct NumdiskLookaheadStrategy {}
@@ -34,7 +34,7 @@ impl Strategy for NumdiskLookaheadStrategy {
         board: &Board,
         player: &Player,
         i_step: usize,
-    ) -> Result<GameTreeNode, String> {
+    ) -> Result<(GameTreeNode, f32), String> {
         let depth = match i_step {
             51..=61 => 11,
             41..=50 => 7,
@@ -45,10 +45,9 @@ impl Strategy for NumdiskLookaheadStrategy {
             Player::Second => (player.opponent().clone(), Board::reverse(&board)),
         };
         let mut game_tree = GameTree::create(player.clone(), root_board);
-        let best_move = game_tree.alpha_beta_pruning_search(depth);
-        // game_tree.print_tree()?;
-        match best_move {
-            Some(best_move) if best_move.put_position.is_some() => Ok(best_move),
+
+        match game_tree.alpha_beta_pruning_search(depth) {
+            Some((best_move, score)) if best_move.put_position.is_some() => Ok((best_move, score)),
             _ => Err(String::from("Result of alpha_beta_pruning_search is empty")),
         }
     }
@@ -63,7 +62,7 @@ impl Strategy for PatternLookahead1Strategy {
         current_board: &Board,
         player: &Player,
         _i_step: usize,
-    ) -> Result<GameTreeNode, String> {
+    ) -> Result<(GameTreeNode, f32), String> {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
@@ -90,10 +89,8 @@ impl Strategy for PatternLookahead1Strategy {
 
         match argmax_f32(&scores) {
             Some(i_max) => {
-                let mut node =
-                    GameTreeNode::create(player.clone(), 1 << i_max, current_board.clone());
-                node.score = Some(scores[i_max]);
-                Ok(node)
+                let node = GameTreeNode::create(player.clone(), 1 << i_max, current_board.clone());
+                Ok((node, 0.0)) // FIXME
             }
             None => Err(String::from("reverse_counts is all zero")),
         }

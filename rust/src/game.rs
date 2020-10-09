@@ -25,8 +25,8 @@ impl Game {
                 .get_next_move(&self.current_board, &player, self.history.len());
 
         match next_position_result {
-            Ok(best_move) => {
-                console_log!("score of choosen move = {:?}", best_move.score);
+            Ok((best_move, score)) => {
+                console_log!("score of choosen move = {:?}", score);
                 let (_player, put_position) = self
                     .current_board
                     .put_and_reverse(&player, best_move.put_position.unwrap());
