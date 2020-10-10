@@ -36,9 +36,9 @@ impl Strategy for NumdiskLookaheadStrategy {
         i_step: usize,
     ) -> Result<(GameTreeNode, f32), String> {
         let depth = match i_step {
-            51..=61 => 11,
-            41..=50 => 7,
-            _ => 5,
+            45..=61 => 13,
+            41..=44 => 9,
+            _ => 7,
         };
         let (player, root_board) = match player {
             Player::First => (player.clone(), board.clone()),
