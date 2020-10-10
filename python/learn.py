@@ -65,6 +65,7 @@ X_train, X_test, y_train, y_test_true = train_test_split(X, y, test_size=0.2, ra
 # %%
 model = SGDRegressor(penalty = 'l2')
 model.fit(X_train, y_train)
+model.intercept_
 
 # %%
 def base_10_to_base_n(x, n):
