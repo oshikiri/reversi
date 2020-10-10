@@ -235,8 +235,7 @@ impl Board {
     }
 
     fn get_n_reverses(&self, player: &Player) -> [u8; 64] {
-        use crate::board_reverse::N_REVERSES_8;
-        use crate::board_reverse::REVERSE_LINE_PATTERN_8;
+        use crate::board_reverse::*;
 
         let (current, opponent) = match player {
             Player::First => (self.first, self.second),
@@ -255,6 +254,61 @@ impl Board {
 
         let mut n_reverses: [u8; 64] = [0; 64];
 
+        for pattern in REVERSE_LINE_PATTERN_3.iter() {
+            let mut index: usize = 0;
+            for i in 0..3 {
+                let cell = coded_board[pattern[i]] as usize;
+                index += cell * 3usize.pow(i as u32);
+            }
+
+            for i in 0..3 {
+                n_reverses[pattern[i]] += N_REVERSES_3[3 * index + i] as u8;
+            }
+        }
+        for pattern in REVERSE_LINE_PATTERN_4.iter() {
+            let mut index: usize = 0;
+            for i in 0..4 {
+                let cell = coded_board[pattern[i]] as usize;
+                index += cell * 3usize.pow(i as u32);
+            }
+
+            for i in 0..4 {
+                n_reverses[pattern[i]] += N_REVERSES_4[4 * index + i] as u8;
+            }
+        }
+        for pattern in REVERSE_LINE_PATTERN_5.iter() {
+            let mut index: usize = 0;
+            for i in 0..5 {
+                let cell = coded_board[pattern[i]] as usize;
+                index += cell * 3usize.pow(i as u32);
+            }
+
+            for i in 0..5 {
+                n_reverses[pattern[i]] += N_REVERSES_5[5 * index + i] as u8;
+            }
+        }
+        for pattern in REVERSE_LINE_PATTERN_6.iter() {
+            let mut index: usize = 0;
+            for i in 0..6 {
+                let cell = coded_board[pattern[i]] as usize;
+                index += cell * 3usize.pow(i as u32);
+            }
+
+            for i in 0..6 {
+                n_reverses[pattern[i]] += N_REVERSES_6[6 * index + i] as u8;
+            }
+        }
+        for pattern in REVERSE_LINE_PATTERN_7.iter() {
+            let mut index: usize = 0;
+            for i in 0..7 {
+                let cell = coded_board[pattern[i]] as usize;
+                index += cell * 3usize.pow(i as u32);
+            }
+
+            for i in 0..7 {
+                n_reverses[pattern[i]] += N_REVERSES_7[7 * index + i] as u8;
+            }
+        }
         for pattern in REVERSE_LINE_PATTERN_8.iter() {
             let mut index: usize = 0;
             for i in 0..8 {
@@ -263,7 +317,7 @@ impl Board {
             }
 
             for i in 0..8 {
-                n_reverses[pattern[i]] += N_REVERSES_8[8*index+i] as u8;
+                n_reverses[pattern[i]] += N_REVERSES_8[8 * index + i] as u8;
             }
         }
 
