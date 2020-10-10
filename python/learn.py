@@ -43,7 +43,7 @@ X = coo_matrix(
   (np.ones_like(i1), (i1, i2)),
   shape=(i1.max() + 1, xcol)
 )
-y = np.repeat(histories[:, 1], 11)
+y = np.repeat(histories[:, 2], 11)
 
 # %%
 model = SGDRegressor(penalty = 'l2')
