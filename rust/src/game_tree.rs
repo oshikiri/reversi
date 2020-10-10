@@ -94,22 +94,24 @@ impl GameTreeNode {
     }
 
     fn alpha_beta_pruning_search(&mut self, depth: u64, alpha: f32, beta: f32) -> f32 {
-        if self.current_board.is_full() {
+        if self.current_board.is_full() || depth == 0 {
             return self.current_board.score_numdisk(self.player.clone());
         }
 
         let mut children = self.get_children();
 
-        if children.len() == 0 && self.put_position.is_some() {
-            let empty_child = GameTreeNode {
-                player: self.player.opponent().clone(),
-                put_position: None,
-                current_board: self.current_board.clone(),
-            };
-            children = vec![empty_child];
-        }
-
-        if children.len() > 0 && depth > 0 {
+        if children.len() == 0 {
+            if self.put_position.is_some() {
+                let mut empty_child = GameTreeNode {
+                    player: self.player.opponent().clone(),
+                    put_position: None,
+                    current_board: self.current_board.clone(),
+                };
+                alpha.max(-empty_child.alpha_beta_pruning_search(depth - 1, -beta, -alpha))
+            } else {
+                self.current_board.score_numdisk(self.player.clone())
+            }
+        } else {
             let mut alpha = alpha;
             for child in children.iter_mut() {
                 let depth_new = match self.put_position {
@@ -122,8 +124,6 @@ impl GameTreeNode {
                 }
             }
             alpha
-        } else {
-            self.current_board.score_numdisk(self.player.clone())
         }
     }
 }
