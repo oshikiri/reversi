@@ -1,4 +1,4 @@
-// #![feature(test)]
+#![feature(test)]
 extern crate wasm_bindgen;
 
 pub mod bitboard;
