@@ -221,23 +221,54 @@ impl Board {
         }
     }
 
-    // TODO: 高速化
     pub fn get_all_legal_moves(&self, player: &Player) -> Vec<u64> {
-        let (current, opponent) = match player {
-            Player::First => (self.first, self.second),
-            Player::Second => (self.second, self.first),
-        };
+        let n_reverses = self.get_n_reverses(player);
         let mut legal_moves = Vec::new();
-
         for i in 0..64 {
             let put_position = 1 << i;
-            let reverse_pattern = self.get_reverse_pattern(current, opponent, put_position);
-            if reverse_pattern > 0 {
+            if n_reverses[i] > 0 {
                 legal_moves.push(put_position);
             }
         }
 
         legal_moves
+    }
+
+    fn get_n_reverses(&self, player: &Player) -> [u8; 64] {
+        use crate::board_reverse::N_REVERSES_8;
+
+        let (current, opponent) = match player {
+            Player::First => (self.first, self.second),
+            Player::Second => (self.second, self.first),
+        };
+
+        let mut coded_board: [u8; 64] = [0; 64];
+        for i in 0..64 {
+            let put_position = 1 << i;
+            if current & put_position > 0 {
+                coded_board[i] = 1;
+            } else if opponent & put_position > 0 {
+                coded_board[i] = 2;
+            }
+        }
+
+        let mut n_reverses: [u8; 64] = [0; 64];
+
+        let pattern: [usize; 8] = [0, 8, 16, 24, 32, 40, 48, 56];
+
+        {
+            let mut index: usize = 0;
+            for i in 0..8 {
+                let cell = coded_board[pattern[i]] as usize;
+                index += cell * 3usize.pow(i as u32);
+            }
+            let n_reverses_line = parse_reverse_index(N_REVERSES_8[index]);
+            for i in 0..8 {
+                n_reverses[pattern[i]] += n_reverses_line[i];
+            }
+        }
+
+        n_reverses
     }
 
     pub fn create_from_str(board_str: &str) -> Board {
@@ -333,6 +364,16 @@ pub fn convert_indices_to_bitboard(x: char, y: char) -> Result<u64, String> {
     };
     let i = ix? + 8 * iy?;
     Ok(1 << i)
+}
+
+pub fn parse_reverse_index(n: u64) -> [u8; 8] {
+    let mut n_remainder = n;
+    let mut reverse_line = [0; 8];
+    for i in 0..8 {
+        reverse_line[i] = (n_remainder % 3) as u8;
+        n_remainder = n_remainder / 3;
+    }
+    reverse_line
 }
 
 #[cfg(test)]
@@ -522,6 +563,15 @@ mod tests {
             assert_eq!(bitboard_a1, Ok(board.first));
             assert_eq!(bitboard_h8, Ok(board.second));
         }
+
+        #[test]
+        fn parse_reverse_index() {
+            use crate::board::parse_reverse_index;
+            let n = 3u64.pow(6) + 2 * 3u64.pow(5) + 3u64.pow(4) + 1 * 3 + 2;
+            let actual = parse_reverse_index(n);
+            let expected = [2, 1, 0, 0, 1, 2, 1, 0];
+            assert_eq!(actual, expected);
+        }
     }
 
     mod benches {
@@ -550,6 +600,5 @@ mod tests {
                 current_board.get_all_legal_moves(&Player::Second);
             })
         }
-
     }
 }
