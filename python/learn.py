@@ -2,9 +2,24 @@
 import numpy as np
 from scipy.sparse import coo_matrix
 import pandas as pd
+
 from sklearn.linear_model import SGDRegressor
+from sklearn.model_selection import train_test_split
 
 histories = np.loadtxt("./data/game-histories/02.csv", delimiter=",", dtype="i4")
+histories.shape
+
+# %%
+# 序盤は定石データベースで処理するべきなので除外する
+# 終盤は完全読みするので除外する
+index = np.reshape(
+  np.repeat((histories[: ,1] > 10) & (histories[: ,1] < 50), 47),
+  (-1, 47)
+)
+histories = np.reshape(
+  histories[index],
+  (-1, 47)
+)
 
 # %%
 pattern_ids = [i for i in range(11)]
@@ -43,13 +58,21 @@ X = coo_matrix(
   (np.ones_like(i1), (i1, i2)),
   shape=(i1.max() + 1, xcol)
 )
-y = np.repeat(histories[:, 1], 11)
+y = np.repeat(histories[:, 2], 11)
+
+X_train, X_test, y_train, y_test_true = train_test_split(X, y, test_size=0.2, random_state=0, shuffle = False)
 
 # %%
 model = SGDRegressor(penalty = 'l2')
-model.fit(X, y)
+model.fit(X_train, y_train)
+model.intercept_
 
 # %%
+def base_10_to_base_n(x, n):
+    if int(x / n):
+        return base_10_to_base_n(int(x / n), n) + str(x % n)
+    return str(x % n)
+
 df_params = (
   pd
   .DataFrame({
@@ -58,12 +81,29 @@ df_params = (
     'coef': model.coef_
   })
   .assign(
-    pattern_name = lambda d: d.pattern_id.map(lambda i: pattern_names[i])
+    pattern_name = lambda d: d.pattern_id.map(lambda i: pattern_names[i]),
+    pattern_instance = lambda d: d.pattern_index.map(lambda i: base_10_to_base_n(i, 3))
   )
 )
 df_params.to_csv('data/parameters/0925.csv', index = False)
 
 df_params.sort_values('coef')
+
+
+# %%
+y_test_predict = model.predict(X_test)
+(
+  pd
+  .DataFrame(dict(
+    y_test_true = y_test_true,
+    y_test_predict = y_test_predict
+  ))
+  # .sort_values('y_test_true')
+)
+
+# %%
+from sklearn.metrics import mean_absolute_error
+mean_absolute_error(y_test_true, y_test_predict)
 
 # %%
 np.savetxt(
@@ -72,11 +112,3 @@ np.savetxt(
   fmt='%.3f',
   newline = ','
 )
-
-# %%
-def base_10_to_base_n(x, n):
-    if int(x / n):
-        return base_10_to_base_n(int(x / n), n) + str(x % n)
-    return str(x % n)
-
-base_10_to_base_n(189, 3)
