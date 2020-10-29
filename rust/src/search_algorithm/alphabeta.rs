@@ -58,20 +58,23 @@ impl AlphaBeta {
 
         if legal_moves.len() == 0 {
             if put_position.is_some() {
+                // when there is no legal next moves and current move is non-empty, then create empty node.
                 let put_position = None;
                 let child_score = self.search_inner(
                     put_position,
                     &player.opponent(),
                     board,
-                    remaining_depth, // do not consume depth when passing
+                    remaining_depth, // NOTE: do not consume depth when passing
                     -beta,
                     -alpha,
                 );
                 alpha.max(-child_score)
             } else {
+                // when there is no legal next moves and next move is empty, then it is a leaf node
                 self.evaluate_leaf(player, board)
             }
         } else {
+            // when there is at least one legal move, search children of the moves
             let mut alpha = alpha;
             for legal_move in legal_moves.iter() {
                 let mut next_board = board.clone();
@@ -96,7 +99,7 @@ impl AlphaBeta {
     fn evaluate_leaf(&mut self, player: &Player, board: Board) -> f32 {
         self.n_evaluated_leaves += 1;
         let leaf_score = board.score_numdisk(player.clone());
-        // append to best_leaves if this leaf is better than one of best_leaves
+        // TODO: append to best_leaves if this leaf is better than one of best_leaves
         leaf_score
     }
 }
