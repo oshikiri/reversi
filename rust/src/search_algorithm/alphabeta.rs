@@ -7,7 +7,7 @@ pub struct AlphaBeta {
     initial_board: Board,
     max_n_leaves: usize,
     max_n_best_leaves: usize,
-    n_leaves_evaluated: usize,
+    n_evaluated_leaves: usize,
     best_leaves: Vec<GameTreeLeaf>,
 }
 
@@ -23,7 +23,7 @@ impl AlphaBeta {
             initial_board,
             max_n_leaves,
             max_n_best_leaves,
-            n_leaves_evaluated: 0,
+            n_evaluated_leaves: 0,
             best_leaves: vec![],
         }
     }
@@ -51,8 +51,7 @@ impl AlphaBeta {
         beta: f32,
     ) -> f32 {
         if board.is_full() || remaining_depth == 0 {
-            self.n_leaves_evaluated += 1;
-            return board.score_numdisk(player.clone());
+            return self.evaluate_leaf(player, board);
         }
 
         let legal_moves = self.initial_board.get_all_legal_moves(&player);
@@ -70,8 +69,7 @@ impl AlphaBeta {
                 );
                 alpha.max(-child_score)
             } else {
-                self.n_leaves_evaluated += 1;
-                board.score_numdisk(player.clone())
+                self.evaluate_leaf(player, board)
             }
         } else {
             let mut alpha = alpha;
@@ -97,6 +95,13 @@ impl AlphaBeta {
             }
             alpha
         }
+    }
+
+    fn evaluate_leaf(&mut self, player: &Player, board: Board) -> f32 {
+        self.n_evaluated_leaves += 1;
+        let leaf_score = board.score_numdisk(player.clone());
+        // append to best_leaves if this leaf is better than one of best_leaves
+        leaf_score
     }
 }
 
