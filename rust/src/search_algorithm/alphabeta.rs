@@ -63,7 +63,7 @@ impl AlphaBeta {
                     put_position,
                     &player.opponent(),
                     board,
-                    remaining_depth - 1,
+                    remaining_depth, // do not consume depth when passing
                     -beta,
                     -alpha,
                 );
@@ -74,17 +74,13 @@ impl AlphaBeta {
         } else {
             let mut alpha = alpha;
             for legal_move in legal_moves.iter() {
-                let remaining_depth_new = match put_position {
-                    Some(_) => remaining_depth - 1,
-                    None => remaining_depth,
-                };
                 let mut next_board = board.clone();
                 next_board.put_and_reverse(&player, *legal_move);
                 let child_score = self.search_inner(
                     Some(*legal_move),
                     &player.opponent(),
                     next_board,
-                    remaining_depth_new,
+                    remaining_depth - 1,
                     -beta,
                     -alpha,
                 );
