@@ -117,14 +117,14 @@ mod tests {
     fn fixture_alphabeta() -> AlphaBeta {
         let board = Board::create_from_str(
             "
-            - - - - - - - -
-            - - - - - - - -
-            - - - - - - - -
-            - - - x o - - -
-            - - - o x - - -
-            - - - - - - - -
-            - - - - - - - -
-            - - - - - - - -
+            - x x x x x - o
+            - - x x x x x o
+            o x x x o x o o
+            o o o x x x o o
+            o x x x x x o o
+            o x x x x x o o
+            o - x x x x - o
+            - x x x x x x -
             ",
         );
         AlphaBeta::create(Player::First, board, 0, 0)
@@ -148,5 +148,6 @@ mod tests {
         let mut algorithm = fixture_alphabeta();
         algorithm.search(5, -f32::MAX, f32::MAX);
         assert_eq!(algorithm.best_leaves(), vec![]);
+        assert_eq!(algorithm.n_evaluated_leaves, 256);
     }
 }
