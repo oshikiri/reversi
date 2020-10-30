@@ -99,7 +99,37 @@ impl AlphaBeta {
     fn evaluate_leaf(&mut self, player: &Player, board: Board) -> f32 {
         self.n_evaluated_leaves += 1;
         let leaf_score = board.score_numdisk(player.clone());
+        let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, vec![]); // FIXME
+
         // TODO: append to best_leaves if this leaf is better than one of best_leaves
+        let best_move_min_opt: Option<&GameTreeLeaf> = self.best_leaves.iter().min_by(|l, r| {
+            l.score()
+                .partial_cmp(&r.score())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        match best_move_min_opt {
+            Some(best_move_min) => {
+                if self.best_leaves.len() < self.max_n_best_leaves
+                    || leaf_score > best_move_min.score()
+                {
+                    let mut best_leaves = self.best_leaves.clone();
+                    best_leaves.push(new_leaf);
+                    if best_leaves.len() > self.max_n_best_leaves {
+                        best_leaves.sort_by(|l, r| {
+                            r.score()
+                                .partial_cmp(&l.score())
+                                .unwrap_or(std::cmp::Ordering::Equal)
+                        });
+                        let (head, _tail) = best_leaves.split_at(self.max_n_best_leaves);
+                        best_leaves = head.to_vec();
+                    }
+                    self.best_leaves = best_leaves;
+                }
+            }
+            None => {
+                self.best_leaves.push(new_leaf);
+            }
+        }
         leaf_score
     }
 }
@@ -127,13 +157,13 @@ mod tests {
             - x x x x x x -
             ",
         );
-        AlphaBeta::create(Player::First, board, 0, 0)
+        AlphaBeta::create(Player::First, board, 10000, 5)
     }
 
     #[test]
     fn create() {
         let search = fixture_alphabeta();
-        assert_eq!(search.max_n_leaves, 0);
+        assert_eq!(search.max_n_leaves, 10000);
     }
 
     #[test]
