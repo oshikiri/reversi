@@ -2,6 +2,8 @@ use crate::board::Board;
 use crate::player::Player;
 use crate::search_algorithm::base::*;
 
+// 次は先手番だとしてalphabeta探索をする。
+// 後手番で読みたい場合は、bitboardを入れ替える前処理を噛ませてから実行する。
 pub struct AlphaBeta {
     player: Player,
     initial_board: Board,
@@ -30,10 +32,13 @@ impl AlphaBeta {
 
     pub fn search(&mut self, remaining_depth: u64, alpha: f32, beta: f32) {
         for legal_move in self.initial_board.get_all_legal_moves(&Player::First) {
+            let mut board = self.initial_board.clone();
+            board.put_and_reverse(&Player::First, legal_move);
+
             self.search_inner(
-                Some(legal_move),
-                &self.player.clone(),
-                self.initial_board.clone(),
+                vec![Some(legal_move)],
+                &Player::Second,
+                board,
                 remaining_depth,
                 alpha,
                 beta,
@@ -43,25 +48,29 @@ impl AlphaBeta {
 
     fn search_inner(
         &mut self,
-        put_position: Option<u64>,
+        put_positions: Vec<Option<u64>>,
         player: &Player,
         board: Board,
         remaining_depth: u64,
         alpha: f32,
         beta: f32,
     ) -> f32 {
+        let put_position = put_positions.last().unwrap();
+
         if board.is_full() || remaining_depth == 0 {
-            return self.evaluate_leaf(player, board);
+            return self.evaluate_leaf(player, board, put_positions);
         }
 
-        let legal_moves = self.initial_board.get_all_legal_moves(&player);
+        let legal_moves = board.get_all_legal_moves(&player);
 
         if legal_moves.len() == 0 {
             if put_position.is_some() {
                 // when there is no legal next moves and current move is non-empty, then create empty node.
-                let put_position = None;
+                let mut put_positions = put_positions.clone();
+                put_positions.push(None);
+
                 let child_score = self.search_inner(
-                    put_position,
+                    put_positions,
                     &player.opponent(),
                     board,
                     remaining_depth, // NOTE: do not consume depth when passing
@@ -71,19 +80,23 @@ impl AlphaBeta {
                 alpha.max(-child_score)
             } else {
                 // when there is no legal next moves and next move is empty, then it is a leaf node
-                self.evaluate_leaf(player, board)
+                self.evaluate_leaf(player, board, put_positions)
             }
         } else {
             // when there is at least one legal move, search children of the moves
             let mut alpha = alpha;
             for legal_move in legal_moves.iter() {
+                let mut put_positions = put_positions.clone();
+                put_positions.push(Some(*legal_move));
+
                 let mut next_board = board.clone();
                 next_board.put_and_reverse(&player, *legal_move);
+
                 let child_score = self.search_inner(
-                    Some(*legal_move),
+                    put_positions,
                     &player.opponent(),
                     next_board,
-                    remaining_depth - 1,
+                    remaining_depth,
                     -beta,
                     -alpha,
                 );
@@ -96,10 +109,15 @@ impl AlphaBeta {
         }
     }
 
-    fn evaluate_leaf(&mut self, player: &Player, board: Board) -> f32 {
+    fn evaluate_leaf(
+        &mut self,
+        player: &Player,
+        board: Board,
+        put_positions: Vec<Option<u64>>,
+    ) -> f32 {
         self.n_evaluated_leaves += 1;
         let leaf_score = board.score_numdisk(player.clone());
-        let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, vec![]); // FIXME
+        let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
 
         // TODO: append to best_leaves if this leaf is better than one of best_leaves
         let best_move_min_opt: Option<&GameTreeLeaf> = self.best_leaves.iter().min_by(|l, r| {
@@ -175,9 +193,20 @@ mod tests {
 
     #[test]
     fn search() {
+        use crate::bitboard::put_position_to_coord;
+
         let mut algorithm = fixture_alphabeta();
-        algorithm.search(5, -f32::MAX, f32::MAX);
-        assert_eq!(algorithm.best_leaves(), vec![]);
+        algorithm.search(13 , -f32::MAX, f32::MAX);
+
+        let best_leaf = &algorithm.best_leaves()[0];
+        let actual_moves = best_leaf
+            .moves()
+            .iter()
+            .map(|p| put_position_to_coord(*p))
+            .collect::<Vec<Result<String, String>>>();
+        println!("{:?}", algorithm.best_leaves().iter().map(|l| l.score()).collect::<Vec<f32>>());
+        // assert_eq!(best_leaf.score(), 38.0);
+        assert_eq!(actual_moves, vec![]);
         assert_eq!(algorithm.n_evaluated_leaves, 256);
     }
 }

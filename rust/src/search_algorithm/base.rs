@@ -4,11 +4,11 @@ use crate::player::Player;
 pub struct GameTreeLeaf {
     player: Player,
     score: f32,
-    moves: Vec<u64>,
+    moves: Vec<Option<u64>>,
 }
 
 impl GameTreeLeaf {
-    pub fn create(player: Player, score: f32, moves: Vec<u64>) -> GameTreeLeaf {
+    pub fn create(player: Player, score: f32, moves: Vec<Option<u64>>) -> GameTreeLeaf {
         GameTreeLeaf {
             player,
             score,
@@ -18,6 +18,10 @@ impl GameTreeLeaf {
 
     pub fn score(&self) -> f32 {
         self.score
+    }
+
+    pub fn moves(&self) -> Vec<Option<u64>> {
+        self.moves.clone()
     }
 }
 
