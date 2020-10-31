@@ -5,7 +5,6 @@ use crate::search_algorithm::base::*;
 // 次は先手番だとしてalphabeta探索をする。
 // 後手番で読みたい場合は、bitboardを入れ替える前処理を噛ませてから実行する。
 pub struct AlphaBeta {
-    player: Player,
     initial_board: Board,
     max_n_leaves: usize,
     max_n_best_leaves: usize,
@@ -15,13 +14,11 @@ pub struct AlphaBeta {
 
 impl AlphaBeta {
     pub fn create(
-        player: Player,
         initial_board: Board,
         max_n_leaves: usize,
         max_n_best_leaves: usize,
     ) -> AlphaBeta {
         AlphaBeta {
-            player,
             initial_board,
             max_n_leaves,
             max_n_best_leaves,
@@ -175,7 +172,7 @@ mod tests {
             - x x x x x x -
             ",
         );
-        AlphaBeta::create(Player::First, board, 10000, 5)
+        AlphaBeta::create(board, 10000, 5)
     }
 
     #[test]
