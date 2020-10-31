@@ -55,7 +55,7 @@ impl AlphaBeta {
         let put_position = put_positions.last().unwrap();
 
         if board.is_full() || remaining_depth == 0 {
-            return self.evaluate_leaf(player, board, put_positions);
+            return self.evaluate_leaf(&Player::First, board, put_positions);
         }
 
         let legal_moves = board.get_all_legal_moves(&player);
@@ -77,7 +77,7 @@ impl AlphaBeta {
                 alpha.max(-child_score)
             } else {
                 // when there is no legal next moves and next move is empty, then it is a leaf node
-                self.evaluate_leaf(player, board, put_positions)
+                self.evaluate_leaf(&Player::First, board, put_positions)
             }
         } else {
             // when there is at least one legal move, search children of the moves
@@ -116,35 +116,34 @@ impl AlphaBeta {
         let leaf_score = board.score_numdisk(player.clone());
         let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
 
-        // TODO: append to best_leaves if this leaf is better than one of best_leaves
+        // FIXME: cache best_move_min_opt
         let best_move_min_opt: Option<&GameTreeLeaf> = self.best_leaves.iter().min_by(|l, r| {
             l.score()
                 .partial_cmp(&r.score())
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
+
+        let mut best_leaves = self.best_leaves.clone();
+        best_leaves.push(new_leaf);
+
         match best_move_min_opt {
             Some(best_move_min) => {
-                if self.best_leaves.len() < self.max_n_best_leaves
-                    || leaf_score > best_move_min.score()
+                if self.best_leaves.len() > self.max_n_best_leaves
+                    && best_move_min.score() < leaf_score
                 {
-                    let mut best_leaves = self.best_leaves.clone();
-                    best_leaves.push(new_leaf);
-                    if best_leaves.len() > self.max_n_best_leaves {
-                        best_leaves.sort_by(|l, r| {
-                            r.score()
-                                .partial_cmp(&l.score())
-                                .unwrap_or(std::cmp::Ordering::Equal)
-                        });
-                        let (head, _tail) = best_leaves.split_at(self.max_n_best_leaves);
-                        best_leaves = head.to_vec();
-                    }
-                    self.best_leaves = best_leaves;
+                    best_leaves.sort_by(|l, r| {
+                        r.score()
+                            .partial_cmp(&l.score())
+                            .unwrap_or(std::cmp::Ordering::Equal)
+                    });
+                    let (head, _tail) = best_leaves.split_at(self.max_n_best_leaves);
+                    best_leaves = head.to_vec();
                 }
             }
-            None => {
-                self.best_leaves.push(new_leaf);
-            }
+            None => {}
         }
+
+        self.best_leaves = best_leaves;
         leaf_score
     }
 }
@@ -193,24 +192,23 @@ mod tests {
         use crate::bitboard::put_position_to_coord;
 
         let mut algorithm = fixture_alphabeta();
-        algorithm.search(13);
+        algorithm.search(9);
 
         let best_leaf = &algorithm.best_leaves()[0];
+        let expected_best_score = 38.0;
         let actual_moves = best_leaf
             .moves()
             .iter()
-            .map(|p| put_position_to_coord(*p))
-            .collect::<Vec<Result<String, String>>>();
-        println!(
-            "{:?}",
-            algorithm
-                .best_leaves()
-                .iter()
-                .map(|l| l.score())
-                .collect::<Vec<f32>>()
-        );
-        // assert_eq!(best_leaf.score(), 38.0);
-        assert_eq!(actual_moves, vec![]);
-        assert_eq!(algorithm.n_evaluated_leaves, 256);
+            .map(|p| put_position_to_coord(*p).unwrap())
+            .collect::<Vec<String>>();
+        // NOTE: there are other best moves that have the same score
+        let expected_moves = vec![
+            "g1", "passed", "a1", "passed", "b7", "passed", "a2", "b2", "a8", "passed", "g7",
+            "passed", "h8",
+        ];
+
+        assert_eq!(best_leaf.score(), expected_best_score);
+        assert_eq!(actual_moves, expected_moves);
+        assert_eq!(algorithm.n_evaluated_leaves, 120);
     }
 }
