@@ -27,7 +27,7 @@ impl AlphaBeta {
         }
     }
 
-    pub fn search(&mut self, remaining_depth: u64, alpha: f32, beta: f32) {
+    pub fn search(&mut self, remaining_depth: u64) {
         for legal_move in self.initial_board.get_all_legal_moves(&Player::First) {
             let mut board = self.initial_board.clone();
             board.put_and_reverse(&Player::First, legal_move);
@@ -37,8 +37,8 @@ impl AlphaBeta {
                 &Player::Second,
                 board,
                 remaining_depth,
-                alpha,
-                beta,
+                -f32::MAX,
+                f32::MAX,
             );
         }
     }
@@ -193,7 +193,7 @@ mod tests {
         use crate::bitboard::put_position_to_coord;
 
         let mut algorithm = fixture_alphabeta();
-        algorithm.search(13 , -f32::MAX, f32::MAX);
+        algorithm.search(13);
 
         let best_leaf = &algorithm.best_leaves()[0];
         let actual_moves = best_leaf
@@ -201,7 +201,14 @@ mod tests {
             .iter()
             .map(|p| put_position_to_coord(*p))
             .collect::<Vec<Result<String, String>>>();
-        println!("{:?}", algorithm.best_leaves().iter().map(|l| l.score()).collect::<Vec<f32>>());
+        println!(
+            "{:?}",
+            algorithm
+                .best_leaves()
+                .iter()
+                .map(|l| l.score())
+                .collect::<Vec<f32>>()
+        );
         // assert_eq!(best_leaf.score(), 38.0);
         assert_eq!(actual_moves, vec![]);
         assert_eq!(algorithm.n_evaluated_leaves, 256);
