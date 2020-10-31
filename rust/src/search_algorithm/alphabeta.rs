@@ -93,7 +93,7 @@ impl AlphaBeta {
                     put_positions,
                     &player.opponent(),
                     next_board,
-                    remaining_depth,
+                    remaining_depth - 1,
                     -beta,
                     -alpha,
                 );
