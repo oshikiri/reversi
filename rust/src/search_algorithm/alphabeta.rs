@@ -52,8 +52,6 @@ impl AlphaBeta {
         alpha: f32,
         beta: f32,
     ) -> f32 {
-        let put_position = put_positions.last().unwrap();
-
         if board.is_full() || remaining_depth == 0 {
             return self.evaluate_leaf(&Player::First, board, put_positions);
         }
@@ -61,7 +59,8 @@ impl AlphaBeta {
         let legal_moves = board.get_all_legal_moves(&player);
 
         if legal_moves.len() == 0 {
-            if put_position.is_some() {
+            let last_move = put_positions.last().unwrap();
+            if last_move.is_some() {
                 // when there is no legal next moves and current move is non-empty, then create empty node.
                 let mut put_positions = put_positions.clone();
                 put_positions.push(None);
