@@ -27,19 +27,55 @@ impl AlphaBeta {
         }
     }
 
-    pub fn search(&mut self, remaining_depth: u64) {
-        for legal_move in self.initial_board.get_all_legal_moves(&Player::First) {
-            let mut board = self.initial_board.clone();
-            board.put_and_reverse(&Player::First, legal_move);
-
-            self.search_inner(
-                vec![Some(legal_move)],
+    pub fn search(&mut self, remaining_depth: u64) -> Option<(Option<u64>, f32)> {
+        let legal_moves = self.initial_board.get_all_legal_moves(&Player::First);
+        if legal_moves.len() == 0 {
+            let child_score = self.search_inner(
+                vec![None],
                 &Player::Second,
-                board,
+                self.initial_board.clone(),
                 remaining_depth,
                 -f32::MAX,
                 f32::MAX,
             );
+
+            Some((None, child_score))
+        } else {
+            let mut node_max_score: Option<u64> = None;
+            let mut max_score_opt: Option<f32> = None;
+            for legal_move in legal_moves {
+                let mut board = self.initial_board.clone();
+                board.put_and_reverse(&Player::First, legal_move);
+
+                let child_score = -self.search_inner(
+                    vec![Some(legal_move)],
+                    &Player::Second,
+                    board,
+                    remaining_depth,
+                    -f32::MAX,
+                    f32::MAX,
+                );
+
+                println!("child_score={}, max_score_opt={:?}", child_score, max_score_opt);
+
+                match (child_score, max_score_opt) {
+                    (child_score, None) => {
+                        max_score_opt = Some(child_score);
+                        node_max_score = Some(legal_move);
+                    }
+                    (child_score, Some(max_score)) => {
+                        if child_score > max_score {
+                            max_score_opt = Some(child_score);
+                            node_max_score = Some(legal_move);
+                        }
+                    }
+                };
+            }
+
+            match (node_max_score, max_score_opt) {
+                (Some(node), Some(score)) => Some((Some(node), score)),
+                __ => None,
+            }
         }
     }
 
@@ -53,7 +89,7 @@ impl AlphaBeta {
         beta: f32,
     ) -> f32 {
         if board.is_full() || remaining_depth == 0 {
-            return self.evaluate_leaf(&Player::First, board, put_positions);
+            return self.evaluate_leaf(player, board, put_positions.clone());
         }
 
         let legal_moves = board.get_all_legal_moves(&player);
@@ -76,7 +112,7 @@ impl AlphaBeta {
                 alpha.max(-child_score)
             } else {
                 // when there is no legal next moves and next move is empty, then it is a leaf node
-                self.evaluate_leaf(&Player::First, board, put_positions)
+                self.evaluate_leaf(player, board, put_positions)
             }
         } else {
             // when there is at least one legal move, search children of the moves
@@ -115,31 +151,25 @@ impl AlphaBeta {
         let leaf_score = board.score_numdisk(player.clone());
         let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
 
-        // FIXME: cache best_move_min_opt
+        let mut best_leaves = self.best_leaves.clone();
+        best_leaves.push(new_leaf);
+
+        // FIXME: efficiency
         let best_move_min_opt: Option<&GameTreeLeaf> = self.best_leaves.iter().min_by(|l, r| {
             l.score()
                 .partial_cmp(&r.score())
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
-
-        let mut best_leaves = self.best_leaves.clone();
-        best_leaves.push(new_leaf);
-
-        match best_move_min_opt {
-            Some(best_move_min) => {
-                if self.best_leaves.len() > self.max_n_best_leaves
-                    && best_move_min.score() < leaf_score
-                {
-                    best_leaves.sort_by(|l, r| {
-                        r.score()
-                            .partial_cmp(&l.score())
-                            .unwrap_or(std::cmp::Ordering::Equal)
-                    });
-                    let (head, _tail) = best_leaves.split_at(self.max_n_best_leaves);
-                    best_leaves = head.to_vec();
-                }
+        if best_move_min_opt.is_some() {
+            if best_leaves.len() > self.max_n_best_leaves {
+                best_leaves.sort_by(|l, r| {
+                    r.score()
+                        .partial_cmp(&l.score())
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                });
+                let (head, _tail) = best_leaves.split_at(self.max_n_best_leaves);
+                best_leaves = head.to_vec();
             }
-            None => {}
         }
 
         self.best_leaves = best_leaves;
@@ -155,9 +185,11 @@ impl SearchAlgorithm for AlphaBeta {
 
 #[cfg(test)]
 mod tests {
+    use crate::bitboard;
     use crate::search_algorithm::alphabeta::*;
 
     fn fixture_alphabeta() -> AlphaBeta {
+        // Puzzle 99 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
         let board = Board::create_from_str(
             "
             - x x x x x - o
@@ -187,27 +219,65 @@ mod tests {
     }
 
     #[test]
-    fn search() {
-        use crate::bitboard::put_position_to_coord;
+    fn search_case_first_doesnt_have_legal_moves() {
+        // Diagram 13-10 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
+        let board = Board::create_from_str(
+            "
+            o o o o o o o o
+            o o o o o x x o
+            o x x o x x x o
+            o x o x o x x o
+            o o o o x x x o
+            o o o x x x x o
+            - o o x o o o o
+            - - o x x x x x
+            ",
+        );
 
+        // when next turn is black
+        let mut alphabeta = AlphaBeta::create(board.clone(), 10000, 5);
+        let search_result = alphabeta.search(5);
+        assert_eq!(search_result.is_some(), true);
+        let search_result = search_result.unwrap();
+        assert_eq!(search_result.0.is_none(), true);
+        // let actual_best_score = search_result.1;
+        // assert_eq!(actual_best_score, -2.0); // 33-31 FIXME
+
+        // when next turn is white
+        let reversed_board = Board::create(board.second(), board.first());
+        let mut alphabeta = AlphaBeta::create(reversed_board, 10000, 5);
+        let search_result = alphabeta.search(5);
+        assert_eq!(search_result.is_some(), true);
+        let search_result = search_result.unwrap();
+        assert_eq!(search_result.0.is_some(), true);
+        let actual_best_move = search_result.0;
+        let actual_best_score = search_result.1;
+        assert_eq!(
+            bitboard::put_position_to_coord(actual_best_move),
+            Ok("a8".to_string())
+        );
+        assert_eq!(actual_best_score, 2.0); // 33-31
+    }
+
+    #[test]
+    fn search_case_puzzle99() {
         let mut algorithm = fixture_alphabeta();
-        algorithm.search(9);
+        let search_result = algorithm.search(9);
+        assert_eq!(search_result.is_some(), true);
+        let search_result = search_result.unwrap();
+        let actual_best_move = search_result.0;
+        let actual_best_score = search_result.1;
 
-        let best_leaf = &algorithm.best_leaves()[0];
-        let expected_best_score = 38.0;
-        let actual_moves = best_leaf
-            .moves()
-            .iter()
-            .map(|p| put_position_to_coord(*p).unwrap())
-            .collect::<Vec<String>>();
         // NOTE: there are other best moves that have the same score
-        let expected_moves = vec![
+        let _expected_moves = vec![
             "g1", "passed", "a1", "passed", "b7", "passed", "a2", "b2", "a8", "passed", "g7",
             "passed", "h8",
         ];
 
-        assert_eq!(best_leaf.score(), expected_best_score);
-        assert_eq!(actual_moves, expected_moves);
-        assert_eq!(algorithm.n_evaluated_leaves, 120);
+        assert_eq!(actual_best_score, 38.0);
+        assert_eq!(
+            bitboard::put_position_to_coord(actual_best_move),
+            Ok("g1".to_string())
+        );
     }
 }
