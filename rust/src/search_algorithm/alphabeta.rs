@@ -54,14 +54,14 @@ impl AlphaBeta {
                 leaf.set_score(-child_score);
                 self.best_leaves.push(leaf);
 
-                match (-child_score, max_score_opt) {
-                    (child_score, None) => {
-                        max_score_opt = Some(child_score);
+                match max_score_opt {
+                    None => {
+                        max_score_opt = Some(-child_score);
                         node_max_score = Some(legal_move);
                     }
-                    (child_score, Some(max_score)) => {
+                    Some(max_score) => {
                         if child_score > max_score {
-                            max_score_opt = Some(child_score);
+                            max_score_opt = Some(-child_score);
                             node_max_score = Some(legal_move);
                         }
                     }
