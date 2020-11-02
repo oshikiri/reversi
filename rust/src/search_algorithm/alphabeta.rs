@@ -7,25 +7,17 @@ use crate::search_algorithm::base::*;
 pub struct AlphaBeta {
     initial_board: Board,
     max_n_leaves: usize,
-    max_n_best_leaves: usize,
     n_evaluated_leaves: usize,
     best_leaves: Vec<GameTreeLeaf>,
-    best_moves: Vec<Vec<Option<u64>>>,
 }
 
 impl AlphaBeta {
-    pub fn create(
-        initial_board: Board,
-        max_n_leaves: usize,
-        max_n_best_leaves: usize,
-    ) -> AlphaBeta {
+    pub fn create(initial_board: Board, max_n_leaves: usize) -> AlphaBeta {
         AlphaBeta {
             initial_board,
             max_n_leaves,
-            max_n_best_leaves,
             n_evaluated_leaves: 0,
             best_leaves: vec![],
-            best_moves: vec![],
         }
     }
 
@@ -173,29 +165,6 @@ impl AlphaBeta {
         self.n_evaluated_leaves += 1;
         let leaf_score = board.score_numdisk(player.clone());
         let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
-
-        let mut best_leaves = self.best_leaves.clone();
-        best_leaves.push(new_leaf.clone());
-
-        // FIXME: efficiency
-        let best_move_min_opt: Option<&GameTreeLeaf> = self.best_leaves.iter().min_by(|l, r| {
-            l.score()
-                .partial_cmp(&r.score())
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
-        if best_move_min_opt.is_some() {
-            if best_leaves.len() > self.max_n_best_leaves {
-                best_leaves.sort_by(|l, r| {
-                    r.score()
-                        .partial_cmp(&l.score())
-                        .unwrap_or(std::cmp::Ordering::Equal)
-                });
-                let (head, _tail) = best_leaves.split_at(self.max_n_best_leaves);
-                best_leaves = head.to_vec();
-            }
-        }
-
-        // self.best_leaves = best_leaves; // FIXME: remove
         new_leaf
     }
 }
@@ -226,7 +195,7 @@ mod tests {
             - x x x x x x -
             ",
         );
-        AlphaBeta::create(board, 10000, 5)
+        AlphaBeta::create(board, 10000)
     }
 
     #[test]
@@ -243,7 +212,7 @@ mod tests {
     }
 
     #[test]
-    fn search_case_first_doesnt_have_legal_moves() {
+    fn search_case_first_doesnt_have_legal_moves_black() {
         // Diagram 13-10 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
         let board = Board::create_from_str(
             "
@@ -259,7 +228,7 @@ mod tests {
         );
 
         // when next turn is black
-        let mut alphabeta = AlphaBeta::create(board.clone(), 10000, 5);
+        let mut alphabeta = AlphaBeta::create(board.clone(), 10000);
         let search_result = alphabeta.search(5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
@@ -272,12 +241,27 @@ mod tests {
             .map(|m| put_position_to_coord(*m).unwrap())
             .collect::<Vec<String>>();
         assert_eq!(actual_best_moves, vec!["passed", "a8", "b8", "a7"]);
+    }
 
-        // FIXME: Split cases
+    #[test]
+    fn search_case_first_doesnt_have_legal_moves_white() {
+        // Diagram 13-10 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
+        let board = Board::create_from_str(
+            "
+            o o o o o o o o
+            o o o o o x x o
+            o x x o x x x o
+            o x o x o x x o
+            o o o o x x x o
+            o o o x x x x o
+            - o o x o o o o
+            - - o x x x x x
+            ",
+        );
 
         // when next turn is white
         let reversed_board = Board::create(board.second(), board.first());
-        let mut alphabeta = AlphaBeta::create(reversed_board, 10000, 5);
+        let mut alphabeta = AlphaBeta::create(reversed_board, 10000);
         let search_result = alphabeta.search(5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
