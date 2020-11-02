@@ -5,29 +5,31 @@ use crate::search_algorithm::base::*;
 // 次は先手番だとしてalphabeta探索をする。
 // 後手番で読みたい場合は、bitboardを入れ替える前処理を噛ませてから実行する。
 pub struct AlphaBeta {
-    initial_board: Board,
     max_n_leaves: usize,
     n_evaluated_leaves: usize,
     best_leaves: Vec<GameTreeLeaf>,
 }
 
 impl AlphaBeta {
-    pub fn create(initial_board: Board, max_n_leaves: usize) -> AlphaBeta {
+    pub fn create(max_n_leaves: usize) -> AlphaBeta {
         AlphaBeta {
-            initial_board,
             max_n_leaves,
             n_evaluated_leaves: 0,
             best_leaves: vec![],
         }
     }
 
-    pub fn search(&mut self, remaining_depth: u64) -> Option<(Option<u64>, f32)> {
-        let legal_moves = self.initial_board.get_all_legal_moves(&Player::First);
+    pub fn search(
+        &mut self,
+        initial_board: Board,
+        remaining_depth: u64,
+    ) -> Option<(Option<u64>, f32)> {
+        let legal_moves = initial_board.get_all_legal_moves(&Player::First);
         let search_results = if legal_moves.len() == 0 {
             let (child_score, mut leaf) = self.search_inner(
                 vec![None],
                 &Player::Second,
-                self.initial_board.clone(),
+                initial_board.clone(),
                 remaining_depth,
                 -f32::MAX,
                 f32::MAX,
@@ -40,7 +42,7 @@ impl AlphaBeta {
             let mut node_max_score: Option<u64> = None;
             let mut max_score_opt: Option<f32> = None;
             for legal_move in legal_moves {
-                let mut board = self.initial_board.clone();
+                let mut board = initial_board.clone();
                 board.put_and_reverse(&Player::First, legal_move);
 
                 let (child_score, mut leaf) = self.search_inner(
@@ -181,9 +183,9 @@ mod tests {
     use crate::bitboard::put_position_to_coord;
     use crate::search_algorithm::alphabeta::*;
 
-    fn fixture_alphabeta() -> AlphaBeta {
+    fn fixture_board() -> Board {
         // Puzzle 99 in Brian Rose, "Othello: A Minute to Learn...A Lifetime to Master"
-        let board = Board::create_from_str(
+        Board::create_from_str(
             "
             - x x x x x - o
             - - x x x x x o
@@ -194,19 +196,18 @@ mod tests {
             o - x x x x - o
             - x x x x x x -
             ",
-        );
-        AlphaBeta::create(board, 10000)
+        )
     }
 
     #[test]
     fn create() {
-        let search = fixture_alphabeta();
+        let search = AlphaBeta::create(10000);
         assert_eq!(search.max_n_leaves, 10000);
     }
 
     #[test]
     fn best_leaves() {
-        let search = fixture_alphabeta();
+        let search = AlphaBeta::create(10000);
         let best_leaves = search.best_leaves();
         assert_eq!(best_leaves, vec![])
     }
@@ -228,8 +229,8 @@ mod tests {
         );
 
         // when next turn is black
-        let mut alphabeta = AlphaBeta::create(board.clone(), 10000);
-        let search_result = alphabeta.search(5);
+        let mut alphabeta = AlphaBeta::create(10000);
+        let search_result = alphabeta.search(board.clone(), 5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         assert_eq!(search_result.0.is_none(), true);
@@ -261,8 +262,8 @@ mod tests {
 
         // when next turn is white
         let reversed_board = Board::create(board.second(), board.first());
-        let mut alphabeta = AlphaBeta::create(reversed_board, 10000);
-        let search_result = alphabeta.search(5);
+        let mut alphabeta = AlphaBeta::create(10000);
+        let search_result = alphabeta.search(reversed_board, 5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         assert_eq!(search_result.0.is_some(), true);
@@ -283,8 +284,8 @@ mod tests {
 
     #[test]
     fn search_case_puzzle99() {
-        let mut alphabeta = fixture_alphabeta();
-        let search_result = alphabeta.search(9);
+        let mut alphabeta = AlphaBeta::create(10000);
+        let search_result = alphabeta.search(fixture_board(), 9);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         let actual_best_move = search_result.0;
