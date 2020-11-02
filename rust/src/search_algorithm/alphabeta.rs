@@ -10,6 +10,7 @@ pub struct AlphaBeta {
     max_n_best_leaves: usize,
     n_evaluated_leaves: usize,
     best_leaves: Vec<GameTreeLeaf>,
+    best_moves: Vec<Vec<Option<u64>>>,
 }
 
 impl AlphaBeta {
@@ -24,13 +25,14 @@ impl AlphaBeta {
             max_n_best_leaves,
             n_evaluated_leaves: 0,
             best_leaves: vec![],
+            best_moves: vec![],
         }
     }
 
     pub fn search(&mut self, remaining_depth: u64) -> Option<(Option<u64>, f32)> {
         let legal_moves = self.initial_board.get_all_legal_moves(&Player::First);
         if legal_moves.len() == 0 {
-            let child_score = self.search_inner(
+            let (child_score, moves) = self.search_inner(
                 vec![None],
                 &Player::Second,
                 self.initial_board.clone(),
@@ -38,8 +40,9 @@ impl AlphaBeta {
                 -f32::MAX,
                 f32::MAX,
             );
+            self.best_moves.push(moves);
 
-            Some((None, child_score))
+            Some((None, -child_score))
         } else {
             let mut node_max_score: Option<u64> = None;
             let mut max_score_opt: Option<f32> = None;
@@ -47,7 +50,7 @@ impl AlphaBeta {
                 let mut board = self.initial_board.clone();
                 board.put_and_reverse(&Player::First, legal_move);
 
-                let child_score = -self.search_inner(
+                let (child_score, moves) = self.search_inner(
                     vec![Some(legal_move)],
                     &Player::Second,
                     board,
@@ -55,10 +58,9 @@ impl AlphaBeta {
                     -f32::MAX,
                     f32::MAX,
                 );
+                self.best_moves.push(moves);
 
-                println!("child_score={}, max_score_opt={:?}", child_score, max_score_opt);
-
-                match (child_score, max_score_opt) {
+                match (-child_score, max_score_opt) {
                     (child_score, None) => {
                         max_score_opt = Some(child_score);
                         node_max_score = Some(legal_move);
@@ -87,12 +89,18 @@ impl AlphaBeta {
         remaining_depth: u64,
         alpha: f32,
         beta: f32,
-    ) -> f32 {
+    ) -> (f32, Vec<Option<u64>>) {
         if board.is_full() || remaining_depth == 0 {
-            return self.evaluate_leaf(player, board, put_positions.clone());
+            return (
+                self.evaluate_leaf(player, board, put_positions.clone()),
+                put_positions,
+            );
         }
 
         let legal_moves = board.get_all_legal_moves(&player);
+
+        let mut best_moves = vec![];
+        let mut alpha = alpha;
 
         if legal_moves.len() == 0 {
             let last_move = put_positions.last().unwrap();
@@ -101,7 +109,7 @@ impl AlphaBeta {
                 let mut put_positions = put_positions.clone();
                 put_positions.push(None);
 
-                let child_score = self.search_inner(
+                let (child_score, moves) = self.search_inner(
                     put_positions,
                     &player.opponent(),
                     board,
@@ -109,14 +117,17 @@ impl AlphaBeta {
                     -beta,
                     -alpha,
                 );
-                alpha.max(-child_score)
+
+                if alpha < -child_score {
+                    alpha = -child_score;
+                    best_moves = moves;
+                }
             } else {
                 // when there is no legal next moves and next move is empty, then it is a leaf node
-                self.evaluate_leaf(player, board, put_positions)
+                alpha = self.evaluate_leaf(player, board, put_positions);
             }
         } else {
             // when there is at least one legal move, search children of the moves
-            let mut alpha = alpha;
             for legal_move in legal_moves.iter() {
                 let mut put_positions = put_positions.clone();
                 put_positions.push(Some(*legal_move));
@@ -124,7 +135,7 @@ impl AlphaBeta {
                 let mut next_board = board.clone();
                 next_board.put_and_reverse(&player, *legal_move);
 
-                let child_score = self.search_inner(
+                let (child_score, moves) = self.search_inner(
                     put_positions,
                     &player.opponent(),
                     next_board,
@@ -132,13 +143,16 @@ impl AlphaBeta {
                     -beta,
                     -alpha,
                 );
-                alpha = alpha.max(-child_score);
+                if alpha < -child_score {
+                    alpha = -child_score;
+                    best_moves = moves;
+                }
                 if alpha >= beta {
                     break;
                 }
             }
-            alpha
-        }
+        };
+        (alpha, best_moves)
     }
 
     fn evaluate_leaf(
@@ -186,6 +200,7 @@ impl SearchAlgorithm for AlphaBeta {
 #[cfg(test)]
 mod tests {
     use crate::bitboard;
+    use crate::bitboard::put_position_to_coord;
     use crate::search_algorithm::alphabeta::*;
 
     fn fixture_alphabeta() -> AlphaBeta {
@@ -240,8 +255,13 @@ mod tests {
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         assert_eq!(search_result.0.is_none(), true);
-        // let actual_best_score = search_result.1;
-        // assert_eq!(actual_best_score, -2.0); // 33-31 FIXME
+        let actual_best_score = search_result.1;
+        assert_eq!(actual_best_score, -2.0); // 33-31
+        let actual_best_moves = alphabeta.best_moves[0]
+            .iter()
+            .map(|m| put_position_to_coord(*m).unwrap())
+            .collect::<Vec<String>>();
+        assert_eq!(actual_best_moves, vec!["passed", "a8", "b8", "a7"]);
 
         // when next turn is white
         let reversed_board = Board::create(board.second(), board.first());
