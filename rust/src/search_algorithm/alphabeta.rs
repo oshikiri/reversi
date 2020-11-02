@@ -283,15 +283,15 @@ mod tests {
 
     #[test]
     fn search_case_puzzle99() {
-        let mut algorithm = fixture_alphabeta();
-        let search_result = algorithm.search(9);
+        let mut alphabeta = fixture_alphabeta();
+        let search_result = alphabeta.search(9);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         let actual_best_move = search_result.0;
         let actual_best_score = search_result.1;
 
         // NOTE: there are other best moves that have the same score
-        let _expected_moves = vec![
+        let expected_moves = vec![
             "g1", "passed", "a1", "passed", "b7", "passed", "a2", "b2", "a8", "passed", "g7",
             "passed", "h8",
         ];
@@ -301,5 +301,11 @@ mod tests {
             bitboard::put_position_to_coord(actual_best_move),
             Ok("g1".to_string())
         );
+        let actual_best_moves = alphabeta.best_leaves[0]
+            .moves()
+            .iter()
+            .map(|m| put_position_to_coord(*m).unwrap())
+            .collect::<Vec<String>>();
+        assert_eq!(actual_best_moves, expected_moves);
     }
 }
