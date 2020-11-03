@@ -5,6 +5,7 @@ use crate::board::{count_bits, Board};
 use crate::console_log;
 use crate::player::Player;
 use crate::search_algorithm::alphabeta::AlphaBeta;
+use crate::search_algorithm::base::GameTreeLeaf;
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -65,13 +66,13 @@ impl Strategy for PatternLookahead1Strategy {
         player: &Player,
         _i_step: usize,
     ) -> Result<(Option<u64>, f32), String> {
-        let mut scores = [-f32::MAX].repeat(64);
+        let (current, opponent) = match player {
+            Player::First => (current_board.first(), current_board.second()),
+            Player::Second => (current_board.second(), current_board.first()),
+        };
 
+        let mut leaves: Vec<GameTreeLeaf> = Vec::new();
         for i_cell in 0..64 {
-            let (current, opponent) = match player {
-                Player::First => (current_board.first(), current_board.second()),
-                Player::Second => (current_board.second(), current_board.first()),
-            };
             let put_position = 1 << i_cell;
             let reverse_pattern =
                 current_board.get_reverse_pattern(current, opponent, put_position);
@@ -84,31 +85,25 @@ impl Strategy for PatternLookahead1Strategy {
 
             let pattern_instance_indices =
                 bitboard::extract_pattern_instance_indices(&next_board, &player);
-            scores[i_cell] = Board::calculate_pattern_score(pattern_instance_indices);
+            let pattern_score = Board::calculate_pattern_score(pattern_instance_indices);
+            let leaf =
+                GameTreeLeaf::create(player.clone(), pattern_score, vec![Some(put_position)]);
+            leaves.push(leaf);
         }
 
-        console_log!("{:?}", scores);
+        leaves.sort_by(|l, r| {
+            r.score()
+                .partial_cmp(&l.score())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
 
-        match argmax_f32(&scores) {
-            Some(i_max) => Ok((Some(1 << i_max), scores[i_max])),
-            None => Err(String::from("reverse_counts is all zero")),
+        console_log!("  leaves: {:?}", leaves);
+
+        if leaves.is_empty() {
+            Err(String::from("leaves is empty"))
+        } else {
+            let best_leaf = leaves[0].clone();
+            Ok((best_leaf.moves()[0], best_leaf.score()))
         }
-    }
-}
-
-fn argmax_f32(v: &Vec<f32>) -> Option<usize> {
-    let mut v_max = -f32::MAX;
-    let mut i_max = 0;
-
-    for i in 1..v.len() {
-        if v[i] > v_max {
-            v_max = v[i];
-            i_max = i;
-        }
-    }
-    if v_max == -f32::MAX {
-        None
-    } else {
-        Some(i_max)
     }
 }
