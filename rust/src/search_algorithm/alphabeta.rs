@@ -106,7 +106,7 @@ impl AlphaBeta {
         alpha: f32,
         beta: f32,
     ) -> (f32, GameTreeLeaf) {
-        if board.is_full() || remaining_depth == 0 {
+        if board.is_full() || remaining_depth == 0 || self.n_evaluated_leaves > self.max_n_leaves {
             let leaf = self.evaluate_leaf(player, board, put_positions.clone());
             return (leaf.score(), leaf);
         }
