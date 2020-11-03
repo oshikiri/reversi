@@ -39,18 +39,14 @@ impl AlphaBeta {
         }
     }
 
-    pub fn search(
-        &mut self,
-        initial_board: Board,
-        remaining_depth: u64,
-    ) -> Option<(Option<u64>, f32)> {
+    pub fn search(&mut self, initial_board: Board, depth: u64) -> Option<(Option<u64>, f32)> {
         let legal_moves = initial_board.get_all_legal_moves(&Player::First);
         let search_results = if legal_moves.len() == 0 {
             let (child_score, mut leaf) = self.search_inner(
                 vec![None],
                 &Player::Second,
                 initial_board.clone(),
-                remaining_depth,
+                depth,
                 -f32::MAX,
                 f32::MAX,
             );
@@ -69,7 +65,7 @@ impl AlphaBeta {
                     vec![Some(legal_move)],
                     &Player::Second,
                     board,
-                    remaining_depth,
+                    depth,
                     -f32::MAX,
                     f32::MAX,
                 );
