@@ -132,17 +132,17 @@ mod tests {
             "
             - - - - - - - -
             - - - - - - - -
-            - - - - - - - -
-            - - - o x - - -
+            - - - - o - - -
             - - - o o - - -
-            - - - o - - - -
+            - - - x o - - -
+            - - - - - - - -
             - - - - - - - -
             - - - - - - - -
         ",
         );
 
         assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap(), Some(1 << 43));
+        assert_eq!(result.unwrap(), Some(1 << 20));
         assert_eq!(game.current_board, expected);
     }
 

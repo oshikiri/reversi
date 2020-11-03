@@ -64,7 +64,7 @@ impl AlphaBeta {
                         node_max_score = Some(legal_move);
                     }
                     Some(max_score) => {
-                        if child_score > max_score {
+                        if -child_score > max_score {
                             max_score_opt = Some(-child_score);
                             node_max_score = Some(legal_move);
                         }
