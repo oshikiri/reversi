@@ -180,7 +180,7 @@ mod tests {
         assert_eq!(result.is_ok(), false);
         assert_eq!(
             result.unwrap_err(),
-            "Skipped because: Result of alpha_beta_pruning_search is empty".to_string()
+            "Skipped because: Result of alpha-beta pruning search is empty".to_string()
         );
     }
 }

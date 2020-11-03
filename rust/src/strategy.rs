@@ -35,22 +35,21 @@ impl Strategy for NumdiskLookaheadStrategy {
         player: &Player,
         i_step: usize,
     ) -> Result<(Option<u64>, f32), String> {
+        let mut alphabeta = AlphaBeta::create(1000000000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
+        let root_board = match player {
+            Player::First => board.clone(),
+            Player::Second => Board::reverse(&board),
+        };
         let depth = match i_step {
             45..=61 => 13,
             41..=44 => 9,
             _ => 7,
         };
-        let root_board = match player {
-            Player::First => board.clone(),
-            Player::Second => Board::reverse(&board),
-        };
-        let mut alphabeta = AlphaBeta::create(1000000000, |board: Board, player: Player| -> f32 {
-            board.score_numdisk(player.clone())
-        });
-
         match alphabeta.search(root_board, depth) {
             Some((Some(best_move), score)) => Ok((Some(best_move), score)),
-            _ => Err(String::from("Result of alpha_beta_pruning_search is empty")),
+            _ => Err(String::from("Result of alpha-beta pruning search is empty")),
         }
     }
 }
