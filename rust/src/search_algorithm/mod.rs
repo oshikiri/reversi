@@ -1,2 +1,2 @@
 pub mod alphabeta;
-mod base;
+pub mod base;
