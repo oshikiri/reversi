@@ -62,25 +62,25 @@ impl Strategy for PatternLookahead1Strategy {
     // TODO: 高速化
     fn get_next_move(
         &mut self,
-        current_board: &Board,
+        board: &Board,
         player: &Player,
         _i_step: usize,
     ) -> Result<(Option<u64>, f32), String> {
-        let (current, opponent) = match player {
-            Player::First => (current_board.first(), current_board.second()),
-            Player::Second => (current_board.second(), current_board.first()),
+        let root_board = match player {
+            Player::First => board.clone(),
+            Player::Second => Board::reverse(&board),
         };
 
         let mut leaves: Vec<GameTreeLeaf> = Vec::new();
         for i_cell in 0..64 {
             let put_position = 1 << i_cell;
             let reverse_pattern =
-                current_board.get_reverse_pattern(current, opponent, put_position);
+                board.get_reverse_pattern(root_board.first(), root_board.second(), put_position);
             if count_bits(reverse_pattern) <= 0 {
                 continue;
             }
 
-            let mut next_board = Board::create(current_board.first(), current_board.second());
+            let mut next_board = root_board.clone();
             next_board.put_and_reverse(&player, put_position);
 
             let pattern_instance_indices =
