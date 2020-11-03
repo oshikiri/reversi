@@ -5,7 +5,6 @@ use wasm_bindgen::prelude::*;
 use crate::bitboard;
 use crate::board::*;
 use crate::console_log;
-use crate::game_tree::GameTreeNode;
 use crate::player::Player;
 use crate::strategy::*;
 
@@ -18,7 +17,7 @@ pub struct Game {
 }
 
 impl Game {
-    fn put_and_reverse_opponent(&mut self) -> Result<GameTreeNode, String> {
+    fn put_and_reverse_opponent(&mut self) -> Result<Option<u64>, String> {
         let player = self.player_human.opponent();
         let next_position_result =
             self.opponent_strategy
@@ -31,7 +30,7 @@ impl Game {
                     .current_board
                     .put_and_reverse(&player, best_move.put_position.unwrap());
                 self.history.push(put_position);
-                Ok(best_move)
+                Ok(best_move.put_position)
             }
             Err(msg) => Err(format!("Skipped because: {}", msg)),
         }
@@ -71,10 +70,9 @@ impl Game {
     pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
         let player = self.player_human.opponent();
         match self.put_and_reverse_opponent() {
-            Ok(best_move) if best_move.put_position.is_some() => {
-                let put_position = best_move.put_position.unwrap();
-                self.print_move(&player, best_move.put_position.unwrap());
-                match bitboard::put_position_to_xy(put_position) {
+            Ok(Some(best_move)) => {
+                self.print_move(&player, best_move);
+                match bitboard::put_position_to_xy(best_move) {
                     Some((i, j)) => convert_vec_to_jsarray(vec![i, j]),
                     None => convert_vec_to_jsarray(vec![]),
                 }
@@ -144,7 +142,7 @@ mod tests {
         );
 
         assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().put_position, Some(1 << 20));
+        assert_eq!(result.unwrap(), Some(1 << 20));
         assert_eq!(game.current_board, expected);
     }
 
