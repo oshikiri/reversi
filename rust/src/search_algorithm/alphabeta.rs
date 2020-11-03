@@ -10,6 +10,10 @@ pub struct AlphaBeta {
 }
 
 impl SearchAlgorithm for AlphaBeta {
+    fn n_evaluated_leaves(&self) -> usize {
+        self.n_evaluated_leaves
+    }
+
     fn best_leaves(&self) -> Vec<GameTreeLeaf> {
         self.best_leaves.clone()
     }
@@ -92,7 +96,7 @@ impl AlphaBeta {
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
 
-        self.print_best_leaves();
+        self.print_search_results();
 
         search_results
     }

@@ -33,6 +33,8 @@ impl GameTreeLeaf {
 }
 
 pub trait SearchAlgorithm {
+    fn n_evaluated_leaves(&self) -> usize;
+
     fn best_leaves(&self) -> Vec<GameTreeLeaf>;
 
     fn increment_n_evaluated_leaves(&mut self) -> ();
@@ -51,7 +53,8 @@ pub trait SearchAlgorithm {
         new_leaf
     }
 
-    fn print_best_leaves(&self) {
+    fn print_search_results(&self) {
+        console_log!("  evaluated leaves = {}", self.n_evaluated_leaves());
         for leaf in self.best_leaves() {
             let move_strs = leaf
                 .moves()
@@ -59,7 +62,7 @@ pub trait SearchAlgorithm {
                 .map(|m| put_position_to_coord(*m).unwrap())
                 .collect::<Vec<String>>()
                 .join(" ");
-            console_log!("{}: {}", leaf.score(), move_strs);
+            console_log!("  {}: {}", leaf.score(), move_strs);
         }
     }
 }
