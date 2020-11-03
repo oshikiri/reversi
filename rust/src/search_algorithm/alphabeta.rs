@@ -1,6 +1,4 @@
-use crate::bitboard::put_position_to_coord;
 use crate::board::Board;
-use crate::console_log;
 use crate::player::Player;
 use crate::search_algorithm::base::*;
 
@@ -11,6 +9,21 @@ pub struct AlphaBeta {
     n_evaluated_leaves: usize,
     best_leaves: Vec<GameTreeLeaf>,
     evaluate_board_func: fn(&Board, &Player) -> f32,
+}
+
+impl SearchAlgorithm for AlphaBeta {
+    fn best_leaves(&self) -> Vec<GameTreeLeaf> {
+        self.best_leaves.clone()
+    }
+
+    fn increment_n_evaluated_leaves(&mut self) -> () {
+        self.n_evaluated_leaves += 1;
+    }
+
+    fn evaluate_board(&self, board: &Board, player: &Player) -> f32 {
+        let evaluate = self.evaluate_board_func;
+        evaluate(board, player)
+    }
 }
 
 impl AlphaBeta {
@@ -24,23 +37,6 @@ impl AlphaBeta {
             best_leaves: vec![],
             evaluate_board_func,
         }
-    }
-
-    fn print_best_leaves(&self) {
-        for leaf in self.best_leaves() {
-            let move_strs = leaf
-                .moves()
-                .iter()
-                .map(|m| put_position_to_coord(*m).unwrap())
-                .collect::<Vec<String>>()
-                .join(" ");
-            console_log!("{}: {}", leaf.score(), move_strs);
-        }
-    }
-
-    pub fn evaluate_board(&self, board: &Board, player: &Player) -> f32 {
-        let evaluate = self.evaluate_board_func;
-        evaluate(board, player)
     }
 
     pub fn search(
@@ -177,24 +173,6 @@ impl AlphaBeta {
             }
         };
         (alpha, best_leaf)
-    }
-
-    fn evaluate_leaf(
-        &mut self,
-        player: &Player,
-        board: &Board,
-        put_positions: Vec<Option<u64>>,
-    ) -> GameTreeLeaf {
-        self.n_evaluated_leaves += 1;
-        let leaf_score = self.evaluate_board(board, player);
-        let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
-        new_leaf
-    }
-}
-
-impl SearchAlgorithm for AlphaBeta {
-    fn best_leaves(&self) -> Vec<GameTreeLeaf> {
-        self.best_leaves.clone()
     }
 }
 
