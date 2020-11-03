@@ -3,8 +3,8 @@ use wasm_bindgen::prelude::*;
 use crate::bitboard;
 use crate::board::{count_bits, Board};
 use crate::console_log;
-use crate::game_tree::{GameTree, GameTreeNode};
 use crate::player::Player;
+use crate::search_algorithm::alphabeta::AlphaBeta;
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -23,7 +23,7 @@ pub trait Strategy {
         board: &Board,
         palyer: &Player,
         i_step: usize,
-    ) -> Result<(GameTreeNode, f32), String>;
+    ) -> Result<(Option<u64>, f32), String>;
 }
 
 pub struct NumdiskLookaheadStrategy {}
@@ -34,20 +34,20 @@ impl Strategy for NumdiskLookaheadStrategy {
         board: &Board,
         player: &Player,
         i_step: usize,
-    ) -> Result<(GameTreeNode, f32), String> {
+    ) -> Result<(Option<u64>, f32), String> {
         let depth = match i_step {
             45..=61 => 13,
             41..=44 => 9,
             _ => 7,
         };
-        let (player, root_board) = match player {
-            Player::First => (player.clone(), board.clone()),
-            Player::Second => (player.opponent().clone(), Board::reverse(&board)),
+        let root_board = match player {
+            Player::First => board.clone(),
+            Player::Second => Board::reverse(&board),
         };
-        let mut game_tree = GameTree::create(player.clone(), root_board);
+        let mut alphabeta = AlphaBeta::create(1000000000);
 
-        match game_tree.alpha_beta_pruning_search(depth) {
-            Some((best_move, score)) if best_move.put_position.is_some() => Ok((best_move, score)),
+        match alphabeta.search(root_board, depth) {
+            Some((Some(best_move), score)) => Ok((Some(best_move), score)),
             _ => Err(String::from("Result of alpha_beta_pruning_search is empty")),
         }
     }
@@ -62,7 +62,7 @@ impl Strategy for PatternLookahead1Strategy {
         current_board: &Board,
         player: &Player,
         _i_step: usize,
-    ) -> Result<(GameTreeNode, f32), String> {
+    ) -> Result<(Option<u64>, f32), String> {
         let mut scores = [-f32::MAX].repeat(64);
 
         for i_cell in 0..64 {
@@ -88,10 +88,7 @@ impl Strategy for PatternLookahead1Strategy {
         console_log!("{:?}", scores);
 
         match argmax_f32(&scores) {
-            Some(i_max) => {
-                let node = GameTreeNode::create(player.clone(), 1 << i_max, current_board.clone());
-                Ok((node, 0.0)) // FIXME
-            }
+            Some(i_max) => Ok((Some(1 << i_max), scores[i_max])),
             None => Err(String::from("reverse_counts is all zero")),
         }
     }

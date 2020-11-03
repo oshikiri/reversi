@@ -28,9 +28,9 @@ impl Game {
                 console_log!("score of choosen move = {:?}", score);
                 let (_player, put_position) = self
                     .current_board
-                    .put_and_reverse(&player, best_move.put_position.unwrap());
+                    .put_and_reverse(&player, best_move.unwrap());
                 self.history.push(put_position);
-                Ok(best_move.put_position)
+                Ok(best_move)
             }
             Err(msg) => Err(format!("Skipped because: {}", msg)),
         }
@@ -132,17 +132,17 @@ mod tests {
             "
             - - - - - - - -
             - - - - - - - -
-            - - - - o - - -
-            - - - o o - - -
-            - - - x o - - -
             - - - - - - - -
+            - - - o x - - -
+            - - - o o - - -
+            - - - o - - - -
             - - - - - - - -
             - - - - - - - -
         ",
         );
 
         assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap(), Some(1 << 20));
+        assert_eq!(result.unwrap(), Some(1 << 43));
         assert_eq!(game.current_board, expected);
     }
 
