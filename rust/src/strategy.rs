@@ -48,7 +48,7 @@ impl Strategy for NumdiskLookaheadStrategy {
             41..=44 => 9,
             _ => 7,
         };
-        match alphabeta.search(root_board, depth) {
+        match alphabeta.search(&root_board, depth) {
             Some((Some(best_move), score)) => Ok((Some(best_move), score)),
             _ => Err(String::from("Result of alpha-beta pruning search is empty")),
         }

@@ -38,13 +38,13 @@ impl AlphaBeta {
     }
 
     /// This function assume the next turn is the first player (black).
-    pub fn search(&mut self, initial_board: Board, depth: u64) -> Option<(Option<u64>, f32)> {
+    pub fn search(&mut self, initial_board: &Board, depth: u64) -> Option<(Option<u64>, f32)> {
         let legal_moves = initial_board.get_all_legal_moves(&Player::First);
         let search_results = if legal_moves.len() == 0 {
             let (child_score, mut leaf) = self.search_inner(
                 vec![None],
                 &Player::Second,
-                initial_board.clone(),
+                initial_board,
                 depth,
                 -f32::MAX,
                 f32::MAX,
@@ -63,7 +63,7 @@ impl AlphaBeta {
                 let (child_score, mut leaf) = self.search_inner(
                     vec![Some(legal_move)],
                     &Player::Second,
-                    board,
+                    &board,
                     depth,
                     -f32::MAX,
                     f32::MAX,
@@ -101,7 +101,7 @@ impl AlphaBeta {
         &mut self,
         put_positions: Vec<Option<u64>>,
         player: &Player,
-        board: Board,
+        board: &Board,
         remaining_depth: u64,
         alpha: f32,
         beta: f32,
@@ -153,7 +153,7 @@ impl AlphaBeta {
                 let (child_score, moves) = self.search_inner(
                     put_positions,
                     &player.opponent(),
-                    next_board,
+                    &next_board,
                     remaining_depth - 1,
                     -beta,
                     -alpha,
@@ -230,7 +230,7 @@ mod tests {
         let mut alphabeta = AlphaBeta::create(10000, |board: &Board, player: &Player| -> f32 {
             board.score_numdisk(player)
         });
-        let search_result = alphabeta.search(board.clone(), 5);
+        let search_result = alphabeta.search(&board, 5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         assert_eq!(search_result.0.is_none(), true);
@@ -265,7 +265,7 @@ mod tests {
         let mut alphabeta = AlphaBeta::create(10000, |board: &Board, player: &Player| -> f32 {
             board.score_numdisk(player)
         });
-        let search_result = alphabeta.search(reversed_board, 5);
+        let search_result = alphabeta.search(&reversed_board, 5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         assert_eq!(search_result.0.is_some(), true);
@@ -289,7 +289,7 @@ mod tests {
         let mut alphabeta = AlphaBeta::create(10000, |board: &Board, player: &Player| -> f32 {
             board.score_numdisk(player)
         });
-        let search_result = alphabeta.search(fixture_board(), 9);
+        let search_result = alphabeta.search(&fixture_board(), 9);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
         let actual_best_move = search_result.0;
