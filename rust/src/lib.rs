@@ -12,6 +12,6 @@ pub mod game_tree;
 pub mod ggf;
 pub mod parameters;
 pub mod player;
-mod search_algorithm;
+pub mod search_algorithm;
 pub mod strategy;
 mod utils;

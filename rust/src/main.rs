@@ -24,8 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // cargo build --release && cargo profiler callgrind --bin ./target/release/reversi -n 10 bench
             println!("Benchmark");
             use reversi::board::Board;
-            use reversi::game_tree::GameTree;
-            use reversi::player::Player;
+            use reversi::search_algorithm::alphabeta::AlphaBeta;
 
             let current_board = Board::create_from_str(
                 "
@@ -39,9 +38,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 - - - - - - - -
             ",
             );
-            let mut game_tree = GameTree::create(Player::First, current_board);
-            let best_move = game_tree.alpha_beta_pruning_search(7).unwrap();
-            println!("{:?}", best_move);
+            let mut alphabeta = AlphaBeta::create(10000);
+            let search_results = alphabeta.search(current_board, 7);
+            println!("{:?}", search_results);
 
             Ok(())
         }
