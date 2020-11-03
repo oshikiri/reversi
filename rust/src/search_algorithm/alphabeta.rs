@@ -1,4 +1,6 @@
+use crate::bitboard::put_position_to_coord;
 use crate::board::Board;
+use crate::console_log;
 use crate::player::Player;
 use crate::search_algorithm::base::*;
 
@@ -81,6 +83,16 @@ impl AlphaBeta {
                 .partial_cmp(&l.score())
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
+
+        for leaf in self.best_leaves() {
+            let move_strs = leaf
+                .moves()
+                .iter()
+                .map(|m| put_position_to_coord(*m).unwrap())
+                .collect::<Vec<String>>()
+                .join(" ");
+            console_log!("{}: {}", leaf.score(), move_strs);
+        }
 
         search_results
     }
