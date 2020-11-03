@@ -44,7 +44,9 @@ impl Strategy for NumdiskLookaheadStrategy {
             Player::First => board.clone(),
             Player::Second => Board::reverse(&board),
         };
-        let mut alphabeta = AlphaBeta::create(1000000000);
+        let mut alphabeta = AlphaBeta::create(1000000000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
 
         match alphabeta.search(root_board, depth) {
             Some((Some(best_move), score)) => Ok((Some(best_move), score)),

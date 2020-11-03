@@ -10,15 +10,22 @@ pub struct AlphaBeta {
     max_n_leaves: usize,
     n_evaluated_leaves: usize,
     best_leaves: Vec<GameTreeLeaf>,
+    evaluate_board_func: fn(Board, Player) -> f32,
 }
 
 impl AlphaBeta {
-    pub fn create(max_n_leaves: usize) -> AlphaBeta {
+    pub fn create(max_n_leaves: usize, evaluate_board_func: fn(Board, Player) -> f32) -> AlphaBeta {
         AlphaBeta {
             max_n_leaves,
             n_evaluated_leaves: 0,
             best_leaves: vec![],
+            evaluate_board_func,
         }
+    }
+
+    pub fn evaluate_board(&self, board: Board, player: Player) -> f32 {
+        let evaluate = self.evaluate_board_func;
+        evaluate(board, player)
     }
 
     pub fn search(
@@ -177,7 +184,7 @@ impl AlphaBeta {
         put_positions: Vec<Option<u64>>,
     ) -> GameTreeLeaf {
         self.n_evaluated_leaves += 1;
-        let leaf_score = board.score_numdisk(player.clone());
+        let leaf_score = self.evaluate_board(board, player.clone());
         let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
         new_leaf
     }
@@ -213,13 +220,17 @@ mod tests {
 
     #[test]
     fn create() {
-        let search = AlphaBeta::create(10000);
+        let search = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
         assert_eq!(search.max_n_leaves, 10000);
     }
 
     #[test]
     fn best_leaves() {
-        let search = AlphaBeta::create(10000);
+        let search = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
         let best_leaves = search.best_leaves();
         assert_eq!(best_leaves, vec![])
     }
@@ -241,7 +252,9 @@ mod tests {
         );
 
         // when next turn is black
-        let mut alphabeta = AlphaBeta::create(10000);
+        let mut alphabeta = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
         let search_result = alphabeta.search(board.clone(), 5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
@@ -274,7 +287,9 @@ mod tests {
 
         // when next turn is white
         let reversed_board = Board::create(board.second(), board.first());
-        let mut alphabeta = AlphaBeta::create(10000);
+        let mut alphabeta = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
         let search_result = alphabeta.search(reversed_board, 5);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();
@@ -296,7 +311,9 @@ mod tests {
 
     #[test]
     fn search_case_puzzle99() {
-        let mut alphabeta = AlphaBeta::create(10000);
+        let mut alphabeta = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
+            board.score_numdisk(player.clone())
+        });
         let search_result = alphabeta.search(fixture_board(), 9);
         assert_eq!(search_result.is_some(), true);
         let search_result = search_result.unwrap();

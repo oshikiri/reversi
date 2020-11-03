@@ -24,6 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // cargo build --release && cargo profiler callgrind --bin ./target/release/reversi -n 10 bench
             println!("Benchmark");
             use reversi::board::Board;
+            use reversi::player::Player;
             use reversi::search_algorithm::alphabeta::AlphaBeta;
 
             let current_board = Board::create_from_str(
@@ -38,7 +39,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 - - - - - - - -
             ",
             );
-            let mut alphabeta = AlphaBeta::create(10000);
+            let mut alphabeta = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
+                board.score_numdisk(player.clone())
+            });
             let search_results = alphabeta.search(current_board, 7);
             println!("{:?}", search_results);
 
