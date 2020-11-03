@@ -39,8 +39,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 - - - - - - - -
             ",
             );
-            let mut alphabeta = AlphaBeta::create(10000, |board: Board, player: Player| -> f32 {
-                board.score_numdisk(player.clone())
+            let mut alphabeta = AlphaBeta::create(10000, |board: &Board, player: &Player| -> f32 {
+                board.score_numdisk(player)
             });
             let search_results = alphabeta.search(current_board, 7);
             println!("{:?}", search_results);
