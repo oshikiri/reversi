@@ -2,8 +2,6 @@ use crate::board::Board;
 use crate::player::Player;
 use crate::search_algorithm::base::*;
 
-// 次は先手番だとしてalphabeta探索をする。
-// 後手番で読みたい場合は、bitboardを入れ替える前処理を噛ませてから実行する。
 pub struct AlphaBeta {
     max_n_leaves: usize,
     n_evaluated_leaves: usize,
@@ -39,6 +37,7 @@ impl AlphaBeta {
         }
     }
 
+    /// This function assume the next turn is the first player (black).
     pub fn search(&mut self, initial_board: Board, depth: u64) -> Option<(Option<u64>, f32)> {
         let legal_moves = initial_board.get_all_legal_moves(&Player::First);
         let search_results = if legal_moves.len() == 0 {
