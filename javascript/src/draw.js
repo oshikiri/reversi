@@ -6,7 +6,7 @@ const GRID_WIDTH = 3;
 const N_COL_CELLS = 8;
 const N_ROW_CELLS = 8;
 const CELL_WIDTH = 90;
-const BACKGROUND_WIDTH = 8 * (CELL_WIDTH + 1) + 2 * BOARD_OFFSET;
+export const BACKGROUND_WIDTH = 8 * (CELL_WIDTH + 1) + 2 * BOARD_OFFSET;
 const DISK_RADIUS = 39;
 
 const color = {

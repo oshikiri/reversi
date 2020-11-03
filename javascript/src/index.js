@@ -6,6 +6,7 @@ import {
   drawCircle,
   drawDisks,
   drawGrid,
+  BACKGROUND_WIDTH,
 } from "./draw";
 
 const game = Game.create(Player.First, StrategyType.NumdiskLookahead);
@@ -13,8 +14,8 @@ let legalPositions = game.getCurrentAllLegalPosition(Player.First);
 let boardLocked = false;
 
 const canvas = document.getElementById("reversi-board");
-canvas.height = "960";
-canvas.width = "960";
+canvas.height = `${BACKGROUND_WIDTH}`;
+canvas.width = `${BACKGROUND_WIDTH}`;
 if (canvas.getContext) {
   const context = canvas.getContext("2d");
 
