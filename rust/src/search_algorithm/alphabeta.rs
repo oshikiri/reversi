@@ -26,6 +26,18 @@ impl AlphaBeta {
         }
     }
 
+    fn print_best_leaves(&self) {
+        for leaf in self.best_leaves() {
+            let move_strs = leaf
+                .moves()
+                .iter()
+                .map(|m| put_position_to_coord(*m).unwrap())
+                .collect::<Vec<String>>()
+                .join(" ");
+            console_log!("{}: {}", leaf.score(), move_strs);
+        }
+    }
+
     pub fn evaluate_board(&self, board: &Board, player: &Player) -> f32 {
         let evaluate = self.evaluate_board_func;
         evaluate(board, player)
@@ -94,15 +106,7 @@ impl AlphaBeta {
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
 
-        for leaf in self.best_leaves() {
-            let move_strs = leaf
-                .moves()
-                .iter()
-                .map(|m| put_position_to_coord(*m).unwrap())
-                .collect::<Vec<String>>()
-                .join(" ");
-            console_log!("{}: {}", leaf.score(), move_strs);
-        }
+        self.print_best_leaves();
 
         search_results
     }
