@@ -1,5 +1,5 @@
-use crate::board::Board;
 use crate::board::player::Player;
+use crate::board::Board;
 use crate::search_algorithm::base::*;
 
 pub struct AlphaBeta {
@@ -245,7 +245,7 @@ mod tests {
             .iter()
             .map(|m| put_position_to_coord(*m).unwrap())
             .collect::<Vec<String>>();
-        assert_eq!(actual_best_moves, vec!["passed", "a8", "b8", "a7"]);
+        assert_eq!(actual_best_moves, vec!["**", "a8", "b8", "a7"]);
     }
 
     #[test]
@@ -301,8 +301,7 @@ mod tests {
 
         // NOTE: there are other best moves that have the same score
         let expected_moves = vec![
-            "g1", "passed", "a1", "passed", "b7", "passed", "a2", "b2", "a8", "passed", "g7",
-            "passed", "h8",
+            "g1", "**", "a1", "**", "b7", "**", "a2", "b2", "a8", "**", "g7", "**", "h8",
         ];
 
         assert_eq!(actual_best_score, 38.0);

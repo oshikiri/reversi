@@ -1,5 +1,5 @@
-use crate::board::Board;
 use crate::board::player::Player;
+use crate::board::Board;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 //
@@ -122,7 +122,7 @@ pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
 
 pub fn put_position_to_coord(position: Option<u64>) -> Result<String, String> {
     if position.is_none() {
-        return Ok("passed".to_string());
+        return Ok("**".to_string());
     }
     let mut position = position.unwrap();
     let mut i_position = None;
