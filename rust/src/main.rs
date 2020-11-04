@@ -23,8 +23,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         _subcommand => {
             // cargo build --release && cargo profiler callgrind --bin ./target/release/reversi -n 10 bench
             println!("Benchmark");
-            use reversi::board::Board;
             use reversi::board::player::Player;
+            use reversi::board::Board;
             use reversi::search_algorithm::alphabeta::AlphaBeta;
 
             let current_board = Board::create_from_str(

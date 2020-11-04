@@ -23,8 +23,8 @@ mod board {
     }
 
     mod board_test {
-        use reversi::board::Board;
         use reversi::board::player::Player;
+        use reversi::board::Board;
 
         #[test]
         fn equivalence() {
@@ -213,8 +213,8 @@ mod board {
         extern crate test;
         use test::Bencher;
 
-        use reversi::board::Board;
         use reversi::board::player::Player;
+        use reversi::board::Board;
 
         #[bench]
         fn get_all_legal_moves(bench: &mut Bencher) {
