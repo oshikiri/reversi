@@ -24,7 +24,7 @@ lazy_static! {
 }
 
 // TODO: refactor?
-fn get_size_n_reverses_3() -> [u64; 3 * SIZE_N_REVERSES_3] {
+pub fn get_size_n_reverses_3() -> [u64; 3 * SIZE_N_REVERSES_3] {
     let mut n_reverses = [0; 3 * SIZE_N_REVERSES_3];
     for i in 0..SIZE_N_REVERSES_3 {
         let cells = board::parse_reverse_index(i as u64);
@@ -36,7 +36,7 @@ fn get_size_n_reverses_3() -> [u64; 3 * SIZE_N_REVERSES_3] {
     }
     n_reverses
 }
-fn get_size_n_reverses_4() -> [u64; 4 * SIZE_N_REVERSES_4] {
+pub fn get_size_n_reverses_4() -> [u64; 4 * SIZE_N_REVERSES_4] {
     let mut n_reverses = [0; 4 * SIZE_N_REVERSES_4];
     for i in 0..SIZE_N_REVERSES_4 {
         let cells = board::parse_reverse_index(i as u64);
@@ -48,7 +48,7 @@ fn get_size_n_reverses_4() -> [u64; 4 * SIZE_N_REVERSES_4] {
     }
     n_reverses
 }
-fn get_size_n_reverses_5() -> [u64; 5 * SIZE_N_REVERSES_5] {
+pub fn get_size_n_reverses_5() -> [u64; 5 * SIZE_N_REVERSES_5] {
     let mut n_reverses = [0; 5 * SIZE_N_REVERSES_5];
     for i in 0..SIZE_N_REVERSES_5 {
         let cells = board::parse_reverse_index(i as u64);
@@ -60,7 +60,7 @@ fn get_size_n_reverses_5() -> [u64; 5 * SIZE_N_REVERSES_5] {
     }
     n_reverses
 }
-fn get_size_n_reverses_6() -> [u64; 6 * SIZE_N_REVERSES_6] {
+pub fn get_size_n_reverses_6() -> [u64; 6 * SIZE_N_REVERSES_6] {
     let mut n_reverses = [0; 6 * SIZE_N_REVERSES_6];
     for i in 0..SIZE_N_REVERSES_6 {
         let cells = board::parse_reverse_index(i as u64);
@@ -72,7 +72,7 @@ fn get_size_n_reverses_6() -> [u64; 6 * SIZE_N_REVERSES_6] {
     }
     n_reverses
 }
-fn get_size_n_reverses_7() -> [u64; 7 * SIZE_N_REVERSES_7] {
+pub fn get_size_n_reverses_7() -> [u64; 7 * SIZE_N_REVERSES_7] {
     let mut n_reverses = [0; 7 * SIZE_N_REVERSES_7];
     for i in 0..SIZE_N_REVERSES_7 {
         let cells = board::parse_reverse_index(i as u64);
@@ -84,7 +84,7 @@ fn get_size_n_reverses_7() -> [u64; 7 * SIZE_N_REVERSES_7] {
     }
     n_reverses
 }
-fn get_size_n_reverses_8() -> [u64; 8 * SIZE_N_REVERSES_8] {
+pub fn get_size_n_reverses_8() -> [u64; 8 * SIZE_N_REVERSES_8] {
     let mut n_reverses = [0; 8 * SIZE_N_REVERSES_8];
     for i in 0..SIZE_N_REVERSES_8 {
         let cells = board::parse_reverse_index(i as u64);
@@ -164,30 +164,3 @@ pub static REVERSE_LINE_PATTERN_8: [[usize; 8]; 18] = [
     [0, 9, 18, 27, 36, 45, 54, 63],
     [7, 14, 21, 28, 35, 42, 49, 56],
 ];
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn get_size_n_reverses_8() {
-        let actual = crate::board_reverse::get_size_n_reverses_8();
-        // o x - x x o x -
-        let index: usize =
-            2 * 3usize.pow(6) + 3usize.pow(5) + 2 * 3usize.pow(4) + 2 * 3usize.pow(3) + 2 * 3 + 1;
-        let expected = [0, 0, 3, 0, 0, 0, 0, 1];
-        assert_eq!(actual[(8 * index)..(8 * index + 8)], expected);
-    }
-
-    #[test]
-    fn static_n_reverses_8() {
-        use crate::board_reverse::N_REVERSES_8;
-        // o x - x x o x -
-        let index: usize =
-            2 * 3usize.pow(6) + 3usize.pow(5) + 2 * 3usize.pow(4) + 2 * 3usize.pow(3) + 2 * 3 + 1;
-        for i in (8 * index)..(8 * index + 8) {
-            println!("N_REVERSES_8[{}] = {}", i, N_REVERSES_8[i]);
-        }
-
-        let expected = [0, 0, 3, 0, 0, 0, 0, 1];
-        assert_eq!(N_REVERSES_8[(8 * index)..(8 * index + 8)], expected);
-    }
-}

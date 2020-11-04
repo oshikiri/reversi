@@ -6,7 +6,7 @@ extern crate lazy_static;
 
 pub mod bitboard;
 pub mod board;
-mod board_reverse;
+pub mod board_reverse;
 mod game;
 pub mod ggf;
 pub mod parameters;
