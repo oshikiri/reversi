@@ -5,7 +5,6 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::bitboard;
-use crate::console_log;
 use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::player::Player;
 
@@ -30,10 +29,6 @@ pub fn newBoard() -> Board {
 impl Board {
     #![allow(non_snake_case)]
 
-    pub fn create(first: u64, second: u64) -> Board {
-        Board { first, second }
-    }
-
     pub fn getBitboard(&self, player: Player) -> js_sys::Array {
         let bitboard = match player {
             Player::First => self.first,
@@ -41,21 +36,6 @@ impl Board {
         };
         let bitarray = bitboard::u64_to_bitvec(bitboard);
         convert_vec_to_jsarray(bitarray)
-    }
-
-    pub fn putAndReverse(&mut self, player: Player, i: u8, j: u8) {
-        let put_position = coordinate_to_bitboard(i as u64, j as u64).unwrap();
-        console_log!(
-            "move {:?} {}",
-            player,
-            bitboard::put_position_to_coord(Some(put_position)).unwrap_or("*".to_string())
-        );
-        self.put_and_reverse(&player, put_position);
-    }
-
-    pub fn entireReversePatterns(&self, player: Player) -> js_sys::Array {
-        let reverse_patterns = self.entire_reverse_patterns(&player);
-        convert_vec_to_jsarray(reverse_patterns)
     }
 
     pub fn getAllLegalPosition(&self, player: Player) -> js_sys::Array {
@@ -69,6 +49,10 @@ impl Board {
 }
 
 impl Board {
+    pub fn create(first: u64, second: u64) -> Board {
+        Board { first, second }
+    }
+
     pub fn first(&self) -> u64 {
         self.first
     }
