@@ -1,5 +1,5 @@
 use crate::board::Board;
-use crate::player::Player;
+use crate::board::player::Player;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 //
@@ -167,7 +167,7 @@ pub fn put_position_to_xy(position: u64) -> Option<(u64, u64)> {
 #[cfg(test)]
 mod tests {
     mod bitboard_test {
-        use crate::bitboard;
+        use crate::board::bitboard;
         use crate::board::Board;
 
         #[test]

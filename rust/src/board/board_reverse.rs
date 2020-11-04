@@ -1,5 +1,5 @@
 use crate::board;
-use crate::player::Player;
+use crate::board::player::Player;
 
 pub const SIZE_N_REVERSES_3: usize = 27; // 3**3
 pub const SIZE_N_REVERSES_4: usize = 81; // 3**4

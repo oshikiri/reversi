@@ -1,5 +1,5 @@
 use crate::board::Board;
-use crate::player::Player;
+use crate::board::player::Player;
 use crate::search_algorithm::base::*;
 
 pub struct AlphaBeta {
@@ -177,8 +177,8 @@ impl AlphaBeta {
 
 #[cfg(test)]
 mod tests {
-    use crate::bitboard;
-    use crate::bitboard::put_position_to_coord;
+    use crate::board::bitboard;
+    use crate::board::bitboard::put_position_to_coord;
     use crate::search_algorithm::alphabeta::*;
 
     fn fixture_board() -> Board {

@@ -24,7 +24,7 @@ mod board {
 
     mod board_test {
         use reversi::board::Board;
-        use reversi::player::Player;
+        use reversi::board::player::Player;
 
         #[test]
         fn equivalence() {
@@ -214,7 +214,7 @@ mod board {
         use test::Bencher;
 
         use reversi::board::Board;
-        use reversi::player::Player;
+        use reversi::board::player::Player;
 
         #[bench]
         fn get_all_legal_moves(bench: &mut Bencher) {

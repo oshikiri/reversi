@@ -1,12 +1,15 @@
 extern crate wasm_bindgen;
 
+pub mod board_reverse;
+pub mod bitboard;
+pub mod player;
+
 use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
-use crate::bitboard;
 use crate::parameters::parameters::PATTERN_INSTANCES;
-use crate::player::Player;
+use crate::board::player::Player;
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, PartialEq)]
@@ -219,7 +222,7 @@ impl Board {
     }
 
     pub fn get_n_reverses(&self, player: &Player) -> [u8; 64] {
-        use crate::board_reverse::*;
+        use crate::board::board_reverse::*;
 
         let (current, opponent) = match player {
             Player::First => (self.first, self.second),

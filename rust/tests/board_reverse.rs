@@ -2,7 +2,7 @@
 mod board_reverse {
     #[test]
     fn get_size_n_reverses_8() {
-        use reversi::board_reverse::get_size_n_reverses_8;
+        use reversi::board::board_reverse::get_size_n_reverses_8;
 
         let actual = get_size_n_reverses_8();
         // o x - x x o x -
@@ -14,7 +14,7 @@ mod board_reverse {
 
     #[test]
     fn static_n_reverses_8() {
-        use reversi::board_reverse::N_REVERSES_8;
+        use reversi::board::board_reverse::N_REVERSES_8;
 
         // o x - x x o x -
         let index: usize =

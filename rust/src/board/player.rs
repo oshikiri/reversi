@@ -18,7 +18,7 @@ impl Player {
 
 #[cfg(test)]
 mod tests {
-    use crate::player::Player;
+    use crate::board::player::Player;
     #[test]
     fn opponent() {
         let first = Player::First;
