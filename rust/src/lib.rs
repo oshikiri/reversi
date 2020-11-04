@@ -1,4 +1,3 @@
-#![feature(test)]
 extern crate wasm_bindgen;
 
 #[macro_use]
