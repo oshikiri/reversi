@@ -4,8 +4,8 @@
   "description": "Computer reversi backed with webassembly",
   "main": "src/index.js",
   "scripts": {
-    "check:format": "./node_modules/.bin/prettier --check **/*.{js,html}",
-    "format": "./node_modules/.bin/prettier --write **/*.{js,html}",
+    "check:format": "prettier --check **/*.{js,html}",
+    "format": "prettier --write **/*.{js,html}",
     "test": "echo \"INFO: no test specified\"",
     "build": "export REVERSI_VERSION=$(git describe --tag) && webpack --config webpack.config.js --mode=production",
     "start": "export REVERSI_VERSION=$(git describe --tag) && webpack-dev-server --mode=development"
