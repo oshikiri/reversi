@@ -19,4 +19,7 @@ module.exports = {
       REVERSI_VERSION: "",
     }),
   ],
+  experiments: {
+    asyncWebAssembly: true,
+  },
 };
