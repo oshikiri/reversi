@@ -13,7 +13,6 @@ module.exports = {
       patterns: [
         { from: "index.html", to: "." },
         { from: "favicon.ico", to: "." },
-        { from: "style.css", to: "." },
       ],
     }),
     new webpack.EnvironmentPlugin({
