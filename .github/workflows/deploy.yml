@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -41,17 +47,18 @@ jobs:
         npm run build
         popd
 
-    - name: Push to gh-pages branch
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git describe --tag
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ./docs
 
-        git config user.name "deploy workflow"
-        git config user.email "oshikiri@users.noreply.github.com"
-
-        git checkout -b gh-pages
-        git add docs/* --force
-        git commit --message "Deploy docs/*"
-
-        git push --force origin gh-pages
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
