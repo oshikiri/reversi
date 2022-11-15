@@ -20,6 +20,9 @@
     "url": "https://github.com/oshikiri/reversi/issues"
   },
   "homepage": "https://github.com/oshikiri/reversi#readme",
+  "engines": {
+    "node": "^14"
+  },
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",
     "prettier": "^2.4.0",
