@@ -1,69 +1,60 @@
-import { Player } from "reversi-wasm";
-
-// TODO: Refactor constants
-const BOARD_OFFSET = 30;
-const GRID_WIDTH = 3;
-const N_COL_CELLS = 8;
-const N_ROW_CELLS = 8;
-const CELL_WIDTH = 90;
-export const BACKGROUND_WIDTH = 8 * (CELL_WIDTH + 1) + 2 * BOARD_OFFSET;
-const DISK_RADIUS = 39;
-
-const color = {
-  background: "#0B610B",
-  grid: "#000000",
-  second: "#FFFFFF",
-  first: "#000000",
-};
-
-export const drawBackground = (ctx) => {
-  ctx.fillStyle = color.background;
-  ctx.fillRect(0, 0, BACKGROUND_WIDTH, BACKGROUND_WIDTH);
-  ctx.fill();
-};
-
-export const drawGrid = (ctx) => {
-  ctx.beginPath();
-  ctx.strokeStyle = color.grid;
-  ctx.lineWidth = GRID_WIDTH;
-
-  // Vertical lines
-  for (let i = 0; i <= N_COL_CELLS; i++) {
-    const start = BOARD_OFFSET + i * (CELL_WIDTH + 1) + 1;
-    const end = BOARD_OFFSET + (CELL_WIDTH + 1) * N_ROW_CELLS + 1;
-    ctx.moveTo(start, BOARD_OFFSET);
-    ctx.lineTo(start, end);
+export function initializeBoard() {
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      document.querySelector("#reversi-board").appendChild(createCell(r, c));
+    }
   }
+}
 
-  // Horizontal lines
-  for (let j = 0; j <= N_ROW_CELLS; j++) {
-    const start = BOARD_OFFSET + j * (CELL_WIDTH + 1) + 1;
-    const end = BOARD_OFFSET + (CELL_WIDTH + 1) * N_COL_CELLS + 1;
-    ctx.moveTo(BOARD_OFFSET, start);
-    ctx.lineTo(end, start);
+function createCell(r, c) {
+  const cell = document.createElement("div");
+  cell.classList = "cell";
+  cell.classList.add("empty");
+  cell.dataset.boardRow = r;
+  cell.dataset.boardColumn = c;
+
+  const diskFront = document.createElement("div");
+  diskFront.classList = "disk-front";
+
+  const diskBack = document.createElement("div");
+  diskBack.classList = "disk-back";
+
+  const disk = document.createElement("div");
+  disk.classList = "disk";
+  disk.appendChild(diskFront);
+  disk.appendChild(diskBack);
+
+  cell.appendChild(disk);
+
+  return cell;
+}
+
+export function renderBoard(bitboardFirst, bitboardSecond, i, j, iPrev, jPrev) {
+  if (iPrev >= 0 && jPrev >= 0) {
+    activateCell(iPrev, jPrev, false);
   }
+  drawDisks(bitboardFirst, bitboardSecond);
+  if (i >= 0 && j >= 0) {
+    activateCell(i, j, true);
+  }
+}
 
-  ctx.stroke();
-};
+function activateCell(i, j, isActive) {
+  const cell = getCell(i, j);
+  if (isActive) {
+    cell.classList.add("active");
+  } else {
+    cell.classList.remove("active");
+  }
+}
 
-const drawDisk = (ctx, i, j, color) => {
-  drawCircle(ctx, i, j, color, DISK_RADIUS);
-};
+function getCell(i, j) {
+  return document.querySelector(
+    `[data-board-row="${j}"][data-board-column="${i}"]`
+  );
+}
 
-export const drawCircle = (ctx, i, j, color, radius) => {
-  const x = BOARD_OFFSET + (i + 1 / 2) * (CELL_WIDTH + 1) + 1;
-  const y = BOARD_OFFSET + (j + 1 / 2) * (CELL_WIDTH + 1) + 1;
-
-  ctx.beginPath();
-  ctx.fillStyle = color;
-  ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  ctx.fill();
-};
-
-export const drawDisks = (ctx, board) => {
-  const first = board.getBitboard(Player.First);
-  const second = board.getBitboard(Player.Second);
-
+const drawDisks = (first, second) => {
   let firstScore = 0;
   let secondScore = 0;
 
@@ -73,24 +64,21 @@ export const drawDisks = (ctx, board) => {
 
     if (first[k] == 1) {
       firstScore++;
-      drawDisk(ctx, i, j, color.first);
+      drawDisk(i, j, true);
     } else if (second[k] == 1) {
       secondScore++;
-      drawDisk(ctx, i, j, color.second);
+      drawDisk(i, j, false);
     }
   }
   document.querySelector("#scores").innerHTML = `${firstScore}-${secondScore}`;
 };
 
-export const convertToIdx = (x, y) => {
-  x = x - BOARD_OFFSET;
-  y = y - BOARD_OFFSET;
-  const i = Math.floor(x / (CELL_WIDTH + 1));
-  const j = Math.floor(y / (CELL_WIDTH + 1));
-
-  if (0 <= Math.min(i, j) && Math.max(i, j) < 8) {
-    return [i, j];
+const drawDisk = (i, j, isFirst) => {
+  const cell = getCell(i, j);
+  cell.classList.remove("empty");
+  if (isFirst) {
+    cell.classList.remove("flipped");
   } else {
-    return undefined;
+    cell.classList.add("flipped");
   }
 };

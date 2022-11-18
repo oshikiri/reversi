@@ -1,71 +1,64 @@
 import { Game, StrategyType, Player } from "reversi-wasm";
-import { sleep } from "./utils";
-import {
-  convertToIdx,
-  drawBackground,
-  drawCircle,
-  drawDisks,
-  drawGrid,
-  BACKGROUND_WIDTH,
-} from "./draw";
+import { renderBoard, initializeBoard } from "./draw";
 
 const game = Game.create(Player.First, StrategyType.NumdiskLookahead);
-let legalPositions = game.getCurrentAllLegalPosition(Player.First);
+initializeBoard();
+draw(game.currentBoard());
+
 let boardLocked = false;
-
-const canvas = document.getElementById("reversi-board");
-canvas.height = `${BACKGROUND_WIDTH}`;
-canvas.width = `${BACKGROUND_WIDTH}`;
-if (canvas.getContext) {
-  const context = canvas.getContext("2d");
-
-  const draw = (board, i, j) => {
-    drawBackground(context);
-    drawGrid(context);
-    drawDisks(context, board);
-    if (i && j) {
-      drawCircle(context, i, j, "red", 5);
-    }
-  };
-  draw(game.currentBoard());
-
-  canvas.addEventListener("click", async function (clickEvent) {
+let i = -1;
+let j = -1;
+document.querySelectorAll(".cell").forEach((c) => {
+  c.addEventListener("click", async () => {
     if (boardLocked) {
       return;
     }
     boardLocked = true;
 
-    const idx = convertToIdx(clickEvent.offsetX, clickEvent.offsetY);
-    if (idx) {
-      let [i, j] = idx;
-      if (legalPositions[i + 8 * j] > 0) {
-        game.putAndReverse(i, j);
-        draw(game.currentBoard(), i, j);
+    const iPrev = i;
+    const jPrev = j;
+    i = Number(c.dataset.boardColumn);
+    j = Number(c.dataset.boardRow);
 
-        while (true) {
-          await sleep(500);
+    const legalPositions = game.getCurrentAllLegalPosition(Player.First);
+    if (legalPositions[i + 8 * j] > 0) {
+      game.putAndReverse(i, j);
+      draw(game.currentBoard(), i, j, iPrev, jPrev);
 
-          const p = game.putAndReverseOpponent();
-          if (p[0] && p[1]) {
-            i = p[0];
-            j = p[1];
-          }
-          draw(game.currentBoard(), i, j);
-          legalPositions = game.getCurrentAllLegalPosition(Player.First);
-          if (legalPositions.reduce((l, r) => l + r) > 0) {
-            break;
-          }
+      while (true) {
+        await sleep(500);
 
-          const legalPositionsOpponent = game.getCurrentAllLegalPosition(
-            Player.Second
-          );
-          if (legalPositionsOpponent.reduce((l, r) => l + r) == 0) {
-            break;
-          }
+        const iPrev = i;
+        const jPrev = j;
+        const p = game.putAndReverseOpponent();
+        if (!(p.length == 2 && p[0] >= 0 && p[1] >= 0)) {
+          throw Error(`putAndReverseOpponent returns invalid value: ${p}`);
+        }
+        [i, j] = p;
+        draw(game.currentBoard(), i, j, iPrev, jPrev);
+        if (hasPossibleMove(game, Player.First)) {
+          break;
+        }
+        if (!hasPossibleMove(game, Player.Second)) {
+          break;
         }
       }
     }
 
     boardLocked = false;
   });
+});
+
+function hasPossibleMove(game, player) {
+  const legalPositions = game.getCurrentAllLegalPosition(player);
+  return legalPositions.reduce((l, r) => l + r) > 0;
+}
+
+const sleep = (milliSeconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliSeconds));
+
+function draw(board, i, j, iPrev, jPrev) {
+  const first = board.getBitboard(Player.First);
+  const second = board.getBitboard(Player.Second);
+  renderBoard(first, second, i, j, iPrev, jPrev);
 }
