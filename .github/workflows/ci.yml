@@ -37,6 +37,11 @@ jobs:
           cargo build --verbose
           cargo test --verbose
           wasm-pack build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        if: github.ref == 'refs/heads/master'
+        with:
+          path: ./docs
 
   deploy:
     environment:
@@ -46,10 +51,6 @@ jobs:
     needs: test-and-build
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: ./docs
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
