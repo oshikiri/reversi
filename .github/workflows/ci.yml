@@ -11,43 +11,37 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: '14'
-
-    - name: npm install, build, and test
-      working-directory: ./javascript
-      run: |
-        npm install
-        npm run check:format
-        npm test
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+      - name: npm install, build, and test
+        working-directory: ./javascript
+        run: |
+          npm install
+          npm run check:format
+          npm test
 
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: Install wasm-pack
-      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-    - name: Install nightly Rust
-      uses: actions-rs/toolchain@v1
-      with:
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Install nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
           toolchain: nightly
           override: true
           components: rustc
-
-    - name: Build and test
-      working-directory: ./rust
-      run: |
-        cargo build --verbose
-        cargo test --verbose
-        wasm-pack build
+      - name: Build and test
+        working-directory: ./rust
+        run: |
+          cargo build --verbose
+          cargo test --verbose
+          wasm-pack build
 
   deploy:
     environment:
@@ -57,10 +51,10 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/master'
     steps:
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
-      with:
-        path: ./docs
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v1
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./docs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
