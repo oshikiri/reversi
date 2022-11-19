@@ -1,7 +1,7 @@
 reversi
 =====
 
-[![Status of test workflow](https://github.com/oshikiri/reversi/workflows/test/badge.svg)](https://github.com/oshikiri/reversi/actions?query=workflow%3A%22test%22) [![Status of "Deploy to GitHub Pages" workflow](https://github.com/oshikiri/reversi/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://github.com/oshikiri/reversi/actions/workflows/deploy.yml)
+[![Status of ci workflow](https://github.com/oshikiri/reversi/workflows/ci/badge.svg)](https://github.com/oshikiri/reversi/actions?query=workflow%3A%22ci%22)
 
 
 Computer reversi on GitHub pages.
