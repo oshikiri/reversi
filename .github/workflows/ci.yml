@@ -17,12 +17,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '14'
-      - name: npm install, build, and test
-        working-directory: ./javascript
-        run: |
-          npm install
-          npm run check:format
-          npm test
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Install nightly Rust
@@ -31,12 +25,19 @@ jobs:
           toolchain: nightly
           override: true
           components: rustc
-      - name: Build and test
+      - name: Build and test at rust/
         working-directory: ./rust
         run: |
           cargo build --verbose
           cargo test --verbose
           wasm-pack build
+      - name: npm install, build, and test
+        working-directory: ./javascript
+        run: |
+          npm install
+          npm run check:format
+          npm test
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         if: github.ref == 'refs/heads/master'
