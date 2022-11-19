@@ -28,7 +28,8 @@ document.querySelectorAll(".cell").forEach((c) => {
 
         const p = game.putAndReverseOpponent();
         if (!(p.length == 2 && p[0] >= 0 && p[1] >= 0)) {
-          throw Error(`putAndReverseOpponent returns invalid value: ${p}`);
+          console.log(`putAndReverseOpponent returns invalid value: ${p}`);
+          break;
         }
         [i, j] = p;
         draw(game.currentBoard(), i, j);
