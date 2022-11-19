@@ -29,14 +29,13 @@ function createCell(r, c) {
   return cell;
 }
 
-export function renderBoard(bitboardFirst, bitboardSecond, i, j, iPrev, jPrev) {
-  if (iPrev >= 0 && jPrev >= 0) {
-    activateCell(iPrev, jPrev, false);
+export function renderBoard(bitboardFirst, bitboardSecond, i, j) {
+  for (let k = 0; k < 64; k++) {
+    const r = Math.floor(k / 8);
+    const c = k % 8;
+    activateCell(r, c, r == i && c == j);
   }
   drawDisks(bitboardFirst, bitboardSecond);
-  if (i >= 0 && j >= 0) {
-    activateCell(i, j, true);
-  }
 }
 
 function activateCell(i, j, isActive) {
