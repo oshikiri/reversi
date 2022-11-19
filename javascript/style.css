@@ -78,13 +78,8 @@
 .cell.active {
   background-color: var(--color-cell-background-active);
 }
-.cell:hover:not(.active) .disk,
 .cell.flipped .disk {
   transform: rotateZ(90deg) rotateX(180deg);
-}
-
-.cell.flipped:hover .disk {
-  transform: none;
 }
 
 .cell.empty > .disk {
