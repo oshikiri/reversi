@@ -1,42 +1,35 @@
-import { Game, StrategyType, Player } from "reversi-wasm";
+import { players, Reversi } from "./reversi";
 import { renderBoard, initializeBoard } from "./draw";
 
-const game = Game.create(Player.First, StrategyType.NumdiskLookahead);
+const game = new Reversi();
 initializeBoard();
-draw(game.currentBoard());
+draw(game);
 
 let boardLocked = false;
-let i = -1;
-let j = -1;
-document.querySelectorAll(".cell").forEach((c) => {
-  c.addEventListener("click", async () => {
+document.querySelectorAll(".cell").forEach((cell) => {
+  cell.addEventListener("click", async () => {
     if (boardLocked) {
       return;
     }
     boardLocked = true;
 
-    i = Number(c.dataset.boardColumn);
-    j = Number(c.dataset.boardRow);
+    const i = Number(cell.dataset.boardColumn);
+    const j = Number(cell.dataset.boardRow);
 
-    const legalPositions = game.getCurrentAllLegalPosition(Player.First);
-    if (legalPositions[i + 8 * j] > 0) {
+    if (game.isPossibleMove(players.first, i, j)) {
       game.putAndReverse(i, j);
-      draw(game.currentBoard(), i, j);
+      draw(game, i, j);
 
       while (true) {
         await sleep(500);
 
-        const p = game.putAndReverseOpponent();
-        if (!(p.length == 2 && p[0] >= 0 && p[1] >= 0)) {
-          console.log(`putAndReverseOpponent returns invalid value: ${p}`);
-          break;
-        }
-        [i, j] = p;
-        draw(game.currentBoard(), i, j);
-        if (hasPossibleMove(game, Player.First)) {
-          break;
-        }
-        if (!hasPossibleMove(game, Player.Second)) {
+        const [suceed, i, j] = game.putAndReverseOpponent();
+        if (!suceed) break;
+        draw(game, i, j);
+        const secondShouldPlayNextTurn =
+          !game.hasPossibleMove(players.first) &&
+          game.hasPossibleMove(players.second);
+        if (!secondShouldPlayNextTurn) {
           break;
         }
       }
@@ -48,16 +41,11 @@ document.querySelectorAll(".cell").forEach((c) => {
 
 document.querySelector("#version").innerHTML = process.env.REVERSI_VERSION;
 
-function hasPossibleMove(game, player) {
-  const legalPositions = game.getCurrentAllLegalPosition(player);
-  return legalPositions.reduce((l, r) => l + r) > 0;
-}
-
 const sleep = (milliSeconds) =>
   new Promise((resolve) => setTimeout(resolve, milliSeconds));
 
-function draw(board, i, j) {
-  const first = board.getBitboard(Player.First);
-  const second = board.getBitboard(Player.Second);
+function draw(game, i, j) {
+  const first = game.getCurrentBitBoard(players.first);
+  const second = game.getCurrentBitBoard(players.second);
   renderBoard(first, second, i, j);
 }
