@@ -3,12 +3,13 @@ import { renderBoard, initializeBoard } from "./draw";
 
 const game = Game.create(Player.First, StrategyType.NumdiskLookahead);
 initializeBoard();
-draw(game.currentBoard());
+draw(game.currentBoard(), -1, -1);
 
 let boardLocked = false;
 let i = -1;
 let j = -1;
-document.querySelectorAll(".cell").forEach((c) => {
+document.querySelectorAll(".cell").forEach((el) => {
+  const c: HTMLElement = <HTMLElement>el;
   c.addEventListener("click", async () => {
     if (boardLocked) {
       return;
@@ -46,7 +47,7 @@ document.querySelectorAll(".cell").forEach((c) => {
   });
 });
 
-document.querySelector("#version").innerHTML = process.env.REVERSI_VERSION;
+document.querySelector("#version").innerHTML = process.env.REVERSI_VERSION || "";
 
 function hasPossibleMove(game, player) {
   const legalPositions = game.getCurrentAllLegalPosition(player);
