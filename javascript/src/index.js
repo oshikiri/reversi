@@ -1,7 +1,7 @@
-import { Game, StrategyType, Player } from "reversi-wasm";
+import { players, Reversi } from "./reversi";
 import { renderBoard, initializeBoard } from "./draw";
 
-const game = Game.create(Player.First, StrategyType.NumdiskLookahead);
+const game = new Reversi();
 initializeBoard();
 draw(game.currentBoard());
 
@@ -18,7 +18,7 @@ document.querySelectorAll(".cell").forEach((c) => {
     i = Number(c.dataset.boardColumn);
     j = Number(c.dataset.boardRow);
 
-    const legalPositions = game.getCurrentAllLegalPosition(Player.First);
+    const legalPositions = game.getCurrentAllLegalPosition(players.first);
     if (legalPositions[i + 8 * j] > 0) {
       game.putAndReverse(i, j);
       draw(game.currentBoard(), i, j);
@@ -33,10 +33,10 @@ document.querySelectorAll(".cell").forEach((c) => {
         }
         [i, j] = p;
         draw(game.currentBoard(), i, j);
-        if (hasPossibleMove(game, Player.First)) {
+        if (game.hasPossibleMove(players.first)) {
           break;
         }
-        if (!hasPossibleMove(game, Player.Second)) {
+        if (!game.hasPossibleMove(players.second)) {
           break;
         }
       }
@@ -48,16 +48,11 @@ document.querySelectorAll(".cell").forEach((c) => {
 
 document.querySelector("#version").innerHTML = process.env.REVERSI_VERSION;
 
-function hasPossibleMove(game, player) {
-  const legalPositions = game.getCurrentAllLegalPosition(player);
-  return legalPositions.reduce((l, r) => l + r) > 0;
-}
-
 const sleep = (milliSeconds) =>
   new Promise((resolve) => setTimeout(resolve, milliSeconds));
 
 function draw(board, i, j) {
-  const first = board.getBitboard(Player.First);
-  const second = board.getBitboard(Player.Second);
+  const first = board.getBitboard(players.first);
+  const second = board.getBitboard(players.second);
   renderBoard(first, second, i, j);
 }
