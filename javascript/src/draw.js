@@ -1,26 +1,26 @@
 export function initializeBoard() {
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      document.querySelector("#reversi-board")?.appendChild(createCell(r, c));
+      document.querySelector("#reversi-board").appendChild(createCell(r, c));
     }
   }
 }
 
 function createCell(r, c) {
   const cell = document.createElement("div");
-  cell.classList.add("cell");
+  cell.classList = "cell";
   cell.classList.add("empty");
   cell.dataset.boardRow = r;
   cell.dataset.boardColumn = c;
 
   const diskFront = document.createElement("div");
-  diskFront.classList.add("disk-front");
+  diskFront.classList = "disk-front";
 
   const diskBack = document.createElement("div");
-  diskBack.classList.add("disk-back");
+  diskBack.classList = "disk-back";
 
   const disk = document.createElement("div");
-  disk.classList.add("disk");
+  disk.classList = "disk";
   disk.appendChild(diskFront);
   disk.appendChild(diskBack);
 
@@ -41,9 +41,9 @@ export function renderBoard(bitboardFirst, bitboardSecond, i, j) {
 function activateCell(i, j, isActive) {
   const cell = getCell(i, j);
   if (isActive) {
-    cell?.classList.add("active");
+    cell.classList.add("active");
   } else {
-    cell?.classList.remove("active");
+    cell.classList.remove("active");
   }
 }
 
