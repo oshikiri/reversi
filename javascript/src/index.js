@@ -46,6 +46,8 @@ document.querySelectorAll(".cell").forEach((c) => {
   });
 });
 
+document.querySelector("#version").innerHTML = process.env.REVERSI_VERSION;
+
 function hasPossibleMove(game, player) {
   const legalPositions = game.getCurrentAllLegalPosition(player);
   return legalPositions.reduce((l, r) => l + r) > 0;
