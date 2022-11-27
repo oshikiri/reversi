@@ -3,6 +3,8 @@ import { Game, StrategyType, Player } from "reversi-wasm";
 export const players = { first: 0, second: 1 };
 
 export class Reversi {
+  #game;
+
   constructor() {
     const player = Player.First;
     const strategy = StrategyType.NumdiskLookahead;
