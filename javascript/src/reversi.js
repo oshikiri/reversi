@@ -6,17 +6,17 @@ export class Reversi {
   constructor() {
     const player = Player.First;
     const strategy = StrategyType.NumdiskLookahead;
-    this.game = Game.create(player, strategy);
+    this.#game = Game.create(player, strategy);
   }
   getCurrentBitBoard(player) {
-    const board = this.game.currentBoard();
+    const board = this.#game.currentBoard();
     return board.getBitboard(this.#getPlayer(player));
   }
   putAndReverse(i, j) {
-    return this.game.putAndReverse(i, j);
+    return this.#game.putAndReverse(i, j);
   }
   putAndReverseOpponent() {
-    const p = this.game.putAndReverseOpponent();
+    const p = this.#game.putAndReverseOpponent();
     if (p.length == 2 && p[0] >= 0 && p[1] >= 0) {
       return [true, p[0], p[1]];
     }
@@ -32,7 +32,7 @@ export class Reversi {
     return legalPositions.reduce((l, r) => l + r) > 0;
   }
   #getCurrentAllLegalPosition(player) {
-    return this.game.getCurrentAllLegalPosition(this.#getPlayer(player));
+    return this.#game.getCurrentAllLegalPosition(this.#getPlayer(player));
   }
   #getPlayer(player) {
     return player == players.first ? Player.First : Player.Second;
