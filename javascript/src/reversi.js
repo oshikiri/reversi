@@ -21,7 +21,7 @@ export class Reversi {
       return [true, p[0], p[1]];
     }
     console.log(`putAndReverseOpponent returns invalid value: ${p}`);
-    return false, -1, -1;
+    return [false, -1, -1];
   }
   isPossibleMove(player, i, j) {
     const legalPositions = this.#getCurrentAllLegalPosition(player);
