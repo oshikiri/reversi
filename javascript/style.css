@@ -1,6 +1,6 @@
 :root {
-  --color-first: #000000;
-  --color-second: #ffffff;
+  --color-first: black;
+  --color-second: white;
   --color-cell-background-active: lightsalmon;
   --color-cell-background: #0b610b;
   --color-board-line: black;
@@ -17,56 +17,6 @@
   padding: 5px;
 }
 
-[data-board-row="0"] {
-  grid-row: 1/2;
-}
-[data-board-row="1"] {
-  grid-row: 2/3;
-}
-[data-board-row="2"] {
-  grid-row: 3/4;
-}
-[data-board-row="3"] {
-  grid-row: 4/5;
-}
-[data-board-row="4"] {
-  grid-row: 5/6;
-}
-[data-board-row="5"] {
-  grid-row: 6/7;
-}
-[data-board-row="6"] {
-  grid-row: 7/8;
-}
-[data-board-row="7"] {
-  grid-row: 8/9;
-}
-
-[data-board-column="0"] {
-  grid-column: 1/2;
-}
-[data-board-column="1"] {
-  grid-column: 2/3;
-}
-[data-board-column="2"] {
-  grid-column: 3/4;
-}
-[data-board-column="3"] {
-  grid-column: 4/5;
-}
-[data-board-column="4"] {
-  grid-column: 5/6;
-}
-[data-board-column="5"] {
-  grid-column: 6/7;
-}
-[data-board-column="6"] {
-  grid-column: 7/8;
-}
-[data-board-column="7"] {
-  grid-column: 8/9;
-}
-
 .cell {
   padding: 2px;
 
@@ -78,7 +28,8 @@
 .cell.active {
   background-color: var(--color-cell-background-active);
 }
-.cell.flipped .disk {
+
+.cell.flipped > .disk {
   transform: rotateZ(90deg) rotateX(180deg);
 }
 
