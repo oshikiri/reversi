@@ -1,7 +1,7 @@
 export function initializeBoard() {
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      document.querySelector("#reversi-board").appendChild(createCell(r, c));
+      document.getElementById("reversi-board").appendChild(createCell(r, c));
     }
   }
 }
@@ -67,7 +67,7 @@ function updateDisks(firstBidboard, secondBitboard) {
       updateDiskIsFirst(i, j, false);
     }
   }
-  document.querySelector("#scores").innerHTML = `${firstScore}-${secondScore}`;
+  document.getElementById("scores").innerHTML = `${firstScore}-${secondScore}`;
 }
 
 function updateDiskIsFirst(i, j, isFirst) {
