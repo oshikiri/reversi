@@ -14,20 +14,20 @@ export class Reversi {
     const board = this.#game.currentBoard();
     return board.getBitboard(this.#getPlayer(player));
   }
-  putAndReverse(i, j) {
-    return this.#game.putAndReverse(i, j);
+  putAndReverse(r, c) {
+    return this.#game.putAndReverse(c, r);
   }
   putAndReverseOpponent() {
     const p = this.#game.putAndReverseOpponent();
     if (p.length == 2 && p[0] >= 0 && p[1] >= 0) {
-      return [true, p[0], p[1]];
+      return [true, p[1], p[0]];
     }
     console.log(`putAndReverseOpponent returns invalid value: ${p}`);
     return [false, -1, -1];
   }
-  isPossibleMove(player, i, j) {
+  isPossibleMove(player, r, c) {
     const legalPositions = this.#getCurrentAllLegalPosition(player);
-    return legalPositions[i + 8 * j] > 0;
+    return legalPositions[c + 8 * r] > 0;
   }
   hasPossibleMove(player) {
     const legalPositions = this.#getCurrentAllLegalPosition(player);

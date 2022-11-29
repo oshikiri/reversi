@@ -28,16 +28,16 @@ function createDiv() {
 }
 
 export function renderBoard(bitboardFirst, bitboardSecond, i, j) {
-  for (let k = 0; k < 64; k++) {
-    const r = Math.floor(k / 8);
-    const c = k % 8;
-    activateCell(r, c, r == i && c == j);
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      activateCell(r, c, r == i && c == j);
+    }
   }
   updateDisks(bitboardFirst, bitboardSecond);
 }
 
-function activateCell(i, j, isActive) {
-  const cell = getCell(i, j);
+function activateCell(r, c, isActive) {
+  const cell = getCell(r, c);
   if (isActive) {
     cell.classList.add("active");
   } else {
@@ -45,9 +45,9 @@ function activateCell(i, j, isActive) {
   }
 }
 
-function getCell(i, j) {
+function getCell(r, c) {
   return document.querySelector(
-    `[data-board-row="${j}"][data-board-column="${i}"]`
+    `[data-board-row="${r}"][data-board-column="${c}"]`
   );
 }
 
@@ -55,23 +55,23 @@ function updateDisks(firstBidboard, secondBitboard) {
   let firstScore = 0;
   let secondScore = 0;
 
-  for (let k = 0; k < 64; k++) {
-    const i = k % 8;
-    const j = Math.floor(k / 8);
-
-    if (firstBidboard[k] == 1) {
-      firstScore++;
-      updateDiskIsFirst(i, j, true);
-    } else if (secondBitboard[k] == 1) {
-      secondScore++;
-      updateDiskIsFirst(i, j, false);
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const k = 8 * r + c;
+      if (firstBidboard[k] == 1) {
+        firstScore++;
+        updateDiskIsFirst(r, c, true);
+      } else if (secondBitboard[k] == 1) {
+        secondScore++;
+        updateDiskIsFirst(r, c, false);
+      }
     }
   }
   document.getElementById("scores").innerHTML = `${firstScore}-${secondScore}`;
 }
 
-function updateDiskIsFirst(i, j, isFirst) {
-  const cell = getCell(i, j);
+function updateDiskIsFirst(r, c, isFirst) {
+  const cell = getCell(r, c);
   cell.classList.remove("empty");
   if (isFirst) {
     cell.classList.remove("flipped");

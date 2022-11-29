@@ -13,19 +13,19 @@ document.querySelectorAll(".cell").forEach((cell) => {
     }
     boardLocked = true;
 
-    const i = Number(cell.dataset.boardColumn);
-    const j = Number(cell.dataset.boardRow);
+    const c = Number(cell.dataset.boardColumn);
+    const r = Number(cell.dataset.boardRow);
 
-    if (game.isPossibleMove(players.first, i, j)) {
-      game.putAndReverse(i, j);
-      draw(game, i, j);
+    if (game.isPossibleMove(players.first, r, c)) {
+      game.putAndReverse(r, c);
+      draw(game, r, c);
 
       while (true) {
         await sleep(500);
 
-        const [suceed, i, j] = game.putAndReverseOpponent();
-        if (!suceed) break;
-        draw(game, i, j);
+        const [ok, r, c] = game.putAndReverseOpponent();
+        if (!ok) break;
+        draw(game, r, c);
         const secondShouldPlayNextTurn =
           !game.hasPossibleMove(players.first) &&
           game.hasPossibleMove(players.second);
@@ -44,8 +44,8 @@ document.querySelector("#version").innerHTML = process.env.REVERSI_VERSION;
 const sleep = (milliSeconds) =>
   new Promise((resolve) => setTimeout(resolve, milliSeconds));
 
-function draw(game, i, j) {
+function draw(game, r, c) {
   const first = game.getCurrentBitBoard(players.first);
   const second = game.getCurrentBitBoard(players.second);
-  renderBoard(first, second, i, j);
+  renderBoard(first, second, r, c);
 }
