@@ -34,7 +34,7 @@ jobs:
           cargo test --verbose
           wasm-pack build
       - name: npm install, build, and test
-        working-directory: ./javascript
+        working-directory: ./frontend
         run: |
           npm install
           npm run check:format
@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         if: github.ref == 'refs/heads/master'
         with:
-          path: ./docs
+          path: ./frontend/dist
 
   deploy:
     environment:
