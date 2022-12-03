@@ -29,8 +29,8 @@ jobs:
       - name: Build and test at rust/
         working-directory: ./rust
         run: |
-          cargo build --verbose
-          cargo test --verbose
+          cargo build
+          cargo test
           wasm-pack build
       - name: npm install, build, and test
         working-directory: ./frontend
