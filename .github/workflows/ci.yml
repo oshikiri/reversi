@@ -26,12 +26,6 @@ jobs:
         with:
           toolchain: nightly
           components: rustc
-      - name: Build and test at rust/
-        working-directory: ./rust
-        run: |
-          cargo build
-          cargo test
-          wasm-pack build
       - name: Cache cargo files
         uses: actions/cache@v3
         with:
@@ -42,6 +36,12 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build and test at rust/
+        working-directory: ./rust
+        run: |
+          cargo build
+          cargo test
+          wasm-pack build
       - name: npm install, build, and test
         working-directory: ./frontend
         run: |
