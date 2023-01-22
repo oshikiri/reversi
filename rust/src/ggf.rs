@@ -49,6 +49,7 @@ pub fn new_game(
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct PatternInstanceHistory {
     step: usize,
