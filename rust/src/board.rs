@@ -2,13 +2,14 @@ extern crate wasm_bindgen;
 
 pub mod bitboard;
 pub mod board_reverse;
-pub mod player;
+mod player;
+
+pub use player::Player;
 
 use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
-use crate::board::player::Player;
 use crate::parameters::parameters::PATTERN_INSTANCES;
 
 #[wasm_bindgen]

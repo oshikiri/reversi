@@ -1,5 +1,5 @@
-use crate::board::player::Player;
-use crate::board::Board;
+use super::player::Player;
+use super::Board;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 //

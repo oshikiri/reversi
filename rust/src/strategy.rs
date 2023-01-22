@@ -1,9 +1,9 @@
 use wasm_bindgen::prelude::*;
 
 use crate::board::bitboard;
-use crate::board::player::Player;
 use crate::board::Board;
-use crate::search_algorithm::alphabeta::AlphaBeta;
+use crate::board::Player;
+use crate::search_algorithm::AlphaBeta;
 
 #[wasm_bindgen]
 #[derive(Debug)]

@@ -1,2 +1,4 @@
-pub mod alphabeta;
-pub mod base;
+mod alphabeta;
+mod base;
+
+pub use alphabeta::AlphaBeta;

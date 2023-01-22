@@ -1,5 +1,5 @@
-use crate::board::player::Player;
 use crate::board::Board;
+use crate::board::Player;
 use crate::search_algorithm::base::*;
 
 pub struct AlphaBeta {

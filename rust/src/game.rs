@@ -3,7 +3,7 @@ extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
 use crate::board::bitboard;
-use crate::board::player::Player;
+use crate::board::Player;
 use crate::board::*;
 use crate::console_log;
 use crate::strategy::*;
@@ -104,8 +104,8 @@ impl Game {
 
 #[cfg(test)]
 mod tests {
-    use crate::board::player::Player;
     use crate::board::Board;
+    use crate::board::Player;
     use crate::game::Game;
     use crate::strategy::StrategyType;
 
