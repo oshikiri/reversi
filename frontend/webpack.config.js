@@ -11,9 +11,9 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: "index.html", to: "." },
-        { from: "favicon.ico", to: "." },
-        { from: "style.css", to: "." },
+        { from: "public/index.html", to: "." },
+        { from: "public/favicon.ico", to: "." },
+        { from: "public/style.css", to: "." },
       ],
     }),
     new webpack.EnvironmentPlugin({
