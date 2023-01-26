@@ -34,10 +34,9 @@ impl Strategy for NumdiskLookaheadStrategy {
         player: &Player,
         i_step: usize,
     ) -> Result<(Option<u64>, f32), String> {
-        let mut alphabeta =
-            AlphaBeta::create(1000000000, |board: &Board, player: &Player| -> f32 {
-                board.score_numdisk(player)
-            });
+        let mut alphabeta = AlphaBeta::create(500000, |board: &Board, player: &Player| -> f32 {
+            board.score_numdisk(player)
+        });
         let root_board = match player {
             Player::First => board.clone(),
             Player::Second => Board::reverse(&board),

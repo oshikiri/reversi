@@ -23,10 +23,6 @@ impl GameTreeLeaf {
         self.score
     }
 
-    pub fn set_score(&mut self, new_score: f32) {
-        self.score = new_score;
-    }
-
     pub fn moves(&self) -> Vec<Option<u64>> {
         self.moves.clone()
     }
