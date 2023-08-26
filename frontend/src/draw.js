@@ -47,7 +47,7 @@ function activateCell(r, c, isActive) {
 
 function getCell(r, c) {
   return document.querySelector(
-    `[data-board-row="${r}"][data-board-column="${c}"]`
+    `[data-board-row="${r}"][data-board-column="${c}"]`,
   );
 }
 
