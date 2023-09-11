@@ -12,7 +12,7 @@ jobs:
   test-and-build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3.6.0
+      - uses: actions/checkout@v4.0.0
         with:
           fetch-depth: 0
       - name: Use Node.js ${{ matrix.node-version }}
