@@ -50,7 +50,7 @@ jobs:
           npm test
           npm run build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2.0.0
+        uses: actions/upload-pages-artifact@v3.0.0
         if: github.ref == 'refs/heads/master'
         with:
           path: ./frontend/dist
