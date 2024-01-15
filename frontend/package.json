@@ -24,7 +24,7 @@
     "node": "^14"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^12.0.1",
     "prettier": "^3.2.2",
     "reversi-wasm": "file:../engine/pkg",
     "webpack": "^5.89.0",
