@@ -24,6 +24,9 @@
     "node": "^14"
   },
   "devDependencies": {
+    "@webassemblyjs/ast": "^1.14.1",
+    "@webassemblyjs/wasm-edit": "^1.14.1",
+    "@webassemblyjs/wasm-parser": "^1.14.1",
     "copy-webpack-plugin": "^12.0.2",
     "prettier": "^3.3.3",
     "reversi-wasm": "file:../engine/pkg",
