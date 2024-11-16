@@ -27,7 +27,7 @@ jobs:
           toolchain: nightly
           components: rustc
       - name: Cache cargo files
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.1.2
         with:
           path: |
             ~/.cargo/bin/
