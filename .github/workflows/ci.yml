@@ -12,11 +12,12 @@ jobs:
   test-and-build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.2
+      # Use major version tags to automatically receive patch updates
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install wasm-pack
@@ -27,7 +28,7 @@ jobs:
           toolchain: nightly
           components: rustc
       - name: Cache cargo files
-        uses: actions/cache@v4.1.2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -50,7 +51,7 @@ jobs:
           npm test
           npm run build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3.0.1
+        uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/master'
         with:
           path: ./frontend/dist
@@ -65,4 +66,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4.0.5
+        uses: actions/deploy-pages@v4
