@@ -67,7 +67,8 @@ function updateDisks(firstBidboard, secondBitboard) {
       }
     }
   }
-  document.getElementById("scores").innerHTML = `${firstScore}-${secondScore}`;
+  document.getElementById("scores").textContent =
+    `${firstScore}-${secondScore}`;
 }
 
 function updateDiskIsFirst(r, c, isFirst) {
