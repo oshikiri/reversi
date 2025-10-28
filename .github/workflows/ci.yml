@@ -24,7 +24,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly
-          components: rustc
+          components: rustc, clippy
       - name: Cache cargo files
         uses: actions/cache@v4
         with:
@@ -41,6 +41,9 @@ jobs:
           cargo build
           cargo test
           wasm-pack build
+      - name: Run cargo clippy
+        working-directory: ./engine
+        run: cargo clippy -- -D warnings
       - name: npm ci, build, and test
         working-directory: ./frontend
         run: |
