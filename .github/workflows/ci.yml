@@ -18,13 +18,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly
-          components: rustc, clippy
+          components: rustc,clippy
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
       - name: Cache cargo files
         uses: actions/cache@v4
         with:
@@ -34,11 +36,11 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             engine/target/
+            ~/.cache/wasm-pack/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build and test at engine/
+      - name: Test at engine/
         working-directory: ./engine
         run: |
-          cargo build
           cargo test
           wasm-pack build
       - name: Run cargo clippy
