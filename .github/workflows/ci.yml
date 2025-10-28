@@ -38,9 +38,9 @@ jobs:
       - name: Build and test at engine/
         working-directory: ./engine
         run: |
-          cargo build
-          cargo test
-          wasm-pack build
+          cargo build --locked
+          cargo test --locked
+          wasm-pack build -- --locked
       - name: npm ci, build, and test
         working-directory: ./frontend
         run: |
