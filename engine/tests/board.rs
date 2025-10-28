@@ -1,5 +1,3 @@
-#![feature(test)]
-
 #[cfg(test)]
 mod board {
     use reversi::board::Board;
@@ -209,31 +207,4 @@ mod board {
         }
     }
 
-    mod benches {
-        extern crate test;
-        use test::Bencher;
-
-        use reversi::board::Board;
-        use reversi::board::Player;
-
-        #[bench]
-        fn get_all_legal_moves(bench: &mut Bencher) {
-            let current_board = Board::create_from_str(
-                "
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - o o o - - -
-                - - - o x - - -
-                - - - - - - - -
-                - - - - - - - -
-                - - - - - - - -
-            ",
-            );
-
-            bench.iter(|| {
-                current_board.get_all_legal_moves(&Player::Second);
-            })
-        }
-    }
 }
