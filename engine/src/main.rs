@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    match std::env::args().nth(1).as_ref().map(String::as_str) {
+    match std::env::args().nth(1).as_deref() {
         Some("parse-ggf") => {
             // ex. cargo run parse-ggf ~/Downloads/Othello.02e4.ggf > ../python/data/game-histories/02.csv
             let path = std::env::args().nth(2).expect("path is required");

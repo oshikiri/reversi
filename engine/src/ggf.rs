@@ -21,31 +21,21 @@ pub struct Game {
     moves: Vec<CharTriple>,
 }
 
-pub fn new_game(
-    name_str: &str,
-    place_str: &str,
-    datetime_str: &str,
-    first_name_str: &str,
-    second_name_str: &str,
-    first_rating: f64,
-    second_rating: f64,
-    game_type_str: &str,
-    result_score: f64,
-    board_type_str: &str,
-    moves: Vec<CharTriple>,
-) -> Game {
-    Game {
-        name: name_str.to_string(),
-        place: place_str.to_string(),
-        datetime: datetime_str.to_string(),
-        first_name: first_name_str.to_string(),
-        second_name: second_name_str.to_string(),
-        first_rating,
-        second_rating,
-        game_type: game_type_str.to_string(),
-        result_score,
-        board_type: board_type_str.to_string(),
-        moves,
+impl Default for Game {
+    fn default() -> Self {
+        Game {
+            name: String::new(),
+            place: String::new(),
+            datetime: String::new(),
+            first_name: String::new(),
+            second_name: String::new(),
+            first_rating: 0.0,
+            second_rating: 0.0,
+            game_type: String::new(),
+            result_score: 0.0,
+            board_type: String::new(),
+            moves: Vec::new(),
+        }
     }
 }
 
@@ -61,7 +51,7 @@ pub struct PatternInstanceHistory {
 }
 
 impl PatternInstanceHistory {
-    fn pattern_instance_indices_to_csv(v: &Vec<u64>) -> String {
+    fn pattern_instance_indices_to_csv(v: &[u64]) -> String {
         let csv: String = v
             .iter()
             .map(|vi| vi.to_string())
@@ -120,7 +110,7 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
     histories
 }
 
-fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
+fn comsume_until_close_bracket(chars: &[char], i: usize) -> (usize, String) {
     let mut j = i;
     loop {
         if chars[j] == ']' {
@@ -130,11 +120,11 @@ fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
         j += 1;
     }
 
-    let content: String = chars.get(i..j).unwrap().into_iter().collect();
+    let content: String = chars[i..j].iter().collect();
     (j, content)
 }
 
-fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) -> CharTriple {
+fn parse_move_content(turn: char, i: usize, chars: &[char], content: String) -> CharTriple {
     let first_slash = content.find('/').unwrap_or(content.len());
     let first_element = content.get(0..first_slash).unwrap();
     if first_element == "pass" {
@@ -148,7 +138,7 @@ fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) 
 
 // Specification?: http://www.soongsky.com/othello/other/format_ggf.txt
 pub fn parse(game_string: String) -> Game {
-    let mut game = new_game("", "", "", "", "", 0.0, 0.0, "", 0.0, "", Vec::new());
+    let mut game = Game::default();
 
     let mut buffer = String::from("");
     let chars = game_string.chars().collect::<Vec<char>>();
@@ -266,18 +256,19 @@ mod tests {
         let game_string = String::from("(;GM[Othello]PC[GGS/os]DT[2000-4-16 11:13 EST]PB[fangr]PW[patzer]RB[1457.12]RW[1631.74]TI[15:00//02:00]TY[8]RE[-40.00:r]BO[8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *]B[E6//4.09]W[H8/40.00/0.01]B[pass//1.67]W[G7/40.00/0.01]B[pass//2.10]W[G8];)");
 
         let actual = parse(game_string);
-        let expected = new_game(
-            "Othello",
-            "GGS/os",
-            "2000-4-16 11:13 EST",
-            "fangr",
-            "patzer",
-            1457.12,
-            1631.74,
-            "8",
-            -40.0,
-            "8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *",
-            vec![
+        let expected = Game {
+            name: "Othello".to_string(),
+            place: "GGS/os".to_string(),
+            datetime: "2000-4-16 11:13 EST".to_string(),
+            first_name: "fangr".to_string(),
+            second_name: "patzer".to_string(),
+            first_rating: 1457.12,
+            second_rating: 1631.74,
+            game_type: "8".to_string(),
+            result_score: -40.0,
+            board_type: "8 -------- -------- -------- ---O*--- ---*O--- -------- -------- -------- *"
+                .to_string(),
+            moves: vec![
                 ('B', 'E', '6'),
                 ('W', 'H', '8'),
                 ('B', '*', '*'),
@@ -285,7 +276,7 @@ mod tests {
                 ('B', '*', '*'),
                 ('W', 'G', '8'),
             ],
-        );
+        };
         assert_eq!(actual, expected);
     }
 }

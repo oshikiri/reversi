@@ -92,18 +92,14 @@ pub fn extract_pattern_instance_indices(board: &Board, player: &Player) -> Vec<u
 }
 
 pub fn cell_state_vec_to_pattern_instance_index(
-    first: &Vec<u64>,
-    second: &Vec<u64>,
+    first: &[u64],
+    second: &[u64],
     pattern: pattern::Pattern,
 ) -> u64 {
-    let length = pattern.len();
     let mut power = 1;
     let mut index = 0;
-    for i in 0..length {
-        if pattern[i] < 0 {
-            break;
-        }
-        let i_pattern = pattern[i] as usize;
+    for &cell in pattern.iter().take_while(|&&cell| cell >= 0) {
+        let i_pattern = cell as usize;
         index += (first[i_pattern] + 2 * second[i_pattern]) * power;
         power *= 3;
     }
@@ -113,9 +109,9 @@ pub fn cell_state_vec_to_pattern_instance_index(
 pub fn u64_to_bitvec(n_original: u64) -> Vec<u64> {
     let mut n = n_original;
     let mut bitvec = vec![0; 64];
-    for i in 0..64 {
-        bitvec[i] = n & 1;
-        n = n >> 1;
+    for bit in bitvec.iter_mut() {
+        *bit = n & 1;
+        n >>= 1;
     }
     bitvec
 }
@@ -130,7 +126,7 @@ pub fn put_position_to_coord(position: Option<u64>) -> Result<String, String> {
         if position & 1 == 1 {
             i_position = Some(i);
         }
-        position = position >> 1;
+        position >>= 1;
     }
     match i_position {
         Some(k) => {
@@ -153,13 +149,13 @@ pub fn put_position_to_coord(position: Option<u64>) -> Result<String, String> {
 }
 
 pub fn put_position_to_xy(position: u64) -> Option<(u64, u64)> {
-    let mut position = position;
+    let mut working_position = position;
     let mut i_position = None;
     for i in 0..64 {
-        if position & 1 == 1 {
+        if working_position & 1 == 1 {
             i_position = Some(i);
         }
-        position = position >> 1;
+        working_position >>= 1;
     }
     i_position.map(|i| (i % 8, i / 8))
 }
