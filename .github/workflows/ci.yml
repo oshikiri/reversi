@@ -24,7 +24,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly
-          components: rustc,clippy
+          components: clippy
       - name: Install wasm-pack
         run: cargo install wasm-pack
       - name: Cache cargo files
