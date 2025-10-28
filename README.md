@@ -12,6 +12,7 @@ Hosted on <https://oshikiri.github.io/reversi/>
 
 See `.github/workflows/deploy.yml`
 
+
 ## References
 
 - [Reversi \- Wikipedia](https://en.wikipedia.org/wiki/Reversi)
