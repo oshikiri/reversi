@@ -39,7 +39,7 @@ impl Strategy for NumdiskLookaheadStrategy {
         });
         let root_board = match player {
             Player::First => board.clone(),
-            Player::Second => Board::reverse(&board),
+            Player::Second => Board::reverse(board),
         };
         let depth = match i_step {
             45..=61 => 13,
@@ -70,7 +70,7 @@ impl Strategy for PatternLookahead1Strategy {
             });
         let root_board = match player {
             Player::First => board.clone(),
-            Player::Second => Board::reverse(&board),
+            Player::Second => Board::reverse(board),
         };
         match alphabeta.search(&root_board, 0) {
             Some((Some(best_move), score)) => Ok((Some(best_move), score)),
