@@ -37,10 +37,9 @@ jobs:
             ~/.cargo/git/db/
             engine/target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build and test at engine/
+      - name: Test at engine/
         working-directory: ./engine
         run: |
-          cargo build
           cargo test
           wasm-pack build
       - name: npm ci, build, and test
