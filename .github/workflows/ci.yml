@@ -25,9 +25,8 @@ jobs:
         with:
           toolchain: nightly
           components: rustc
-      - name: Install wasm-pack
-        run: cargo install wasm-pack
       - name: Cache cargo files
+        id: cargo-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -37,7 +36,10 @@ jobs:
             ~/.cargo/git/db/
             engine/target/
             ~/.cache/wasm-pack/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('engine/Cargo.lock') }}
+      - name: Install wasm-pack
+        if: steps.cargo-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-pack
       - name: Test at engine/
         working-directory: ./engine
         run: |
