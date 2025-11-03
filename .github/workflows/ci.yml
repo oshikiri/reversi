@@ -42,9 +42,17 @@ jobs:
         run: cargo install wasm-pack
       - name: Test at engine/
         working-directory: ./engine
-        run: |
-          cargo test
-          wasm-pack build
+        run: cargo test
+      - name: Cache wasm-pack build output
+        id: wasm-pack-cache
+        uses: actions/cache@v4
+        with:
+          path: engine/pkg
+          key: ${{ runner.os }}-wasm-pack-${{ hashFiles('engine/Cargo.toml', 'engine/Cargo.lock', 'engine/src/**/*.rs') }}
+      - name: Build wasm package
+        if: steps.wasm-pack-cache.outputs.cache-hit != 'true'
+        working-directory: ./engine
+        run: wasm-pack build
       - name: npm ci, build, and test
         working-directory: ./frontend
         run: |
