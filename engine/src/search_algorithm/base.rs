@@ -33,10 +33,12 @@ pub trait SearchAlgorithm {
 
     fn best_leaves(&self) -> Vec<GameTreeLeaf>;
 
+    #[allow(dead_code)]
     fn increment_n_evaluated_leaves(&mut self) -> ();
 
     fn evaluate_board(&self, board: &Board, player: &Player) -> f32;
 
+    #[allow(dead_code)]
     fn evaluate_leaf(
         &mut self,
         player: &Player,
