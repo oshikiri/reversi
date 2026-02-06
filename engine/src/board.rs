@@ -212,10 +212,9 @@ impl Board {
     pub fn get_all_legal_moves(&self, player: &Player) -> Vec<u64> {
         let n_reverses = self.get_n_reverses(player);
         let mut legal_moves = Vec::new();
-        for i in 0..64 {
-            let put_position = 1 << i;
-            if n_reverses[i] > 0 {
-                legal_moves.push(put_position);
+        for (i, n_reverse) in n_reverses.iter().enumerate() {
+            if *n_reverse > 0 {
+                legal_moves.push(1 << i);
             }
         }
 
@@ -231,12 +230,12 @@ impl Board {
         };
 
         let mut coded_board: [u8; 64] = [0; 64];
-        for i in 0..64 {
+        for (i, cell) in coded_board.iter_mut().enumerate() {
             let put_position = 1 << i;
             if current & put_position > 0 {
-                coded_board[i] = 1;
+                *cell = 1;
             } else if opponent & put_position > 0 {
-                coded_board[i] = 2;
+                *cell = 2;
             }
         }
 
@@ -324,7 +323,7 @@ impl Board {
                 } else if c == 'x' {
                     second |= 1 << n_cells;
                 }
-                n_cells = n_cells + 1;
+                n_cells += 1;
             }
         }
 
@@ -366,9 +365,9 @@ pub fn count_bits(bitboard: u64) -> u64 {
     let mut bits = bitboard;
     for i in 1..=6 {
         let mask = generate_mask(i);
-        bits = (bits & mask) + (bits >> (1 << i - 1) & mask);
+        bits = (bits & mask) + (bits >> (1 << (i - 1)) & mask);
     }
-    return bits;
+    bits
 }
 
 pub fn coordinate_to_bitboard(x: u64, y: u64) -> Result<u64, String> {
@@ -410,9 +409,9 @@ pub fn convert_indices_to_bitboard(x: char, y: char) -> Result<u64, String> {
 pub fn parse_reverse_index(n: u64) -> [u8; 8] {
     let mut n_remainder = n;
     let mut reverse_line = [0; 8];
-    for i in 0..8 {
-        reverse_line[i] = (n_remainder % 3) as u8;
-        n_remainder = n_remainder / 3;
+    for cell in &mut reverse_line {
+        *cell = (n_remainder % 3) as u8;
+        n_remainder /= 3;
     }
     reverse_line
 }

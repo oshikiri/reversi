@@ -18,7 +18,7 @@ impl SearchAlgorithm for AlphaBeta {
         self.best_leaves.clone()
     }
 
-    fn increment_n_evaluated_leaves(&mut self) -> () {
+    fn increment_n_evaluated_leaves(&mut self) {
         self.n_evaluated_leaves += 1;
     }
 
@@ -44,7 +44,7 @@ impl AlphaBeta {
     /// This function assume the next turn is the first player (black).
     pub fn search(&mut self, initial_board: &Board, depth: u64) -> Option<(Option<u64>, f32)> {
         let legal_moves = initial_board.get_all_legal_moves(&Player::First);
-        let search_results = if legal_moves.len() == 0 {
+        let search_results = if legal_moves.is_empty() {
             let (child_score, mut leaf_moves) = self.search_inner(
                 None,
                 &Player::Second,
@@ -92,7 +92,7 @@ impl AlphaBeta {
 
             match (node_max_score, max_score_opt) {
                 (Some(node), Some(score)) => Some((Some(node), score)),
-                __ => None,
+                _ => None,
             }
         };
 
@@ -121,13 +121,13 @@ impl AlphaBeta {
             return (score, vec![]);
         }
 
-        let legal_moves = board.get_all_legal_moves(&player);
+        let legal_moves = board.get_all_legal_moves(player);
         let mut best_current_move: Option<u64> = None;
         let mut best_leaf_moves = vec![];
 
         let mut alpha = alpha;
 
-        if legal_moves.len() == 0 {
+        if legal_moves.is_empty() {
             if last_move.is_some() {
                 // when there is no legal next moves and current move is non-empty, then create empty node.
                 let (child_score, current_best_move) = self.search_inner(
@@ -146,13 +146,13 @@ impl AlphaBeta {
                 }
             } else {
                 // when there is no legal next moves and next move is empty, then it is a leaf node
-                alpha = self.evaluate_board(&board, player);
+                alpha = self.evaluate_board(board, player);
             }
         } else {
             // when there is at least one legal move, search children of the moves
             for legal_move in legal_moves.iter() {
                 let mut next_board = board.clone();
-                next_board.put_and_reverse(&player, *legal_move);
+                next_board.put_and_reverse(player, *legal_move);
 
                 let (child_score, current_moves) = self.search_inner(
                     Some(*legal_move),

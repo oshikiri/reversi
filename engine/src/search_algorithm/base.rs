@@ -34,7 +34,7 @@ pub trait SearchAlgorithm {
     fn best_leaves(&self) -> Vec<GameTreeLeaf>;
 
     #[allow(dead_code)]
-    fn increment_n_evaluated_leaves(&mut self) -> ();
+    fn increment_n_evaluated_leaves(&mut self);
 
     fn evaluate_board(&self, board: &Board, player: &Player) -> f32;
 
@@ -47,8 +47,7 @@ pub trait SearchAlgorithm {
     ) -> GameTreeLeaf {
         self.increment_n_evaluated_leaves();
         let leaf_score = self.evaluate_board(board, player);
-        let new_leaf = GameTreeLeaf::create(player.clone(), leaf_score, put_positions);
-        new_leaf
+        GameTreeLeaf::create(player.clone(), leaf_score, put_positions)
     }
 
     fn print_search_results(&self) {
