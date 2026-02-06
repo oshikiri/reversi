@@ -121,7 +121,7 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
     histories
 }
 
-fn comsume_until_close_bracket(chars: &[char], i: usize) -> (usize, String) {
+fn consume_until_close_bracket(chars: &[char], i: usize) -> (usize, String) {
     let mut j = i;
     loop {
         if chars[j] == ']' {
@@ -164,75 +164,75 @@ pub fn parse(game_string: String) -> Game {
                 buffer.clear();
             }
             "GM[" => {
-                let (i_next, game_name) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, game_name) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.name = game_name;
                 buffer.clear();
             }
             "PC[" => {
-                let (i_next, place) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, place) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.place = place;
                 buffer.clear();
             }
             "DT[" => {
-                let (i_next, datetime_str) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, datetime_str) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.datetime = datetime_str;
                 buffer.clear();
             }
             "PB[" => {
-                let (i_next, player_black) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, player_black) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.first_name = player_black;
                 buffer.clear();
             }
             "PW[" => {
-                let (i_next, player_white) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, player_white) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.second_name = player_white;
                 buffer.clear();
             }
             "RB[" => {
-                let (i_next, rating_str) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, rating_str) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.first_rating = rating_str.parse::<f64>().unwrap();
                 buffer.clear();
             }
             "RW[" => {
-                let (i_next, rating_str) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, rating_str) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.second_rating = rating_str.parse::<f64>().unwrap();
                 buffer.clear();
             }
             "TY[" => {
-                let (i_next, game_type) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, game_type) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 game.game_type = game_type;
                 buffer.clear();
             }
             "RE[" => {
-                let (i_next, result_score_str) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, result_score_str) = consume_until_close_bracket(&chars, i + 1);
                 i = i_next;
                 let result_score_str: Vec<&str> = result_score_str.split(':').collect();
                 game.result_score = result_score_str[0].parse::<f64>().unwrap();
                 buffer.clear();
             }
             "BO[" => {
-                let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, content) = consume_until_close_bracket(&chars, i + 1);
                 game.board_type = content;
                 i = i_next;
                 buffer.clear();
             }
             "B[" => {
-                let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, content) = consume_until_close_bracket(&chars, i + 1);
                 let next_move = parse_move_content('B', i, &chars, content);
                 game.moves.push(next_move);
                 i = i_next;
                 buffer.clear();
             }
             "W[" => {
-                let (i_next, content) = comsume_until_close_bracket(&chars, i + 1);
+                let (i_next, content) = consume_until_close_bracket(&chars, i + 1);
                 let next_move = parse_move_content('W', i, &chars, content);
                 game.moves.push(next_move);
                 i = i_next;
