@@ -28,7 +28,7 @@
     "@webassemblyjs/wasm-edit": "1.14.1",
     "@webassemblyjs/wasm-parser": "1.14.1",
     "copy-webpack-plugin": "13.0.1",
-    "prettier": "3.6.2",
+    "prettier": "3.8.1",
     "reversi-wasm": "file:../engine/pkg",
     "webpack": "5.101.3",
     "webpack-cli": "6.0.1",
