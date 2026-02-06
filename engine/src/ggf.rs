@@ -21,6 +21,7 @@ pub struct Game {
     moves: Vec<CharTriple>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn new_game(
     name_str: &str,
     place_str: &str,
@@ -61,7 +62,7 @@ pub struct PatternInstanceHistory {
 }
 
 impl PatternInstanceHistory {
-    fn pattern_instance_indices_to_csv(v: &Vec<u64>) -> String {
+    fn pattern_instance_indices_to_csv(v: &[u64]) -> String {
         let csv: String = v
             .iter()
             .map(|vi| vi.to_string())
@@ -120,7 +121,7 @@ pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHis
     histories
 }
 
-fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
+fn comsume_until_close_bracket(chars: &[char], i: usize) -> (usize, String) {
     let mut j = i;
     loop {
         if chars[j] == ']' {
@@ -130,11 +131,11 @@ fn comsume_until_close_bracket(chars: &Vec<char>, i: usize) -> (usize, String) {
         j += 1;
     }
 
-    let content: String = chars.get(i..j).unwrap().into_iter().collect();
+    let content: String = chars.get(i..j).unwrap().iter().collect();
     (j, content)
 }
 
-fn parse_move_content(turn: char, i: usize, chars: &Vec<char>, content: String) -> CharTriple {
+fn parse_move_content(turn: char, i: usize, chars: &[char], content: String) -> CharTriple {
     let first_slash = content.find('/').unwrap_or(content.len());
     let first_element = content.get(0..first_slash).unwrap();
     if first_element == "pass" {
