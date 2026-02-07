@@ -140,7 +140,7 @@ mod tests {
         ",
         );
 
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
         assert_eq!(result.unwrap(), Some(1 << 20));
         assert_eq!(game.current_board, expected);
     }
@@ -176,7 +176,7 @@ mod tests {
         );
 
         assert_eq!(game.current_board, expected);
-        assert_eq!(result.is_ok(), false);
+        assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
             "Skipped because: Result of alpha-beta pruning search is empty".to_string()

@@ -237,9 +237,9 @@ mod tests {
             board.score_numdisk(player)
         });
         let search_result = alphabeta.search(&board, 5);
-        assert_eq!(search_result.is_some(), true);
+        assert!(search_result.is_some());
         let search_result = search_result.unwrap();
-        assert_eq!(search_result.0.is_none(), true);
+        assert!(search_result.0.is_none());
         let actual_best_score = search_result.1;
         assert_eq!(actual_best_score, -2.0); // 33-31
         let actual_best_moves = alphabeta.best_leaves[0]
@@ -272,9 +272,9 @@ mod tests {
             board.score_numdisk(player)
         });
         let search_result = alphabeta.search(&reversed_board, 5);
-        assert_eq!(search_result.is_some(), true);
+        assert!(search_result.is_some());
         let search_result = search_result.unwrap();
-        assert_eq!(search_result.0.is_some(), true);
+        assert!(search_result.0.is_some());
         let actual_best_move = search_result.0;
         let actual_best_score = search_result.1;
         assert_eq!(
@@ -296,7 +296,7 @@ mod tests {
             board.score_numdisk(player)
         });
         let search_result = alphabeta.search(&fixture_board(), 9);
-        assert_eq!(search_result.is_some(), true);
+        assert!(search_result.is_some());
         let search_result = search_result.unwrap();
         let actual_best_move = search_result.0;
         let actual_best_score = search_result.1;

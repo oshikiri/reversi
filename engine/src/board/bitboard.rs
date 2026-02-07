@@ -217,14 +217,7 @@ mod tests {
                 &second,
                 bitboard::pattern::ALL_PATTERNS[5], // rotate:+0, hor./vert. 2
             );
-            let expected = 0
-                + 1 * 3
-                + 0 * 3 * 3
-                + 1 * 3 * 3 * 3
-                + 2 * 3 * 3 * 3 * 3
-                + 0 * 3 * 3 * 3 * 3 * 3
-                + 1 * 3 * 3 * 3 * 3 * 3 * 3
-                + 0 * 3 * 3 * 3 * 3 * 3 * 3 * 3;
+            let expected = 3u64.pow(1) + 3u64.pow(3) + 2 * 3u64.pow(4) + 3u64.pow(6);
             assert_eq!(actual, expected);
         }
 

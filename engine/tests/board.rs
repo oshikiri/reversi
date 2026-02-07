@@ -47,7 +47,7 @@ mod board {
                 - - - - - - - -
             ",
             );
-            assert_eq!(board.is_full(), false);
+            assert!(!board.is_full());
         }
 
         #[test]
@@ -64,7 +64,7 @@ mod board {
                 x x x x x x x x
             ",
             );
-            assert_eq!(board.is_full(), true);
+            assert!(board.is_full());
         }
 
         #[test]
@@ -122,8 +122,8 @@ mod board {
                 - - - - - - - -
             ",
             );
-            assert_eq!(board.is_empty(1), false);
-            assert_eq!(board.is_empty(1 << 63), true);
+            assert!(!board.is_empty(1));
+            assert!(board.is_empty(1 << 63));
         }
 
         #[test]
@@ -200,7 +200,7 @@ mod board {
         #[test]
         fn parse_reverse_index() {
             use reversi::board::parse_reverse_index;
-            let n = 3u64.pow(6) + 2 * 3u64.pow(5) + 3u64.pow(4) + 1 * 3 + 2;
+            let n = 3u64.pow(6) + 2 * 3u64.pow(5) + 3u64.pow(4) + 3 + 2;
             let actual = parse_reverse_index(n);
             let expected = [2, 1, 0, 0, 1, 2, 1, 0];
             assert_eq!(actual, expected);
