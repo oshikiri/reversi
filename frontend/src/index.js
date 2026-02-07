@@ -39,7 +39,8 @@ document.querySelectorAll(".cell").forEach((cell) => {
   });
 });
 
-document.querySelector("#version").textContent = process.env.REVERSI_VERSION;
+document.querySelector("#version").textContent =
+  import.meta.env.VITE_REVERSI_VERSION ?? "";
 
 const sleep = (milliSeconds) =>
   new Promise((resolve) => setTimeout(resolve, milliSeconds));
