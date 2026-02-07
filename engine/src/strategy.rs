@@ -20,7 +20,7 @@ pub trait Strategy {
     fn get_next_move(
         &mut self,
         board: &Board,
-        palyer: &Player,
+        player: &Player,
         i_step: usize,
     ) -> Result<(Option<u64>, f32), String>;
 }

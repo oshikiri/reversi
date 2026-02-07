@@ -1,5 +1,3 @@
-extern crate wasm_bindgen;
-
 pub mod board;
 mod game;
 pub mod ggf;

@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             for (i_game, game_str) in BufReader::new(File::open(path)?).lines().enumerate() {
                 let game: ggf::Game = ggf::parse(game_str?);
                 let pattern_instance_histories: Vec<ggf::PatternInstanceHistory> =
-                    ggf::extract_pattarn_instance_histories(&game);
+                    ggf::extract_pattern_instance_histories(&game);
 
                 for history in pattern_instance_histories {
                     println!("{},{}", i_game, history);

@@ -1,5 +1,3 @@
-extern crate wasm_bindgen;
-
 use wasm_bindgen::prelude::*;
 
 use crate::board::bitboard;
@@ -17,7 +15,7 @@ pub struct Game {
 }
 
 impl Game {
-    fn put_and_reverse_opponent(&mut self) -> Result<Option<u64>, String> {
+    fn put_and_reverse_opponent_inner(&mut self) -> Result<Option<u64>, String> {
         let player = self.player_human.opponent();
         let next_position_result =
             self.opponent_strategy
@@ -38,10 +36,8 @@ impl Game {
 
 #[wasm_bindgen]
 impl Game {
-    #![allow(non_snake_case)]
-
     pub fn create(player_human: Player, opponent_strategy_type: StrategyType) -> Game {
-        let current_board = newBoard();
+        let current_board = new_board();
         let opponent_strategy: Box<dyn Strategy> = match opponent_strategy_type {
             StrategyType::NumdiskLookahead => Box::new(NumdiskLookaheadStrategy {}),
             StrategyType::PatternLookahead1 => Box::new(PatternLookahead1Strategy {}),
@@ -54,11 +50,13 @@ impl Game {
         }
     }
 
-    pub fn currentBoard(&self) -> Board {
+    #[wasm_bindgen(js_name = currentBoard)]
+    pub fn current_board(&self) -> Board {
         self.current_board.clone()
     }
 
-    pub fn putAndReverse(&mut self, i: u8, j: u8) {
+    #[wasm_bindgen(js_name = putAndReverse)]
+    pub fn put_and_reverse(&mut self, i: u8, j: u8) {
         let put_position = coordinate_to_bitboard(i as u64, j as u64).unwrap();
         self.current_board
             .put_and_reverse(&self.player_human, put_position);
@@ -66,9 +64,10 @@ impl Game {
         self.print_move(&self.player_human, put_position);
     }
 
-    pub fn putAndReverseOpponent(&mut self) -> js_sys::Array {
+    #[wasm_bindgen(js_name = putAndReverseOpponent)]
+    pub fn put_and_reverse_opponent(&mut self) -> js_sys::Array {
         let player = self.player_human.opponent();
-        match self.put_and_reverse_opponent() {
+        match self.put_and_reverse_opponent_inner() {
             Ok(Some(best_move)) => {
                 self.print_move(&player, best_move);
                 match bitboard::put_position_to_xy(best_move) {
@@ -87,8 +86,9 @@ impl Game {
         }
     }
 
-    pub fn getCurrentAllLegalPosition(&self, player: Player) -> js_sys::Array {
-        self.current_board.getAllLegalPosition(player)
+    #[wasm_bindgen(js_name = getCurrentAllLegalPosition)]
+    pub fn get_current_all_legal_position(&self, player: Player) -> js_sys::Array {
+        self.current_board.get_all_legal_position(player)
     }
 
     fn print_move(&self, player: &Player, put_position: u64) {
@@ -125,7 +125,7 @@ mod tests {
             - - - - - - - -
         ",
         );
-        let result = game.put_and_reverse_opponent();
+        let result = game.put_and_reverse_opponent_inner();
 
         let expected = Board::create_from_str(
             "
@@ -160,7 +160,7 @@ mod tests {
             - - - - - - - -
         ",
         );
-        let result = game.put_and_reverse_opponent();
+        let result = game.put_and_reverse_opponent_inner();
 
         let expected = Board::create_from_str(
             "

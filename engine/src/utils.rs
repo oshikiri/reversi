@@ -1,5 +1,3 @@
-extern crate web_sys;
-
 // https://rustwasm.github.io/book/game-of-life/debugging.html
 #[macro_export]
 macro_rules! console_log {

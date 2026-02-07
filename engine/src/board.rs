@@ -1,5 +1,3 @@
-extern crate wasm_bindgen;
-
 pub mod bitboard;
 pub mod board_reverse;
 mod player;
@@ -19,10 +17,9 @@ pub struct Board {
     second: u64, // white, 後手
 }
 
-#[wasm_bindgen]
 #[allow(dead_code)]
-#[allow(non_snake_case)]
-pub fn newBoard() -> Board {
+#[wasm_bindgen(js_name = newBoard)]
+pub fn new_board() -> Board {
     Board {
         first: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
         second: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,
@@ -31,9 +28,8 @@ pub fn newBoard() -> Board {
 
 #[wasm_bindgen]
 impl Board {
-    #![allow(non_snake_case)]
-
-    pub fn getBitboard(&self, player: Player) -> js_sys::Array {
+    #[wasm_bindgen(js_name = getBitboard)]
+    pub fn get_bitboard(&self, player: Player) -> js_sys::Array {
         let bitboard = match player {
             Player::First => self.first,
             Player::Second => self.second,
@@ -42,7 +38,8 @@ impl Board {
         convert_vec_to_jsarray(bitarray)
     }
 
-    pub fn getAllLegalPosition(&self, player: Player) -> js_sys::Array {
+    #[wasm_bindgen(js_name = getAllLegalPosition)]
+    pub fn get_all_legal_position(&self, player: Player) -> js_sys::Array {
         let legal_positions: Vec<u64> = self
             .entire_reverse_patterns(&player)
             .into_iter()

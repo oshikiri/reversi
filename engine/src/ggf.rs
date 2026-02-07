@@ -86,8 +86,8 @@ impl fmt::Display for PatternInstanceHistory {
     }
 }
 
-pub fn extract_pattarn_instance_histories(game: &Game) -> Vec<PatternInstanceHistory> {
-    let mut board = board::newBoard();
+pub fn extract_pattern_instance_histories(game: &Game) -> Vec<PatternInstanceHistory> {
+    let mut board = board::new_board();
     let mut histories = Vec::new();
     let mut i_move = 0;
     for move_ in &game.moves {
