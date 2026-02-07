@@ -1,5 +1,6 @@
 use crate::board;
 use crate::board::player::Player;
+use std::sync::LazyLock;
 
 pub const SIZE_N_REVERSES_3: usize = 27; // 3**3
 pub const SIZE_N_REVERSES_4: usize = 81; // 3**4
@@ -8,20 +9,18 @@ pub const SIZE_N_REVERSES_6: usize = 729; // 3**6
 pub const SIZE_N_REVERSES_7: usize = 2187; // 3**7
 pub const SIZE_N_REVERSES_8: usize = 6561; // 3**8
 
-lazy_static! {
-    pub static ref N_REVERSES_3: Box<[u64; 3 * SIZE_N_REVERSES_3]> =
-        Box::new(get_size_n_reverses_3());
-    pub static ref N_REVERSES_4: Box<[u64; 4 * SIZE_N_REVERSES_4]> =
-        Box::new(get_size_n_reverses_4());
-    pub static ref N_REVERSES_5: Box<[u64; 5 * SIZE_N_REVERSES_5]> =
-        Box::new(get_size_n_reverses_5());
-    pub static ref N_REVERSES_6: Box<[u64; 6 * SIZE_N_REVERSES_6]> =
-        Box::new(get_size_n_reverses_6());
-    pub static ref N_REVERSES_7: Box<[u64; 7 * SIZE_N_REVERSES_7]> =
-        Box::new(get_size_n_reverses_7());
-    pub static ref N_REVERSES_8: Box<[u64; 8 * SIZE_N_REVERSES_8]> =
-        Box::new(get_size_n_reverses_8());
-}
+pub static N_REVERSES_3: LazyLock<[u64; 3 * SIZE_N_REVERSES_3]> =
+    LazyLock::new(get_size_n_reverses_3);
+pub static N_REVERSES_4: LazyLock<[u64; 4 * SIZE_N_REVERSES_4]> =
+    LazyLock::new(get_size_n_reverses_4);
+pub static N_REVERSES_5: LazyLock<[u64; 5 * SIZE_N_REVERSES_5]> =
+    LazyLock::new(get_size_n_reverses_5);
+pub static N_REVERSES_6: LazyLock<[u64; 6 * SIZE_N_REVERSES_6]> =
+    LazyLock::new(get_size_n_reverses_6);
+pub static N_REVERSES_7: LazyLock<[u64; 7 * SIZE_N_REVERSES_7]> =
+    LazyLock::new(get_size_n_reverses_7);
+pub static N_REVERSES_8: LazyLock<[u64; 8 * SIZE_N_REVERSES_8]> =
+    LazyLock::new(get_size_n_reverses_8);
 
 // TODO: refactor?
 pub fn get_size_n_reverses_3() -> [u64; 3 * SIZE_N_REVERSES_3] {
