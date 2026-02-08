@@ -2,10 +2,10 @@
   "name": "reversi",
   "version": "0.0.1",
   "description": "Computer reversi backed with webassembly",
-  "main": "src/main.js",
+  "main": "src/main.ts",
   "scripts": {
-    "check:format": "prettier --check **/*.{js,html,css}",
-    "format": "prettier --write **/*.{js,html,css}",
+    "check:format": "prettier --check **/*.{js,ts,html,css}",
+    "format": "prettier --write **/*.{js,ts,html,css}",
     "test": "echo \"INFO: no test specified\"",
     "build": "export REVERSI_VERSION=$(git describe --tag) && vite build",
     "start": "export REVERSI_VERSION=$(git describe --tag) && vite"
@@ -26,6 +26,7 @@
   "devDependencies": {
     "prettier": "3.8.1",
     "reversi-wasm": "file:../engine/pkg",
+    "typescript": "^5.9.3",
     "vite": "7.3.1",
     "vite-plugin-wasm": "3.5.0"
   }
