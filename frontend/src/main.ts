@@ -8,7 +8,7 @@ initializeBoard();
 draw(game);
 
 let boardLocked = false;
-document.querySelectorAll(".cell").forEach((cell) => {
+document.querySelectorAll<HTMLElement>(".cell").forEach((cell) => {
   cell.addEventListener("click", async () => {
     if (boardLocked) {
       return;
@@ -41,12 +41,15 @@ document.querySelectorAll(".cell").forEach((cell) => {
   });
 });
 
-document.querySelector("#version").textContent = process.env.REVERSI_VERSION;
+const version = document.querySelector<HTMLElement>("#version");
+if (version) {
+  version.textContent = process.env.REVERSI_VERSION ?? "";
+}
 
-const sleep = (milliSeconds) =>
+const sleep = (milliSeconds: number) =>
   new Promise((resolve) => setTimeout(resolve, milliSeconds));
 
-function draw(game, r, c) {
+function draw(game: Reversi, r?: number, c?: number) {
   const first = game.getCurrentBitBoard(players.first);
   const second = game.getCurrentBitBoard(players.second);
   renderBoard(first, second, r, c);

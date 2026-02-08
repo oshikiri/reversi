@@ -1,33 +1,38 @@
-export function initializeBoard() {
+export function initializeBoard(): void {
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      document.getElementById("reversi-board").appendChild(createCell(r, c));
+      document.getElementById("reversi-board")?.appendChild(createCell(r, c));
     }
   }
 }
 
-function createCell(r, c) {
+function createCell(r: number, c: number): HTMLDivElement {
   const disk = createDiv("disk");
   disk.appendChild(createDiv("disk-front"));
   disk.appendChild(createDiv("disk-back"));
 
   const cell = createDiv("cell", "empty");
-  cell.dataset.boardRow = r;
-  cell.dataset.boardColumn = c;
+  cell.dataset.boardRow = String(r);
+  cell.dataset.boardColumn = String(c);
   cell.appendChild(disk);
 
   return cell;
 }
 
-function createDiv() {
+function createDiv(...classes: Array<string | number>): HTMLDivElement {
   const div = document.createElement("div");
-  for (const arg of arguments) {
+  for (const arg of classes) {
     div.classList.add(String(arg));
   }
   return div;
 }
 
-export function renderBoard(bitboardFirst, bitboardSecond, i, j) {
+export function renderBoard(
+  bitboardFirst: ArrayLike<number>,
+  bitboardSecond: ArrayLike<number>,
+  i?: number,
+  j?: number,
+): void {
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       activateCell(r, c, r == i && c == j);
@@ -36,7 +41,7 @@ export function renderBoard(bitboardFirst, bitboardSecond, i, j) {
   updateDisks(bitboardFirst, bitboardSecond);
 }
 
-function activateCell(r, c, isActive) {
+function activateCell(r: number, c: number, isActive: boolean): void {
   const cell = getCell(r, c);
   if (isActive) {
     cell.classList.add("active");
@@ -45,13 +50,20 @@ function activateCell(r, c, isActive) {
   }
 }
 
-function getCell(r, c) {
-  return document.querySelector(
+function getCell(r: number, c: number): HTMLElement {
+  const cell = document.querySelector<HTMLElement>(
     `[data-board-row="${r}"][data-board-column="${c}"]`,
   );
+  if (!cell) {
+    throw new Error(`Cell not found: ${r}, ${c}`);
+  }
+  return cell;
 }
 
-function updateDisks(firstBidboard, secondBitboard) {
+function updateDisks(
+  firstBidboard: ArrayLike<number>,
+  secondBitboard: ArrayLike<number>,
+): void {
   let firstScore = 0;
   let secondScore = 0;
 
@@ -67,11 +79,13 @@ function updateDisks(firstBidboard, secondBitboard) {
       }
     }
   }
-  document.getElementById("scores").textContent =
-    `${firstScore}-${secondScore}`;
+  const scores = document.getElementById("scores");
+  if (scores) {
+    scores.textContent = `${firstScore}-${secondScore}`;
+  }
 }
 
-function updateDiskIsFirst(r, c, isFirst) {
+function updateDiskIsFirst(r: number, c: number, isFirst: boolean): void {
   const cell = getCell(r, c);
   cell.classList.remove("empty");
   if (isFirst) {
