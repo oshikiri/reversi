@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       # Use major version tags to automatically receive patch updates
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.19.0
           cache: npm
@@ -27,7 +27,7 @@ jobs:
           components: rustc, clippy
       - name: Cache cargo files
         id: cargo-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/bin/
@@ -48,7 +48,7 @@ jobs:
         run: cargo clippy -- -D warnings
       - name: Cache wasm-pack build output
         id: wasm-pack-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: engine/pkg
           key: ${{ runner.os }}-wasm-pack-${{ hashFiles('engine/Cargo.toml', 'engine/Cargo.lock', 'engine/src/**/*.rs') }}
@@ -64,7 +64,7 @@ jobs:
           npm test
           npm run build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
           path: ./frontend/dist
