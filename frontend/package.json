@@ -7,8 +7,8 @@
     "check:format": "prettier --check **/*.{js,html,css}",
     "format": "prettier --write **/*.{js,html,css}",
     "test": "echo \"INFO: no test specified\"",
-    "build": "export REVERSI_VERSION=$(git describe --tag) && webpack --config webpack.config.js --mode=production",
-    "start": "export REVERSI_VERSION=$(git describe --tag) && webpack-dev-server --mode=development"
+    "build": "export REVERSI_VERSION=$(git describe --tag) && vite build",
+    "start": "export REVERSI_VERSION=$(git describe --tag) && vite"
   },
   "repository": {
     "type": "git",
@@ -24,15 +24,10 @@
     "node": "^24"
   },
   "devDependencies": {
-    "@webassemblyjs/ast": "1.14.1",
-    "@webassemblyjs/wasm-edit": "1.14.1",
-    "@webassemblyjs/wasm-parser": "1.14.1",
-    "copy-webpack-plugin": "13.0.1",
     "prettier": "3.8.1",
     "reversi-wasm": "file:../engine/pkg",
-    "webpack": "5.105.0",
-    "webpack-cli": "6.0.1",
-    "webpack-dev-server": "5.2.3"
+    "vite": "7.1.5",
+    "vite-plugin-wasm": "3.5.0"
   },
   "overrides": {
     "on-headers": "^1.1.0"
