@@ -1,3 +1,5 @@
+import "./style.css";
+
 import { players, Reversi } from "./reversi";
 import { renderBoard, initializeBoard } from "./draw";
 
