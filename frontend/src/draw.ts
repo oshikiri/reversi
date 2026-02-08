@@ -1,7 +1,13 @@
 export function initializeBoard(): void {
+  const board = document.getElementById("reversi-board");
+  if (!board) {
+    console.error("Board element not found");
+    return;
+  }
+
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      document.getElementById("reversi-board")?.appendChild(createCell(r, c));
+      board.appendChild(createCell(r, c));
     }
   }
 }
