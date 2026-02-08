@@ -3,6 +3,8 @@ name: git-commit
 description: commit changes
 ---
 
+- Use English for commit messages.
+
 ## Conventional Commit Prefixes
 Use the following prefixes for commit messages:
 
