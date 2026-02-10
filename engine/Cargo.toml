@@ -39,7 +39,7 @@ features = [
 opt-level = "s"
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = false
+wasm-opt = false # Disable wasm-opt to avoid external Binaryen download failures / download dependency
 
 [[bench]]
 name = "board_bench"
