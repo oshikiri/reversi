@@ -7,8 +7,8 @@
     "check:format": "prettier --check **/*.{js,html,css}",
     "format": "prettier --write **/*.{js,html,css}",
     "test": "echo \"INFO: no test specified\"",
-    "build": "export REVERSI_VERSION=$(git describe --tag) && vite build",
-    "start": "export REVERSI_VERSION=$(git describe --tag) && vite"
+    "build": "export REVERSI_VERSION=$(git describe --tags --always) && vite build",
+    "start": "export REVERSI_VERSION=$(git describe --tags --always) && vite"
   },
   "repository": {
     "type": "git",

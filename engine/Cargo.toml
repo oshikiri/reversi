@@ -38,6 +38,9 @@ features = [
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
 [[bench]]
 name = "board_bench"
 harness = false
