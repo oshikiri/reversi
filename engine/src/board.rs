@@ -9,6 +9,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::parameters::parameters::PATTERN_INSTANCES;
+use crate::utils;
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, PartialEq)]
@@ -20,6 +21,7 @@ pub struct Board {
 #[allow(dead_code)]
 #[wasm_bindgen(js_name = newBoard)]
 pub fn new_board() -> Board {
+    utils::set_panic_hook();
     Board {
         first: 0b_00000000_00000000_00000000_00001000_00010000_00000000_00000000_00000000,
         second: 0b_00000000_00000000_00000000_00010000_00001000_00000000_00000000_00000000,

@@ -5,6 +5,7 @@ use crate::board::Player;
 use crate::board::*;
 use crate::console_log;
 use crate::strategy::*;
+use crate::utils;
 
 #[wasm_bindgen]
 pub struct Game {
@@ -37,6 +38,7 @@ impl Game {
 #[wasm_bindgen]
 impl Game {
     pub fn create(player_human: Player, opponent_strategy_type: StrategyType) -> Game {
+        utils::set_panic_hook();
         let current_board = new_board();
         let opponent_strategy: Box<dyn Strategy> = match opponent_strategy_type {
             StrategyType::NumdiskLookahead => Box::new(NumdiskLookaheadStrategy {}),

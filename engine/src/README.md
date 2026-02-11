@@ -7,9 +7,11 @@ echo -e "];\n}" >> parameters.rs
 ```
 
 ## Debugging
-```rs
-extern crate console_error_panic_hook;
-use std::panic;
+panic の詳細を DevTools に出したい場合は feature を有効化します。
 
-panic::set_hook(Box::new(console_error_panic_hook::hook));
+- feature: `debug-panic-hook`
+- hook 初期化: `newBoard` / `Game::create` 呼び出し時に `set_once()` を実行
+
+```sh
+wasm-pack build --dev -- --features debug-panic-hook
 ```
