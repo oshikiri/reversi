@@ -2,11 +2,11 @@
 name = "reversi"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.89.0"
+rust-version = "1.89"
 description = "A core package for computer reversi"
-authors = ["Takamasa Oshikiri <mail@oshikiri.org>"]
 repository = "https://github.com/oshikiri/reversi"
 license = "MIT"
+publish = false
 
 [lib]
 crate-type = ["cdylib", "rlib"]
