@@ -6,6 +6,7 @@
   "scripts": {
     "check:format": "prettier --check **/*.{js,ts,html,css}",
     "format": "prettier --write **/*.{js,ts,html,css}",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"INFO: no test specified\"",
     "build": "export REVERSI_VERSION=$(git describe --tag) && vite build",
     "start": "export REVERSI_VERSION=$(git describe --tag) && vite"

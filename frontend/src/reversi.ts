@@ -14,12 +14,12 @@ export class Reversi {
     const strategy = StrategyType.NumdiskLookahead;
     this.#game = Game.create(player, strategy);
   }
-  getCurrentBitBoard(player: PlayerId): Uint8Array {
+  getCurrentBitBoard(player: PlayerId): number[] {
     const board = this.#game.currentBoard();
     return board.getBitboard(this.#getPlayer(player));
   }
-  putAndReverse(r: number, c: number): Uint8Array {
-    return this.#game.putAndReverse(c, r);
+  putAndReverse(r: number, c: number): void {
+    this.#game.putAndReverse(c, r);
   }
   putAndReverseOpponent(): MoveResult {
     const p = this.#game.putAndReverseOpponent();
@@ -37,7 +37,7 @@ export class Reversi {
     const legalPositions = this.#getCurrentAllLegalPosition(player);
     return legalPositions.reduce((l, r) => l + r) > 0;
   }
-  #getCurrentAllLegalPosition(player: PlayerId): Uint8Array {
+  #getCurrentAllLegalPosition(player: PlayerId): number[] {
     return this.#game.getCurrentAllLegalPosition(this.#getPlayer(player));
   }
   #getPlayer(player: PlayerId): Player {
