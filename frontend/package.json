@@ -8,6 +8,7 @@
     "format": "prettier --write **/*.{js,ts,html,css}",
     "typecheck": "tsc --noEmit",
     "test": "echo \"INFO: no test specified\"",
+    "verify": "npm run check:format && npm run typecheck && npm run test && npm run build",
     "build": "export REVERSI_VERSION=$(git describe --tag --always) && vite build",
     "start": "export REVERSI_VERSION=$(git describe --tag --always) && vite"
   },
