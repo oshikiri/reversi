@@ -1,6 +1,6 @@
-use crate::board::bitboard::put_position_to_coord;
 use crate::board::Board;
 use crate::board::Player;
+use crate::board::bitboard::put_position_to_coord;
 use crate::console_log;
 
 #[derive(Clone, Debug, PartialEq)]

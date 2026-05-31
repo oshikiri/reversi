@@ -22,6 +22,7 @@ mod board {
 
     mod board_test {
         use reversi::board::Board;
+        use reversi::board::MoveError;
         use reversi::board::Player;
 
         #[test]
@@ -103,9 +104,108 @@ mod board {
                 - - - - - - - -
             ",
             );
-            board.put_and_reverse(&Player::First, 8);
+            board.put_and_reverse(&Player::First, 8).unwrap();
             let expected = Board::create(15, 0);
             assert_eq!(board, expected);
+        }
+
+        #[test]
+        fn put_and_reverse_should_reject_zero_position() {
+            let mut board = Board::create_from_str(
+                "
+                o x x - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            let original = board.clone();
+
+            let actual = board.put_and_reverse(&Player::First, 0);
+
+            assert_eq!(actual, Err(MoveError::NotSingleBit(0)));
+            assert_eq!(board, original);
+        }
+
+        #[test]
+        fn put_and_reverse_should_reject_multi_bit_position() {
+            let mut board = Board::create_from_str(
+                "
+                o x x - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            let original = board.clone();
+
+            let actual = board.put_and_reverse(&Player::First, 8 | 16);
+
+            assert_eq!(actual, Err(MoveError::NotSingleBit(8 | 16)));
+            assert_eq!(board, original);
+        }
+
+        #[test]
+        fn put_and_reverse_should_reject_occupied_position() {
+            let mut board = Board::create_from_str(
+                "
+                o x x - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            let original = board.clone();
+
+            let actual = board.put_and_reverse(&Player::First, 1);
+
+            assert_eq!(actual, Err(MoveError::Occupied(1)));
+            assert_eq!(board, original);
+        }
+
+        #[test]
+        fn put_and_reverse_should_reject_move_that_reverses_no_disks() {
+            let mut board = Board::create_from_str(
+                "
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - o x - - -
+                - - - x o - - -
+                - - - - - - - -
+                - - - - - - - -
+                - - - - - - - -
+            ",
+            );
+            let original = board.clone();
+
+            let actual = board.put_and_reverse(&Player::First, 1);
+
+            assert_eq!(actual, Err(MoveError::NoReversedDisk(1)));
+            assert_eq!(board, original);
+        }
+
+        #[test]
+        fn try_create_should_reject_overlapping_bitboards() {
+            assert_eq!(
+                Board::try_create(1, 1),
+                Err(reversi::board::BoardError::OverlappingDisks {
+                    first: 1,
+                    second: 1,
+                })
+            );
         }
 
         #[test]
@@ -206,5 +306,4 @@ mod board {
             assert_eq!(actual, expected);
         }
     }
-
 }

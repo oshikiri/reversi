@@ -65,7 +65,9 @@ impl AlphaBeta {
             let mut max_score_opt: Option<f32> = None;
             for legal_move in legal_moves {
                 let mut board = initial_board.clone();
-                board.put_and_reverse(&Player::First, legal_move);
+                board
+                    .put_and_reverse(&Player::First, legal_move)
+                    .expect("legal moves returned by get_all_legal_moves must be playable");
 
                 let (child_score, mut leaf_moves) = self.search_inner(
                     Some(legal_move),
@@ -152,7 +154,9 @@ impl AlphaBeta {
             // when there is at least one legal move, search children of the moves
             for legal_move in legal_moves.iter() {
                 let mut next_board = board.clone();
-                next_board.put_and_reverse(player, *legal_move);
+                next_board
+                    .put_and_reverse(player, *legal_move)
+                    .expect("legal moves returned by get_all_legal_moves must be playable");
 
                 let (child_score, current_moves) = self.search_inner(
                     Some(*legal_move),

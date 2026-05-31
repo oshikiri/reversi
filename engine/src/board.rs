@@ -5,8 +5,9 @@ mod player;
 pub use player::Player;
 
 use std::convert::TryFrom;
-use wasm_bindgen::prelude::*;
+use std::fmt;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::*;
 
 use crate::parameters::parameters::PATTERN_INSTANCES;
 use crate::utils;
@@ -16,6 +17,48 @@ use crate::utils;
 pub struct Board {
     first: u64,  // black, 先手
     second: u64, // white, 後手
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum BoardError {
+    OverlappingDisks { first: u64, second: u64 },
+}
+
+impl fmt::Display for BoardError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            BoardError::OverlappingDisks { first, second } => write!(
+                f,
+                "bitboards for both players overlap: first={first:#x}, second={second:#x}",
+            ),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum MoveError {
+    NotSingleBit(u64),
+    Occupied(u64),
+    NoReversedDisk(u64),
+}
+
+impl fmt::Display for MoveError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            MoveError::NotSingleBit(position) => {
+                write!(
+                    f,
+                    "move position must contain exactly one bit: {position:#x}"
+                )
+            }
+            MoveError::Occupied(position) => {
+                write!(f, "move position is already occupied: {position:#x}")
+            }
+            MoveError::NoReversedDisk(position) => {
+                write!(f, "move position reverses no disks: {position:#x}")
+            }
+        }
+    }
 }
 
 #[allow(dead_code)]
@@ -53,7 +96,15 @@ impl Board {
 
 impl Board {
     pub fn create(first: u64, second: u64) -> Board {
-        Board { first, second }
+        Board::try_create(first, second).expect("bitboards for both players must not overlap")
+    }
+
+    pub fn try_create(first: u64, second: u64) -> Result<Board, BoardError> {
+        if first & second != 0 {
+            Err(BoardError::OverlappingDisks { first, second })
+        } else {
+            Ok(Board { first, second })
+        }
     }
 
     pub fn first(&self) -> u64 {
@@ -72,22 +123,35 @@ impl Board {
         ((self.first | self.second) & position) == 0
     }
 
-    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) -> (Player, u64) {
+    pub fn put_and_reverse(&mut self, player: &Player, put_position: u64) -> Result<(), MoveError> {
+        if put_position.count_ones() != 1 {
+            return Err(MoveError::NotSingleBit(put_position));
+        }
+        if !self.is_empty(put_position) {
+            return Err(MoveError::Occupied(put_position));
+        }
+
         match player {
             Player::First => {
                 let reverse_pattern =
                     self.get_reverse_pattern(self.first, self.second, put_position);
+                if reverse_pattern == 0 {
+                    return Err(MoveError::NoReversedDisk(put_position));
+                }
                 self.first ^= put_position | reverse_pattern;
                 self.second ^= reverse_pattern;
             }
             Player::Second => {
                 let reverse_pattern =
                     self.get_reverse_pattern(self.second, self.first, put_position);
+                if reverse_pattern == 0 {
+                    return Err(MoveError::NoReversedDisk(put_position));
+                }
                 self.first ^= reverse_pattern;
                 self.second ^= put_position | reverse_pattern;
             }
         };
-        (player.clone(), put_position)
+        Ok(())
     }
 
     pub fn get_reverse_pattern(&self, current: u64, opponent: u64, put_position: u64) -> u64 {
@@ -209,11 +273,15 @@ impl Board {
     }
 
     pub fn get_all_legal_moves(&self, player: &Player) -> Vec<u64> {
-        let n_reverses = self.get_n_reverses(player);
+        let (current, opponent) = match player {
+            Player::First => (self.first, self.second),
+            Player::Second => (self.second, self.first),
+        };
         let mut legal_moves = Vec::new();
-        for (i, n_reverse) in n_reverses.iter().enumerate() {
-            if *n_reverse > 0 {
-                legal_moves.push(1 << i);
+        for i in 0..64 {
+            let put_position = 1 << i;
+            if self.get_reverse_pattern(current, opponent, put_position) > 0 {
+                legal_moves.push(put_position);
             }
         }
 

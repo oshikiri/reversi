@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 
-use crate::board::bitboard;
 use crate::board::Player;
+use crate::board::bitboard;
 use crate::board::*;
 use crate::console_log;
 use crate::strategy::*;
@@ -23,13 +23,14 @@ impl Game {
                 .get_next_move(&self.current_board, &player, self.history.len());
 
         match next_position_result {
-            Ok((best_move, _score)) => {
-                let (_player, put_position) = self
-                    .current_board
-                    .put_and_reverse(&player, best_move.unwrap());
-                self.history.push(put_position);
-                Ok(best_move)
+            Ok((Some(best_move), _score)) => {
+                self.current_board
+                    .put_and_reverse(&player, best_move)
+                    .map_err(|err| format!("Skipped because: {}", err))?;
+                self.history.push(best_move);
+                Ok(Some(best_move))
             }
+            Ok((None, _score)) => Ok(None),
             Err(msg) => Err(format!("Skipped because: {}", msg)),
         }
     }
@@ -58,12 +59,15 @@ impl Game {
     }
 
     #[wasm_bindgen(js_name = putAndReverse)]
-    pub fn put_and_reverse(&mut self, i: u8, j: u8) {
-        let put_position = coordinate_to_bitboard(i as u64, j as u64).unwrap();
+    pub fn put_and_reverse(&mut self, i: u8, j: u8) -> Result<(), JsValue> {
+        let put_position =
+            coordinate_to_bitboard(i as u64, j as u64).map_err(|err| JsValue::from_str(&err))?;
         self.current_board
-            .put_and_reverse(&self.player_human, put_position);
+            .put_and_reverse(&self.player_human, put_position)
+            .map_err(|err| JsValue::from_str(&err.to_string()))?;
         self.history.push(put_position);
         self.print_move(&self.player_human, put_position);
+        Ok(())
     }
 
     #[wasm_bindgen(js_name = putAndReverseOpponent)]

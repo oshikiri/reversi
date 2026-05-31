@@ -1,5 +1,5 @@
-use super::player::Player;
 use super::Board;
+use super::player::Player;
 
 // Buro, M. (2003) The Evolution of Strong Othello Programs. Entertainment Computing. IFIP, vol 112. Springer, Boston, MA.
 //
@@ -166,8 +166,8 @@ pub fn put_position_to_xy(position: u64) -> Option<(u64, u64)> {
 #[cfg(test)]
 mod tests {
     mod bitboard_test {
-        use crate::board::bitboard;
         use crate::board::Board;
+        use crate::board::bitboard;
 
         #[test]
         fn u64_to_bitvec() {
